@@ -1,0 +1,360 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #16181d;
+  --color-muted: #5f6570;
+  --color-line: #e8ebef;
+  --color-paper: #ffffff;
+  --color-ground: #fbfcfe;
+  /* 브랜드 블루에서 파생한 4단계. 나머지 색은 그대로 둔다. */
+  --color-brand: #1a73e8;
+  --color-brand-deep: #0842a0;
+  --color-brand-mid: #4285f4;
+  --color-brand-lite: #8ab4f8;
+  --color-brand-pale: #c2e7ff;
+  --color-brand-dark: #1558b8;
+  --color-brand-soft: #e8f0fe;
+  --color-go: #00a05a;
+  --color-go-soft: #e3f5ec;
+  --color-warn: #b45309;
+  --color-warn-soft: #fef3c7;
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+
+:root {
+  /* 모션은 장식이 아니라 다음 행동을 가리키는 안내다. 두 개만 쓴다. */
+  --ease-kinetic: cubic-bezier(0.2, 0, 0, 1);
+  --ease-press: cubic-bezier(0.3, 0, 0.2, 1);
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04),
+    0 10px 28px -20px rgba(8, 66, 160, 0.3);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* 모바일에서 하단 고정 바가 홈 인디케이터에 먹히지 않게 */
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow-wrap: break-word;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 아래에서 피어오르는 블룸. 방향성 있는 에너지 — 화면 전체의 바탕. */
+.bloom {
+  position: fixed;
+  left: 50%;
+  bottom: -300px;
+  width: min(900px, 190vw);
+  height: 700px;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(66, 133, 244, 0.34),
+    rgba(138, 180, 248, 0.22) 48%,
+    rgba(194, 231, 255, 0.12) 68%,
+    transparent 82%
+  );
+  filter: blur(14px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 반복되는 패턴만 클래스로. 나머지는 유틸리티로 쓴다.
+   Tailwind v4 의 @apply 는 커스텀 클래스를 참조하지 못하므로 평범한 CSS 로 쓴다. */
+
+.card {
+  border-radius: 20px;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+}
+
+/* 원이 기본 도형. 버튼·칩·배지는 알약, 카드만 20px 라운드를 유지한다. */
+.btn,
+.btn-primary,
+.btn-go,
+.btn-ghost {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding-inline: 1.375rem;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s var(--ease-press),
+    box-shadow 0.32s var(--ease-kinetic), background-color 0.2s var(--ease-press),
+    filter 0.2s var(--ease-press);
+}
+
+/* 누르면 중심에서 흰빛이 퍼진다 */
+.btn::after,
+.btn-primary::after,
+.btn-go::after,
+.btn-ghost::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.5),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.55s var(--ease-kinetic);
+  pointer-events: none;
+}
+.btn:active:not(:disabled),
+.btn-primary:active:not(:disabled),
+.btn-go:active:not(:disabled),
+.btn-ghost:active:not(:disabled) {
+  transform: scale(0.968);
+}
+.btn:active:not(:disabled)::after,
+.btn-primary:active:not(:disabled)::after,
+.btn-go:active:not(:disabled)::after,
+.btn-ghost:active:not(:disabled)::after {
+  opacity: 1;
+  transition-duration: 0.06s;
+}
+
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    #2b7cf0,
+    var(--color-brand) 44%,
+    var(--color-brand-deep)
+  );
+  box-shadow: 0 2px 6px rgba(8, 66, 160, 0.28),
+    0 14px 30px -16px rgba(26, 115, 232, 0.85);
+}
+.btn-primary:active:not(:disabled) {
+  box-shadow: 0 1px 3px rgba(8, 66, 160, 0.34),
+    0 6px 16px -12px rgba(26, 115, 232, 0.9);
+}
+
+.btn-go {
+  color: #fff;
+  background: linear-gradient(135deg, #12b46b, var(--color-go));
+  box-shadow: 0 2px 6px rgba(0, 120, 68, 0.24),
+    0 14px 30px -18px rgba(0, 160, 90, 0.8);
+}
+
+.btn-ghost {
+  border: 1px solid var(--color-line);
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--color-ink);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.btn-ghost:active:not(:disabled) {
+  background: #f2f5f9;
+}
+
+.btn:disabled,
+.btn-primary:disabled,
+.btn-go:disabled,
+.btn-ghost:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+  box-shadow: none;
+  filter: grayscale(0.15);
+}
+
+.label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.prose-body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-ink);
+}
+
+/* 제목에 쓰는 그라디언트 텍스트 */
+.grad-text {
+  background: linear-gradient(
+    105deg,
+    var(--color-brand-deep),
+    var(--color-brand-mid) 46%,
+    #7aa8f5
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 잉크 패널 — 우상단 광원이 깔린다 */
+.ink-panel {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: radial-gradient(
+      130% 120% at 100% 0%,
+      rgba(66, 133, 244, 0.55),
+      transparent 58%
+    ),
+    linear-gradient(180deg, #1e2129, #14161b);
+  box-shadow: 0 18px 42px -24px rgba(8, 66, 160, 0.85);
+}
+
+/* Safari 는 summary 기본 삼각형을 list-style 로 못 없앤다 */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* 실습 프롬프트 블록 — 가로로 넘치면 자기 안에서만 스크롤 */
+.promptbox {
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* ───────────────────────────────────────────────────────────
+   모션. 장식이 아니라 시선을 이끄는 용도로만 쓴다.
+   ─────────────────────────────────────────────────────────── */
+
+/* 등장 — 아래에서 떠오르며 자리를 잡는다 */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 화면에 들어온 순서대로 차례차례. 위에서 아래로 읽으라는 신호. */
+.stagger > * {
+  animation: rise 0.5s var(--ease-kinetic) backwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0s; }
+.stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.18s; }
+.stagger > *:nth-child(5) { animation-delay: 0.24s; }
+.stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger > *:nth-child(7) { animation-delay: 0.36s; }
+.stagger > *:nth-child(n + 8) { animation-delay: 0.42s; }
+/* sheen 만 both 를 유지한다 — backwards 면 끝난 뒤 빛이 카드 위에 멈춘다 */
+
+.rise {
+  animation: rise 0.5s var(--ease-kinetic) backwards;
+}
+
+/* 성취의 순간 — 확인 문제를 맞혔을 때 한 번만 */
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  60% {
+    transform: scale(1.012) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes glow-ring {
+  from {
+    box-shadow: 0 0 0 0 rgba(0, 160, 90, 0.3);
+  }
+  to {
+    box-shadow: 0 0 0 20px rgba(0, 160, 90, 0);
+  }
+}
+.pop {
+  animation: pop 0.5s var(--ease-kinetic) backwards,
+    glow-ring 1.1s var(--ease-kinetic) 0.15s 1;
+}
+
+/* 배경이 아주 느리게 숨 쉰다. 화면이 살아 있다는 최소한의 신호. */
+@keyframes bloom-drift {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-52%) scale(1.07);
+    opacity: 0.84;
+  }
+}
+.bloom {
+  animation: bloom-drift 19s ease-in-out infinite;
+}
+
+/* 다음 행동을 가리키는 자리에서만 반짝인다 */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+}
+.twinkle {
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+
+/* 수료증 위를 한 번 지나가는 빛 */
+@keyframes sheen {
+  from {
+    transform: translateX(-140%) rotate(14deg);
+  }
+  to {
+    transform: translateX(240%) rotate(14deg);
+  }
+}
+.sheen::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 0;
+  width: 42%;
+  height: 160%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.14),
+    transparent
+  );
+  animation: sheen 1.5s var(--ease-kinetic) 0.5s 1 both;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    /* 무한 반복까지 막지 않으면 0.01ms 로 계속 도는 낭비가 남는다 */
+    animation-iteration-count: 1 !important;
+  }
+}

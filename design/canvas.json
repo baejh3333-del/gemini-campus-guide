@@ -1,0 +1,25 @@
+{
+  "artboards": [
+    { "file": "Landing.dc.html", "x": 0, "y": 0, "w": 390, "h": 844, "title": "랜딩" },
+    { "file": "Main.dc.html", "x": 470, "y": 0, "w": 390, "h": 844, "title": "STEP 화면 (스크롤해 보세요)", "is_interactive": true },
+    { "file": "Done.dc.html", "x": 940, "y": 0, "w": 390, "h": 844, "title": "수료 · 응모" },
+    { "file": "System.dc.html", "x": 0, "y": 964, "w": 1040, "h": 1560, "title": "디자인 시스템" }
+  ],
+  "annotations": [
+    {
+      "id": "note-direction",
+      "x": 0,
+      "y": -210,
+      "w": 560,
+      "text": "Gemini Bloom — 기존 UI 위에 얹는 시각 언어\n\n색을 새로 만들지 않았습니다. #1a73e8 브랜드 블루에서 파랑 4단계만 파생하고,\nink·muted·go·warn 은 그대로 뒀습니다.\n\n바뀐 것은 셋 — 모서리(12px→999px 알약), 그림자(하드 보더→흐려진 발광),\n모션(장식이 아니라 다음 행동을 가리키는 안내)."
+    },
+    {
+      "id": "note-scroll",
+      "x": 1410,
+      "y": 60,
+      "w": 300,
+      "text": "STEP 화면 안을 아래로 끝까지 스크롤해 보세요.\n\n바닥 64px 안으로 들어오면 파란 블룸이 차오르고\n\"다 읽었어요\" 칩이 떠오릅니다.\n동시에 하단 다음 버튼의 발광이 짙어집니다.\n\n버튼은 눌러 보세요 — scale(.968) + 중심에서 퍼지는 흰빛."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}
