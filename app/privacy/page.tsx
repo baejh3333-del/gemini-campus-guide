@@ -3,13 +3,14 @@ import Link from "next/link";
 export const metadata = { title: "개인정보 처리방침 | 15분 제미나이" };
 
 /* ───────────────────────────────────────────────────────────
-   배포 전 반드시 실제 값으로 교체할 것.
-   담당자 정보 없이 개인정보를 수집하면 안 된다.
+   개인정보 보호 책임자. 이름과 전화번호를 수집하므로 비워 둘 수 없다.
+   여기가 비면 npm run preflight 가 배포를 막는다.
+   destroyBy 는 캠페인이 밀리면 실제와 어긋나니 함께 갱신할 것.
    ─────────────────────────────────────────────────────────── */
 const OPERATOR = {
-  team: "강원대학교 AI 마스터 챌린지 운영팀",
-  manager: "○○○",
-  email: "여기에-담당자-이메일@kangwon.ac.kr",
+  team: "gemini student Ambassador 강원대",
+  manager: "배정현",
+  email: "baejh3333@kangwon.ac.kr",
   destroyBy: "2026년 10월 31일",
 };
 
@@ -23,8 +24,9 @@ export default function PrivacyPage() {
         개인정보 수집·이용 동의 및 처리방침
       </h1>
       <p className="mt-3 text-sm text-[var(--color-muted)]">
-        {OPERATOR.team}(이하 &ldquo;운영팀&rdquo;)은 경품 추첨 및 지급을 위해 아래와
-        같이 최소한의 개인정보를 수집합니다.
+        {/* 조사는 팀명의 받침에 따라 달라진다. "에서는" 은 받침과 무관해 안전하다. */}
+        {OPERATOR.team}(이하 &ldquo;운영팀&rdquo;)에서는 경품 추첨 및 지급을 위해
+        아래와 같이 최소한의 개인정보를 수집합니다.
       </p>
 
       <div className="mt-8 space-y-7 text-[14px] leading-relaxed">
