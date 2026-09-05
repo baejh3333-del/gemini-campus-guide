@@ -3,5 +3,7 @@ node_modules
 .env*.local
 next-env.d.ts
 
-# 디자인 캔버스 결과물 — 2.5MB, design/*.dc.html 에서 다시 만들 수 있다
+# 디자인 캔버스의 "결과물"만 제외한다 (2.5MB, .dc.html 에서 다시 만들 수 있음).
+# .dc.html 은 소스이므로 반드시 남긴다 — canvas.json 이 이 파일들을 가리킨다.
 design/*.html
+!design/*.dc.html

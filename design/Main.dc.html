@@ -1,0 +1,377 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500;700&display=swap');
+
+    :root {
+      --ink: #16181d;
+      --muted: #5f6570;
+      --paper: #ffffff;
+      --ground: #fbfcfe;
+      --line: #e8ebef;
+      --brand: #1a73e8;
+      --brand-deep: #0842a0;
+      --brand-mid: #4285f4;
+      --brand-lite: #8ab4f8;
+      --brand-pale: #c2e7ff;
+      --brand-soft: #e8f0fe;
+      --go: #00a05a;
+      --ease-kinetic: cubic-bezier(.2, 0, 0, 1);
+      --ease-press: cubic-bezier(.3, 0, .2, 1);
+      --shadow-card: 0 1px 2px rgba(16,24,40,.04), 0 10px 28px -16px rgba(8,66,160,.20);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--ground);
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); }
+    a:hover { color: var(--brand-deep); }
+
+    /* ── 배경: 아래에서 피어오르는 블룸. 방향성 있는 에너지. ── */
+    .stage { position: relative; min-height: 844px; }
+    .stage::before {
+      content: '';
+      position: fixed;
+      left: 50%; bottom: -280px;
+      width: 760px; height: 620px;
+      transform: translateX(-50%);
+      background:
+        radial-gradient(closest-side, rgba(138,180,248,.55), rgba(194,231,255,.28) 55%, transparent 78%);
+      filter: blur(16px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .scroll { position: relative; z-index: 1; padding-bottom: 132px; }
+
+    /* ── 헤더 + 진행바 ── */
+    .top {
+      position: sticky; top: 0; z-index: 5;
+      background: rgba(251,252,254,.82);
+      backdrop-filter: saturate(1.6) blur(14px);
+      -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    }
+    .top-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px 10px;
+      font-size: 13px; color: var(--muted); font-weight: 600;
+    }
+    .track { height: 3px; background: rgba(26,115,232,.12); }
+    .fill {
+      height: 100%; width: 60%;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(90deg, var(--brand-deep), var(--brand-mid) 62%, var(--brand-lite));
+      box-shadow: 0 0 12px rgba(66,133,244,.55);
+    }
+
+    .wrap { padding: 24px 20px 0; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── 타이포 ── */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--brand);
+    }
+    h1 { margin: 6px 0 4px; font-size: 30px; line-height: 1.18; letter-spacing: -.022em; font-weight: 800; }
+    .sub { margin: 0; font-size: 15px; color: var(--muted); }
+
+    /* ── 목표 배너: 잉크 위에 사선 그라디언트 ── */
+    .goal {
+      position: relative; overflow: hidden;
+      border-radius: 22px; padding: 18px 20px;
+      background:
+        radial-gradient(120% 140% at 100% 0%, rgba(66,133,244,.55), transparent 58%),
+        linear-gradient(180deg, #1e2129, #14161b);
+      color: #fff; font-size: 15px; line-height: 1.55; font-weight: 600;
+      box-shadow: 0 14px 34px -20px rgba(8,66,160,.75);
+    }
+    .goal .tag { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.62); margin-bottom: 6px; font-weight: 700; }
+
+    /* ── 카드 ── */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow-card);
+    }
+    .label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .body { font-size: 15px; line-height: 1.72; margin: 8px 0 0; }
+
+    .callout {
+      display: flex; gap: 10px;
+      border-radius: 16px; padding: 16px 18px;
+      background: linear-gradient(135deg, var(--brand-soft), #f4f9ff);
+      color: var(--brand-deep); font-size: 15px; line-height: 1.6; font-weight: 650;
+    }
+
+    ul.steps { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+    ul.steps li { display: flex; gap: 11px; font-size: 15px; line-height: 1.6; }
+    .num {
+      flex: none; width: 22px; height: 22px; margin-top: 2px;
+      border-radius: 999px; display: grid; place-items: center;
+      background: linear-gradient(160deg, var(--brand-mid), var(--brand-deep));
+      color: #fff; font-size: 11px; font-weight: 800;
+    }
+
+    /* ── 실습 카드: 강조 테두리 ── */
+    .practice { border: 1px solid rgba(26,115,232,.28); box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 16px 40px -22px rgba(8,66,160,.45); }
+    .prompt {
+      margin: 14px 0 0;
+      border-radius: 14px; padding: 14px 16px;
+      background: #f7f9fc; border: 1px solid var(--line);
+      font-family: "Google Sans Code", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12.5px; line-height: 1.62; color: #2c313a;
+      white-space: pre-wrap; overflow-x: auto;
+    }
+
+    /* ── 알약 버튼 + 누름 상호작용 ── */
+    .pill {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; min-height: 52px; padding: 0 22px;
+      border: 0; border-radius: 999px;
+      font-family: inherit; font-size: 15.5px; font-weight: 700; letter-spacing: -.01em;
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: transform .2s var(--ease-press), box-shadow .32s var(--ease-kinetic), filter .2s var(--ease-press);
+    }
+    .pill::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.55), transparent 62%);
+      opacity: 0; transition: opacity .55s var(--ease-kinetic);
+      pointer-events: none;
+    }
+    .pill:active { transform: scale(.968); }
+    .pill:active::after { opacity: 1; transition-duration: .06s; }
+
+    .pill-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #2b7cf0, var(--brand) 45%, var(--brand-deep));
+      box-shadow: 0 2px 6px rgba(8,66,160,.28), 0 14px 30px -16px rgba(26,115,232,.85);
+    }
+    .pill-primary:active { box-shadow: 0 1px 3px rgba(8,66,160,.34), 0 6px 16px -12px rgba(26,115,232,.9); }
+
+    .pill-go {
+      color: #fff;
+      background: linear-gradient(135deg, #12b46b, var(--go));
+      box-shadow: 0 2px 6px rgba(0,120,68,.24), 0 14px 30px -18px rgba(0,160,90,.8);
+    }
+
+    .pill-ghost {
+      color: var(--ink);
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 2px rgba(16,24,40,.04);
+    }
+    .pill-ghost:active { background: #f2f5f9; }
+
+    .pill[disabled] { cursor: not-allowed; filter: grayscale(.15); opacity: .38; box-shadow: none; }
+    .pill[disabled]:active { transform: none; }
+
+    .hint { margin: 12px 0 0; text-align: center; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* ── 선택지 ── */
+    .opts { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+    .opt {
+      position: relative; overflow: hidden;
+      display: block; width: 100%; text-align: left;
+      padding: 15px 17px; border-radius: 16px;
+      border: 1.5px solid var(--line); background: var(--paper);
+      font-family: inherit; font-size: 14.5px; line-height: 1.55; color: var(--ink);
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
+      transition: transform .18s var(--ease-press), border-color .22s var(--ease-kinetic), background .22s var(--ease-kinetic), box-shadow .28s var(--ease-kinetic);
+    }
+    .opt:active { transform: scale(.988); }
+    .opt.on {
+      border-color: transparent;
+      background: linear-gradient(var(--paper), var(--paper)) padding-box,
+                  linear-gradient(135deg, var(--brand-mid), var(--brand-deep)) border-box;
+      border: 1.5px solid transparent;
+      font-weight: 700;
+      box-shadow: 0 10px 26px -18px rgba(26,115,232,.9);
+    }
+    .opt .dot {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%) scale(.4);
+      width: 20px; height: 20px; border-radius: 999px;
+      background: linear-gradient(160deg, var(--brand-mid), var(--brand-deep));
+      opacity: 0; transition: all .3s var(--ease-kinetic);
+    }
+    .opt.on .dot { opacity: 1; transform: translateY(-50%) scale(1); }
+    .opt.on { padding-right: 46px; }
+
+    /* ── 하단 고정 바 ── */
+    .dock {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+      padding: 12px 20px 18px;
+      background: linear-gradient(180deg, rgba(251,252,254,0), rgba(251,252,254,.92) 32%);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      display: flex; gap: 10px;
+    }
+    .dock .pill { width: auto; }
+    .dock .a { flex: 1; }
+    .dock .b { flex: 2; }
+
+    /* ── 스크롤 최하단 도착 이펙트 ── */
+    .endglow {
+      position: fixed; left: 50%; bottom: -160px; z-index: 2;
+      width: 620px; height: 380px; transform: translateX(-50%) scale(.86);
+      background: radial-gradient(closest-side, rgba(66,133,244,.5), rgba(138,180,248,.22) 52%, transparent 76%);
+      filter: blur(10px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .7s var(--ease-kinetic), transform .9s var(--ease-kinetic);
+    }
+    .endcue {
+      position: fixed; left: 50%; bottom: 96px; z-index: 7;
+      transform: translateX(-50%) translateY(10px);
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 16px; border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(26,115,232,.22);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px -16px rgba(8,66,160,.6);
+      font-size: 12.5px; font-weight: 700; color: var(--brand-deep);
+      opacity: 0; pointer-events: none;
+      transition: opacity .5s var(--ease-kinetic), transform .6s var(--ease-kinetic);
+    }
+    .is-end .endglow { opacity: 1; transform: translateX(-50%) scale(1); }
+    .is-end .endcue { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .is-end .dock .b { box-shadow: 0 2px 6px rgba(8,66,160,.3), 0 18px 44px -18px rgba(26,115,232,1); }
+
+    .spark { flex: none; }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: .01ms !important; }
+    }
+  </style>
+</helmet>
+
+<div class="stage {{endClass}}">
+  <div class="scroll">
+
+    <div class="top">
+      <div class="top-row">
+        <span>← 처음으로</span>
+        <span>STEP 2 · 약 4분</span>
+      </div>
+      <div class="track"><div class="fill"></div></div>
+    </div>
+
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">
+          <svg class="spark" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+          믿을 수 있게 쓰기
+        </span>
+        <h1>출처를 직접<br>확인하는 법</h1>
+        <p class="sub">Deep Research + 출처 검증</p>
+      </div>
+
+      <div class="goal">
+        <span class="tag">이 단계 목표</span>
+        출처가 달린 리서치를 만들고, 그 출처를 직접 확인한다
+      </div>
+
+      <div class="card">
+        <div class="label">왜 필요한가</div>
+        <p class="body">AI가 지어낸 출처를 그대로 레포트에 넣으면 표절보다 심각한 사고가 됩니다. Deep Research는 출처를 붙여주지만, 붙어 있다고 맞는 건 아니에요.</p>
+      </div>
+
+      <div class="card">
+        <div class="callout">
+          <svg class="spark" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-top:2px" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+          <span>출처가 달려 있다는 것과 사실이라는 것은 다릅니다.</span>
+        </div>
+        <ul class="steps">
+          <li><span class="num">1</span><span>레포트에 쓸 문장을 고른다</span></li>
+          <li><span class="num">2</span><span>그 문장에 달린 출처를 눌러 원문을 연다</span></li>
+          <li><span class="num">3</span><span>원문에 없거나 뜻이 다르면 그 문장은 버린다</span></li>
+        </ul>
+      </div>
+
+      <div class="card practice">
+        <div class="label">직접 해보기</div>
+        <div class="prompt">주제: [여기에 내 과제 주제]
+
+이 주제로 학부 레포트에 쓸 자료조사를 해줘.
+각 주장마다 출처 링크를 달아줘.</div>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px">
+          <button class="pill pill-primary" type="button">프롬프트 복사</button>
+          <button class="pill pill-go" type="button">제미나이 열기 ↗</button>
+        </div>
+        <p class="hint">새 창에서 열립니다. 돌아오면 진행 상황은 저장돼 있어요.</p>
+      </div>
+
+      <div class="card">
+        <div class="label">돌아오셨나요? 확인 한 문제</div>
+        <p class="body" style="font-weight:700; font-size:16px">Deep Research 결과물이 평소 답변과 가장 다른 점은?</p>
+        <div class="opts">
+          <button class="opt on" type="button">웹 출처 목록이 붙어 근거를 확인할 수 있었다<span class="dot"></span></button>
+          <button class="opt" type="button">답변이 훨씬 짧고 간단했다</button>
+          <button class="opt" type="button">이미지가 자동으로 들어갔다</button>
+        </div>
+        <button class="pill pill-primary" type="button" style="margin-top:14px">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="endglow"></div>
+  <div class="endcue">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+    다 읽었어요 — 다음으로
+  </div>
+
+  <div class="dock">
+    <button class="pill pill-ghost a" type="button">이전</button>
+    <button class="pill pill-primary b" type="button">다음 · 시험노트</button>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { atEnd: false };
+    this.onScroll = this.onScroll.bind(this);
+  }
+
+  componentDidMount() {
+    // 스크롤 최하단 도착 감지. 임계값을 넘을 때만 setState 해서 렌더가 튀지 않게 한다.
+    this.scroller = document.scrollingElement || document.documentElement;
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onScroll();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+  }
+
+  onScroll() {
+    const el = this.scroller;
+    if (!el) return;
+    const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+    const atEnd = remaining < 64;
+    if (atEnd !== this.state.atEnd) this.setState({ atEnd });
+  }
+
+  renderVals() {
+    return { endClass: this.state.atEnd ? 'is-end' : '' };
+  }
+}
+</script>
+</body>
+</html>

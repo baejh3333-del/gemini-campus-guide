@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Google+Sans+Code:wght@400;500&display=swap');
+    :root {
+      --ink: #16181d;
+      --muted: #5f6570;
+      --paper: #ffffff;
+      --ground: #fbfcfe;
+      --line: #e8ebef;
+      --brand: #1a73e8;
+      --brand-deep: #0842a0;
+      --brand-mid: #4285f4;
+      --brand-lite: #8ab4f8;
+      --brand-pale: #c2e7ff;
+      --brand-soft: #e8f0fe;
+      --go: #00a05a;
+      --warn: #b45309;
+      --ease-kinetic: cubic-bezier(.2, 0, 0, 1);
+      --ease-press: cubic-bezier(.3, 0, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 40px 44px 48px;
+      font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      color: var(--ink); background: var(--ground);
+      word-break: keep-all; -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); } a:hover { color: var(--brand-deep); }
+    code { font-family: "Google Sans Code", ui-monospace, Menlo, monospace; font-size: 11.5px; color: #37414f; }
+
+    h1 { margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -.025em; }
+    .sub { margin: 8px 0 0; font-size: 14.5px; color: var(--muted); line-height: 1.65; max-width: 640px; }
+    h2 {
+      margin: 0 0 16px; font-size: 11.5px; font-weight: 700;
+      letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+    }
+    section { margin-top: 38px; }
+    .grid { display: grid; gap: 16px; }
+
+    .panel {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 20px; padding: 22px;
+      box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 10px 28px -20px rgba(8,66,160,.28);
+    }
+
+    /* 색 */
+    .sw { border-radius: 14px; height: 68px; border: 1px solid rgba(0,0,0,.05); }
+    .swname { margin-top: 8px; font-size: 12.5px; font-weight: 700; }
+    .swval { font-family: "Google Sans Code", ui-monospace, monospace; font-size: 11px; color: var(--muted); }
+    .swnote { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* 그라디언트 표본 */
+    .spec { border-radius: 16px; height: 108px; border: 1px solid rgba(0,0,0,.05); }
+    .g-bloom { background: radial-gradient(closest-side at 50% 120%, rgba(66,133,244,.55), rgba(138,180,248,.3) 48%, rgba(194,231,255,.16) 68%, transparent 82%), #fbfcfe; }
+    .g-btn { background: linear-gradient(135deg, #2b7cf0, #1a73e8 44%, #0842a0); }
+    .g-ink { background: radial-gradient(130% 120% at 100% 0%, rgba(66,133,244,.55), transparent 58%), linear-gradient(180deg, #1e2129, #14161b); }
+    .g-edge { background: linear-gradient(90deg, #0842a0, #4285f4 62%, #8ab4f8); }
+
+    /* 버튼 */
+    .pill {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 52px; padding: 0 26px; border: 0; border-radius: 999px;
+      font-family: inherit; font-size: 15.5px; font-weight: 700; letter-spacing: -.01em;
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: transform .2s var(--ease-press), box-shadow .32s var(--ease-kinetic);
+    }
+    .pill::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.55), transparent 62%);
+      opacity: 0; transition: opacity .55s var(--ease-kinetic); pointer-events: none;
+    }
+    .pill:active { transform: scale(.968); }
+    .pill:active::after { opacity: 1; transition-duration: .06s; }
+    .pill-primary { color: #fff; background: linear-gradient(135deg, #2b7cf0, var(--brand) 44%, var(--brand-deep)); box-shadow: 0 2px 6px rgba(8,66,160,.28), 0 14px 30px -16px rgba(26,115,232,.85); }
+    .pill-go { color: #fff; background: linear-gradient(135deg, #12b46b, var(--go)); box-shadow: 0 2px 6px rgba(0,120,68,.24), 0 14px 30px -18px rgba(0,160,90,.8); }
+    .pill-ghost { color: var(--ink); background: rgba(255,255,255,.72); border: 1px solid var(--line); backdrop-filter: blur(8px); }
+    .pill[disabled] { cursor: not-allowed; opacity: .38; box-shadow: none; filter: grayscale(.15); }
+    .pill[disabled]:active { transform: none; }
+    .pressed { transform: scale(.968); box-shadow: 0 1px 3px rgba(8,66,160,.34), 0 6px 16px -12px rgba(26,115,232,.9); }
+
+    .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .cap { font-size: 11.5px; color: var(--muted); margin-top: 9px; }
+
+    /* 모션 */
+    .curve { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+    .curvename { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; }
+    .curveval { font-family: "Google Sans Code", ui-monospace, monospace; font-size: 10.5px; color: var(--muted); }
+    .demo-track { margin-top: 12px; height: 34px; border-radius: 999px; background: #f2f5f9; position: relative; overflow: hidden; }
+    .dot {
+      position: absolute; top: 5px; left: 5px;
+      width: 24px; height: 24px; border-radius: 999px;
+      background: linear-gradient(160deg, var(--brand-mid), var(--brand-deep));
+      box-shadow: 0 4px 12px -4px rgba(26,115,232,.8);
+    }
+    .run .k { animation: slide 1.5s cubic-bezier(.2,0,0,1) infinite alternate; }
+    .run .p { animation: slide 1.5s cubic-bezier(.3,0,.2,1) infinite alternate; }
+    .run .l { animation: slide 1.5s linear infinite alternate; }
+    @keyframes slide { from { left: 5px; } to { left: calc(100% - 29px); } }
+
+    /* 스크롤 종료 이펙트 */
+    .endbox {
+      position: relative; overflow: hidden;
+      height: 150px; border-radius: 16px; border: 1px solid var(--line);
+      background: #fff; display: grid; place-items: end center; padding-bottom: 18px;
+    }
+    .endbox::before {
+      content: ''; position: absolute; left: 50%; bottom: -70px;
+      width: 320px; height: 190px; transform: translateX(-50%);
+      background: radial-gradient(closest-side, rgba(66,133,244,.5), rgba(138,180,248,.22) 52%, transparent 76%);
+      filter: blur(8px);
+    }
+    .endcue {
+      position: relative; display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 16px; border-radius: 999px;
+      background: rgba(255,255,255,.8); border: 1px solid rgba(26,115,232,.22);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px -16px rgba(8,66,160,.6);
+      font-size: 12.5px; font-weight: 700; color: var(--brand-deep);
+    }
+
+    .rule { display: flex; gap: 10px; font-size: 13.5px; line-height: 1.66; }
+    .rule .n { flex: none; width: 20px; height: 20px; margin-top: 2px; border-radius: 999px; display: grid; place-items: center; background: linear-gradient(160deg, var(--brand-mid), var(--brand-deep)); color: #fff; font-size: 10px; font-weight: 800; }
+    @media (prefers-reduced-motion: reduce) { .run .k, .run .p, .run .l { animation: none; } }
+  </style>
+</helmet>
+
+<div>
+  <header>
+    <h1>Gemini Bloom — 디자인 시스템</h1>
+    <p class="sub">기존 토큰(#1a73e8 · #16181d · Pretendard)을 그대로 두고, 제미나이의 시각 언어 세 가지만 얹습니다 — <b>방향성 있는 그라디언트</b>, <b>흐려진 발광</b>, <b>원형 기하</b>. 색을 새로 만들지 않았고, 모서리와 그림자와 모션만 바꿉니다.</p>
+  </header>
+
+  <section>
+    <h2>1. 색 — 기존 브랜드에서 파생</h2>
+    <div class="panel">
+      <div class="grid" style="grid-template-columns: repeat(6, 1fr)">
+        <div><div class="sw" style="background:#0842a0"></div><div class="swname">brand-deep</div><div class="swval">#0842A0</div><div class="swnote">그라디언트 끝</div></div>
+        <div><div class="sw" style="background:#1a73e8"></div><div class="swname">brand</div><div class="swval">#1A73E8</div><div class="swnote">기존 · 유지</div></div>
+        <div><div class="sw" style="background:#4285f4"></div><div class="swname">brand-mid</div><div class="swval">#4285F4</div><div class="swnote">그라디언트 중심</div></div>
+        <div><div class="sw" style="background:#8ab4f8"></div><div class="swname">brand-lite</div><div class="swval">#8AB4F8</div><div class="swnote">블룸</div></div>
+        <div><div class="sw" style="background:#c2e7ff"></div><div class="swname">brand-pale</div><div class="swval">#C2E7FF</div><div class="swnote">블룸 바깥</div></div>
+        <div><div class="sw" style="background:#fbfcfe; border-color:#e8ebef"></div><div class="swname">ground</div><div class="swval">#FBFCFE</div><div class="swnote">기존 #F6F7F9 → 냉색</div></div>
+      </div>
+      <p class="cap">신규는 파랑 4단계뿐입니다. ink · muted · go · warn 은 손대지 않았습니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 그라디언트 — 에너지의 방향</h2>
+    <div class="grid" style="grid-template-columns: repeat(4, 1fr)">
+      <div class="panel" style="padding:16px">
+        <div class="spec g-bloom"></div>
+        <div class="swname" style="margin-top:10px">Bloom</div>
+        <div class="swnote">화면 아래에서 피어오르는 배경. 고정 배치.</div>
+      </div>
+      <div class="panel" style="padding:16px">
+        <div class="spec g-btn"></div>
+        <div class="swname" style="margin-top:10px">Action 135°</div>
+        <div class="swnote">주 버튼. 밝은 모서리 → 깊은 끝.</div>
+      </div>
+      <div class="panel" style="padding:16px">
+        <div class="spec g-ink"></div>
+        <div class="swname" style="margin-top:10px">Ink + Sheen</div>
+        <div class="swnote">목표 배너·경품 카드. 우상단 광원.</div>
+      </div>
+      <div class="panel" style="padding:16px">
+        <div class="spec g-edge" style="height:12px; margin-top:48px"></div>
+        <div class="swname" style="margin-top:10px">Progress</div>
+        <div class="swnote">선명한 앞머리가 뒤로 번지는 진행바.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 버튼 — 원형 기하 + 누름 반응</h2>
+    <div class="panel">
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr)">
+        <div>
+          <div class="row"><button class="pill pill-primary" type="button">기본</button><button class="pill pill-primary pressed" type="button">눌림</button></div>
+          <p class="cap">Primary · 눌리면 <code>scale(.968)</code> + 그림자 수축 + 중심에서 흰빛 링</p>
+        </div>
+        <div>
+          <div class="row"><button class="pill pill-go" type="button">제미나이 열기 ↗</button></div>
+          <p class="cap">Go · 외부 창을 여는 동작에만</p>
+        </div>
+        <div>
+          <div class="row"><button class="pill pill-ghost" type="button">이전</button><button class="pill pill-primary" type="button" disabled>비활성</button></div>
+          <p class="cap">Ghost 는 반투명 + 블러. 비활성은 그림자를 완전히 뺍니다</p>
+        </div>
+      </div>
+      <p class="cap" style="margin-top:16px">모서리 <code>12px → 999px</code>. 원이 기본 도형이라는 원칙을 버튼·칩·배지에 적용했습니다. 카드만 <code>20px</code> 라운드를 유지합니다.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 모션 — 장식이 아니라 안내</h2>
+    <div class="grid run" style="grid-template-columns: repeat(3, 1fr)">
+      <div class="curve">
+        <div class="curvename">Kinetic — 등장 · 전환</div>
+        <div class="curveval">cubic-bezier(.2, 0, 0, 1) · 320ms</div>
+        <div class="demo-track"><div class="dot k"></div></div>
+      </div>
+      <div class="curve">
+        <div class="curvename">Press — 누름 · 되돌림</div>
+        <div class="curveval">cubic-bezier(.3, 0, .2, 1) · 200ms</div>
+        <div class="demo-track"><div class="dot p"></div></div>
+      </div>
+      <div class="curve" style="opacity:.55">
+        <div class="curvename">Linear — 쓰지 않음</div>
+        <div class="curveval">linear · 기계적으로 읽힘</div>
+        <div class="demo-track"><div class="dot l"></div></div>
+      </div>
+    </div>
+    <p class="cap"><code>prefers-reduced-motion</code> 에서 모든 전환을 0.01ms 로 낮춥니다.</p>
+  </section>
+
+  <section>
+    <h2>5. 스크롤 최하단 이펙트</h2>
+    <div class="grid" style="grid-template-columns: 1.1fr 1fr">
+      <div class="panel" style="padding:16px">
+        <div class="endbox">
+          <span class="endcue">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+            다 읽었어요 — 다음으로
+          </span>
+        </div>
+        <p class="cap">바닥 64px 안으로 들어오면 블룸이 차오르고 칩이 떠오릅니다.</p>
+      </div>
+      <div class="panel">
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <div class="rule"><span class="n">1</span><span>남은 스크롤이 <b>64px</b> 미만일 때만 상태를 바꿉니다. 임계값을 넘을 때 한 번만 <code>setState</code> 하므로 스크롤이 끊기지 않습니다.</span></div>
+          <div class="rule"><span class="n">2</span><span>블룸 <code>opacity 0→1 · 700ms</code>, 칩 <code>translateY(10px)→0 · 600ms</code>. 둘 다 Kinetic 커브.</span></div>
+          <div class="rule"><span class="n">3</span><span>동시에 하단 다음 버튼의 그림자가 짙어집니다. <b>"여기가 끝, 다음은 저기"</b> 를 색이 아니라 빛으로 알려주는 장치입니다.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. 아이콘 — 스파클</h2>
+    <div class="panel">
+      <div class="row" style="gap:26px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1a73e8" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#1a73e8" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+        <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4285f4"/><stop offset="1" stop-color="#0842a0"/></linearGradient></defs><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z" fill="url(#sg)"/></svg>
+        <span class="cap" style="margin:0">AI가 개입하는 자리에만 씁니다 — 눈썹 라벨, 콜아웃, 스크롤 종료 칩. 남용하면 의미를 잃습니다.</span>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":1040,"height":1560}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

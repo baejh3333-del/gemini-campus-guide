@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root {
+      --ink: #16181d; --muted: #5f6570; --paper: #ffffff; --ground: #fbfcfe;
+      --line: #e8ebef; --brand: #1a73e8; --brand-deep: #0842a0; --brand-mid: #4285f4;
+      --brand-lite: #8ab4f8; --go: #00a05a;
+      --ease-kinetic: cubic-bezier(.2, 0, 0, 1);
+      --ease-press: cubic-bezier(.3, 0, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      color: var(--ink); background: var(--ground);
+      word-break: keep-all; -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); } a:hover { color: var(--brand-deep); }
+
+    .stage { position: relative; min-height: 844px; overflow: hidden; padding: 40px 22px 40px; }
+    /* 수료 화면의 블룸은 위에서 내려온다 — 도착의 인상 */
+    .stage::before {
+      content: ''; position: absolute; left: 50%; top: -260px;
+      width: 820px; height: 620px; transform: translateX(-50%);
+      background: radial-gradient(closest-side, rgba(66,133,244,.34), rgba(138,180,248,.22) 50%, transparent 76%);
+      filter: blur(14px); pointer-events: none;
+    }
+    .inner { position: relative; z-index: 1; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 11.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--go);
+    }
+    h1 { margin: 12px 0 0; font-size: 29px; line-height: 1.2; letter-spacing: -.028em; font-weight: 800; }
+
+    /* 수료증 */
+    .cert {
+      position: relative; overflow: hidden;
+      margin-top: 24px; border-radius: 26px; padding: 26px;
+      color: #fff;
+      background:
+        radial-gradient(120% 110% at 88% -10%, rgba(66,133,244,.62), transparent 56%),
+        linear-gradient(180deg, #1e2129, #101216);
+      box-shadow: 0 26px 56px -28px rgba(8,66,160,.9);
+    }
+    .cert::after {
+      content: ''; position: absolute; right: -70px; bottom: -90px;
+      width: 240px; height: 240px; border-radius: 999px;
+      background: radial-gradient(closest-side, rgba(138,180,248,.4), transparent 72%);
+      filter: blur(6px);
+    }
+    .cert .k { position: relative; z-index: 1; }
+    .cert .tag { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.5); font-weight: 700; }
+    .cert h2 { margin: 16px 0 0; font-size: 25px; line-height: 1.24; font-weight: 800; letter-spacing: -.02em; }
+    .cert .hr { height: 1px; background: rgba(255,255,255,.16); margin: 20px 0; }
+    .cert .name {
+      font-size: 21px; font-weight: 800; letter-spacing: -.01em;
+      border-bottom: 1px solid rgba(255,255,255,.28); padding-bottom: 9px;
+    }
+    .cert .date { margin-top: 15px; font-size: 13px; color: rgba(255,255,255,.62); }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+    .bdg { padding: 6px 11px; border-radius: 999px; background: rgba(255,255,255,.11); font-size: 11px; font-weight: 700; }
+
+    .pill {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; min-height: 52px; padding: 0 22px; border: 0; border-radius: 999px;
+      font-family: inherit; font-size: 15.5px; font-weight: 700;
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: transform .2s var(--ease-press), box-shadow .32s var(--ease-kinetic);
+    }
+    .pill::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.5), transparent 62%);
+      opacity: 0; transition: opacity .55s var(--ease-kinetic); pointer-events: none;
+    }
+    .pill:active { transform: scale(.968); }
+    .pill:active::after { opacity: 1; transition-duration: .06s; }
+    .pill-primary { color: #fff; background: linear-gradient(135deg, #2b7cf0, var(--brand) 44%, var(--brand-deep)); box-shadow: 0 3px 8px rgba(8,66,160,.3), 0 18px 38px -18px rgba(26,115,232,.9); }
+    .pill-ghost { color: var(--ink); background: rgba(255,255,255,.74); border: 1px solid var(--line); backdrop-filter: blur(8px); }
+
+    .cap { margin: 10px 0 0; text-align: center; font-size: 12px; color: var(--muted); }
+
+    .card {
+      margin-top: 26px; background: var(--paper); border: 1px solid var(--line);
+      border-radius: 20px; padding: 20px;
+      box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 10px 28px -20px rgba(8,66,160,.3);
+    }
+    .card h3 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.015em; }
+    .card .m { margin: 6px 0 0; font-size: 13.5px; color: var(--muted); }
+    .field { margin-top: 15px; }
+    .field span { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; }
+    .input {
+      width: 100%; min-height: 50px; border-radius: 14px;
+      border: 1.5px solid var(--line); background: #fff;
+      padding: 0 15px; font-family: inherit; font-size: 16px; color: var(--ink);
+      transition: border-color .22s var(--ease-kinetic), box-shadow .28s var(--ease-kinetic);
+    }
+    .input:focus { outline: 0; border-color: var(--brand-mid); box-shadow: 0 0 0 4px rgba(66,133,244,.14); }
+    .consent {
+      display: flex; gap: 11px; margin-top: 16px; padding: 15px;
+      border-radius: 15px; background: #f4f7fb;
+      font-size: 12.5px; line-height: 1.62; color: #414852;
+    }
+    .box { flex: none; width: 21px; height: 21px; border-radius: 7px; border: 1.5px solid #c6ccd4; background: #fff; }
+    @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+  </style>
+</helmet>
+
+<div class="stage">
+  <div class="inner">
+    <span class="eyebrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+      수료 완료
+    </span>
+    <h1>축하합니다, 이제<br>제미나이를 학업에<br>쓸 수 있어요</h1>
+
+    <div class="cert">
+      <div class="k">
+        <div class="tag">Certificate of Completion</div>
+        <h2>15분 만에<br>제미나이 정복하기</h2>
+        <div class="hr"></div>
+        <div class="name">배정현</div>
+        <div class="date">2026년 9월 5일 · 강원대 AI 마스터 챌린지</div>
+        <div class="badges">
+          <span class="bdg">프롬프트 4블록</span>
+          <span class="bdg">Deep Research</span>
+          <span class="bdg">NotebookLM</span>
+          <span class="bdg">Gems</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <button class="pill pill-ghost" type="button">친구에게 공유하기</button>
+      <p class="cap">위 카드를 캡처해서 에브리타임에 올려도 좋아요.</p>
+    </div>
+
+    <div class="card">
+      <h3>경품 응모하기</h3>
+      <p class="m">커피 기프티콘 100명</p>
+      <label class="field"><span>이름</span><input class="input" type="text" placeholder="홍길동"></label>
+      <label class="field"><span>휴대폰 번호</span><input class="input" type="tel" placeholder="010-1234-5678"></label>
+      <div class="consent">
+        <span class="box"></span>
+        <span><b>[필수]</b> 개인정보 수집·이용에 동의합니다. 수집 항목: 이름, 휴대폰 번호 · 목적: 경품 추첨 및 지급 안내 · 보유기간: 지급 완료 후 즉시 파기.</span>
+      </div>
+      <div style="margin-top:16px"><button class="pill pill-primary" type="button">응모하기</button></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root {
+      --ink: #16181d;
+      --muted: #5f6570;
+      --paper: #ffffff;
+      --ground: #fbfcfe;
+      --line: #e8ebef;
+      --brand: #1a73e8;
+      --brand-deep: #0842a0;
+      --brand-mid: #4285f4;
+      --brand-lite: #8ab4f8;
+      --brand-pale: #c2e7ff;
+      --brand-soft: #e8f0fe;
+      --go: #00a05a;
+      --ease-kinetic: cubic-bezier(.2, 0, 0, 1);
+      --ease-press: cubic-bezier(.3, 0, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      color: var(--ink); background: var(--ground);
+      word-break: keep-all; overflow-wrap: break-word;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); }
+    a:hover { color: var(--brand-deep); }
+
+    /* 아래에서 위로 번지는 블룸 — 제미나이 모바일의 그 인상 */
+    .stage { position: relative; min-height: 844px; overflow: hidden; padding-bottom: 40px; }
+    .stage::before {
+      content: '';
+      position: absolute; left: 50%; bottom: -300px;
+      width: 900px; height: 760px; transform: translateX(-50%);
+      background:
+        radial-gradient(closest-side, rgba(66,133,244,.42), rgba(138,180,248,.30) 46%, rgba(194,231,255,.18) 66%, transparent 80%);
+      filter: blur(12px); pointer-events: none;
+    }
+    .inner { position: relative; z-index: 1; padding: 44px 22px 0; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 11.5px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--brand);
+    }
+    h1 {
+      margin: 14px 0 0; font-size: 40px; line-height: 1.12;
+      letter-spacing: -.035em; font-weight: 800;
+    }
+    h1 .grad {
+      background: linear-gradient(105deg, var(--brand-deep), var(--brand-mid) 46%, #7aa8f5);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .lede { margin: 16px 0 0; font-size: 15.5px; line-height: 1.72; color: #3d434d; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+    .chip {
+      padding: 8px 14px; border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(26,115,232,.18);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      font-size: 12.5px; font-weight: 700; color: var(--brand-deep);
+    }
+
+    .pill {
+      position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; min-height: 56px; padding: 0 24px;
+      border: 0; border-radius: 999px;
+      font-family: inherit; font-size: 16.5px; font-weight: 700; letter-spacing: -.012em;
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: transform .2s var(--ease-press), box-shadow .32s var(--ease-kinetic);
+    }
+    .pill::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.5), transparent 62%);
+      opacity: 0; transition: opacity .55s var(--ease-kinetic); pointer-events: none;
+    }
+    .pill:active { transform: scale(.968); }
+    .pill:active::after { opacity: 1; transition-duration: .06s; }
+    .pill-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #2b7cf0, var(--brand) 44%, var(--brand-deep));
+      box-shadow: 0 3px 8px rgba(8,66,160,.3), 0 20px 42px -18px rgba(26,115,232,.95);
+    }
+    .cta { margin-top: 26px; }
+
+    h2 { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.018em; }
+    .list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px; border-radius: 18px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 1px 2px rgba(16,24,40,.03), 0 10px 26px -20px rgba(8,66,160,.4);
+      transition: transform .22s var(--ease-press), box-shadow .3s var(--ease-kinetic);
+      cursor: pointer;
+    }
+    .row:active { transform: scale(.99); }
+    .badge {
+      flex: none; width: 38px; height: 38px; border-radius: 13px;
+      display: grid; place-items: center;
+      font-size: 13px; font-weight: 800; color: #fff;
+      background: linear-gradient(160deg, #2b2f38, #14161b);
+    }
+    .row.done .badge { background: linear-gradient(160deg, #12b46b, var(--go)); }
+    .row .t { font-size: 15px; font-weight: 700; }
+    .row .m { font-size: 12px; font-weight: 500; color: var(--muted); margin-left: 7px; }
+    .row .d { display: block; margin-top: 3px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+    .prize {
+      position: relative; overflow: hidden;
+      margin-top: 20px; border-radius: 22px; padding: 22px;
+      color: #fff;
+      background:
+        radial-gradient(130% 120% at 8% 0%, rgba(66,133,244,.6), transparent 56%),
+        linear-gradient(180deg, #1e2129, #14161b);
+      box-shadow: 0 18px 42px -24px rgba(8,66,160,.85);
+    }
+    .prize h3 { margin: 0; font-size: 16px; font-weight: 800; }
+    .prize p { margin: 9px 0 0; font-size: 14px; line-height: 1.65; color: rgba(255,255,255,.78); }
+    .prize .fine { margin-top: 12px; font-size: 11.5px; color: rgba(255,255,255,.55); line-height: 1.6; }
+
+    @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+  </style>
+</helmet>
+
+<div class="stage">
+  <div class="inner">
+    <span class="eyebrow">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1.6l2.34 8.06L22 12l-7.66 2.34L12 22.4l-2.34-8.06L2 12l7.66-2.34z"/></svg>
+      강원대 AI 마스터 챌린지
+    </span>
+
+    <h1>15분 만에<br><span class="grad">제미나이 정복하기</span></h1>
+
+    <p class="lede">레포트, 시험공부, 발표. 학교에서 진짜 쓰는 것만 골랐습니다. 읽고 끝내는 강의가 아니라, 옆 창에 제미나이를 켜놓고 같이 해보는 실습이에요.</p>
+
+    <div class="chips">
+      <span class="chip">총 15분</span>
+      <span class="chip">실습형</span>
+      <span class="chip">수료 시 경품 응모</span>
+      <span class="chip">재학생 12개월 무료</span>
+    </div>
+
+    <div class="cta">
+      <button class="pill pill-primary" type="button">시작하기</button>
+    </div>
+
+    <div style="margin-top:38px">
+      <h2>무엇을 배우나요</h2>
+      <ul class="list">
+        <li class="row done">
+          <span class="badge">✓</span>
+          <span>
+            <span class="t">혜택 받기<span class="m">1분</span></span>
+            <span class="d">12개월 무료부터 켜고 시작하자</span>
+          </span>
+        </li>
+        <li class="row">
+          <span class="badge">01</span>
+          <span>
+            <span class="t">질문하는 법<span class="m">3분</span></span>
+            <span class="d">4블록으로 지시서 쓰기</span>
+          </span>
+        </li>
+        <li class="row">
+          <span class="badge">02</span>
+          <span>
+            <span class="t">믿을 수 있게 쓰기<span class="m">4분</span></span>
+            <span class="d">Deep Research + 출처 검증</span>
+          </span>
+        </li>
+        <li class="row">
+          <span class="badge">03</span>
+          <span>
+            <span class="t">강의자료 → 시험노트<span class="m">4분</span></span>
+            <span class="d">NotebookLM으로 시험 준비</span>
+          </span>
+        </li>
+        <li class="row">
+          <span class="badge">04</span>
+          <span>
+            <span class="t">나만의 조교 만들기<span class="m">3분</span></span>
+            <span class="d">Gem으로 저장해서 계속 쓰기</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="prize">
+      <h3>수료하면 응모할 수 있어요</h3>
+      <p>5단계를 마치고 최종 퀴즈를 통과하면 경품 추첨에 응모할 수 있습니다. 커피 기프티콘 100명.</p>
+      <p class="fine">응모에는 이름과 전화번호가 필요하며, 경품 지급 안내 목적으로만 쓰고 지급 완료 후 파기합니다.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
