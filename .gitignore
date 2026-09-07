@@ -7,3 +7,6 @@ next-env.d.ts
 # .dc.html 은 소스이므로 반드시 남긴다 — canvas.json 이 이 파일들을 가리킨다.
 design/*.html
 !design/*.dc.html
+
+# 운영 내부 문서 — 저장소가 공개라 추적하지 않는다 (로컬에만 둔다)
+docs/launch-checklist.md
