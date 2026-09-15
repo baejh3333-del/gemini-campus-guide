@@ -42,27 +42,28 @@ function doPost(e) {
     try {
       var sheet = getSheet();
 
-      // 전화번호 기준 중복 응모 차단
+      // 전화번호 기준 중복 응모 차단. 숫자만 비교하고, 앞자리 0 이 빠진 채
+      // 숫자로 저장된 예전 행도 잡히도록 앞쪽 0 을 떼고 비교한다.
       var last = sheet.getLastRow();
       if (last > 1) {
         var phones = sheet.getRange(2, 3, last - 1, 1).getValues();
         for (var i = 0; i < phones.length; i++) {
-          if (String(phones[i][0]) === phone) {
+          if (digits(phones[i][0]) === digits(phone)) {
             return json({ ok: true, duplicate: true });
           }
         }
       }
 
       var p = body.progress || {};
+      var started = new Date(p.startedAt);
       sheet.appendRow([
         new Date(),
         cell(name),
-        phone, // 문자열로 넣어야 앞자리 0 이 살아남는다
-        cell(Array.isArray(p.completed) ? p.completed.join(",") : ""),
-        cell(JSON.stringify(p.stepTimes || {})),
+        // 010-1234-5678 형태로. 숫자만 넣으면 appendRow 가 숫자로 바꿔 앞자리 0 이 사라진다.
+        phone.replace(/^(\d{3})(\d{3,4})(\d{4})$/, "$1-$2-$3"),
+        isNaN(started) ? "" : started,
+        cell(studyTime(p.stepTimes)),
         cell(p.quizAttempts),
-        cell(p.signup),
-        cell(p.startedAt),
       ]);
       return json({ ok: true });
     } finally {
@@ -78,20 +79,43 @@ function getSheet() {
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow([
-      "제출시각",
-      "이름",
-      "전화번호",
-      "완료단계",
-      "단계별소요초",
-      "퀴즈시도",
-      "혜택가입",
-      "학습시작시각",
-    ]);
-    // 전화번호 열을 텍스트로 고정 (앞자리 0 보존)
+    sheet.appendRow(["제출시각", "이름", "전화번호", "학습시작", "학습시간", "퀴즈시도"]);
+    // 전화번호는 텍스트로, 시각은 "9월 15일 16:12" 처럼 날짜·시·분까지만
     sheet.getRange("C:C").setNumberFormat("@");
+    sheet.getRange("A:A").setNumberFormat('M"월" d"일" HH:mm');
+    sheet.getRange("D:D").setNumberFormat('M"월" d"일" HH:mm');
   }
   return sheet;
+}
+
+var STEP_LABELS = [
+  ["benefit", "STEP0"],
+  ["prompt", "STEP1"],
+  ["research", "STEP2"],
+  ["notebook", "STEP3"],
+  ["gem", "STEP4"],
+];
+
+// { prompt: 41, research: 250, ... } (초) -> "총 5분 (STEP1 1분 미만 · STEP2 4분)"
+function studyTime(t) {
+  t = t || {};
+  var total = 0;
+  var parts = [];
+  for (var i = 0; i < STEP_LABELS.length; i++) {
+    var sec = Number(t[STEP_LABELS[i][0]]);
+    if (!(sec >= 0)) continue; // 기록이 없거나 이상한 값
+    total += sec;
+    parts.push(STEP_LABELS[i][1] + " " + minutes(sec));
+  }
+  return parts.length ? "총 " + minutes(total) + " (" + parts.join(" · ") + ")" : "";
+}
+
+function minutes(sec) {
+  return sec < 60 ? "1분 미만" : Math.round(sec / 60) + "분";
+}
+
+function digits(v) {
+  return String(v).replace(/[^0-9]/g, "").replace(/^0+/, "");
 }
 
 // appendRow 는 = + - @ 로 시작하는 문자열을 수식으로 해석한다.
