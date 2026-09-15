@@ -12,7 +12,11 @@ export type Progress = {
   quiz: { passed: boolean; attempts: number };
   startedAt: string | null;
   stepTimes: Partial<Record<StepId, number>>;
-  signup: "none" | "clicked" | "done";
+  /**
+   * STEP 0 자기 신고. done = 이번에 학생 혜택을 새로 받음(= 경품 응모 자격),
+   * existing = 전부터 쓰던 사람, clicked = 나중에 하겠다고 함, none = 건너뜀.
+   */
+  signup: "none" | "clicked" | "done" | "existing";
   /** 수료증에 표시할 이름. 캡처하려다 새로고침해도 날아가지 않게 저장한다. */
   certName: string;
 };
@@ -88,7 +92,9 @@ export function parseProgress(raw: string | null): Progress {
     }
   }
 
-  if (o.signup === "clicked" || o.signup === "done") base.signup = o.signup;
+  if (o.signup === "clicked" || o.signup === "done" || o.signup === "existing") {
+    base.signup = o.signup;
+  }
 
   // 저장 시점에 이미 잘라 넣지만, 손으로 고친 값이 들어올 수도 있으니 여기서도 자른다
   if (typeof o.certName === "string") base.certName = o.certName.slice(0, 20);

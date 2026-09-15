@@ -59,6 +59,12 @@ good.checks.prompt = true;
 good.signup = "done";
 good.startedAt = "2026-09-21T00:00:00.000Z";
 assert.deepEqual(parseProgress(JSON.stringify(good)), good, "정상 데이터 왕복");
+// 전부터 쓰던 사람은 경품 응모 자격이 없으므로 done 과 섞이면 안 된다
+assert.equal(
+  parseProgress(JSON.stringify({ ...good, signup: "existing" })).signup,
+  "existing",
+  "existing 보존"
+);
 
 // 퀴즈 자격: benefit 은 선택이므로 없어도 통과해야 한다
 const p = emptyProgress();

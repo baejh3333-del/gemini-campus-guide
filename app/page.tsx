@@ -138,8 +138,8 @@ export default function Home() {
       <section className="ink-panel mt-4 rounded-[22px] p-5">
         <h2 className="text-base font-extrabold">수료하면 응모할 수 있어요</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-white/80">
-          5단계를 마치고 최종 퀴즈를 통과하면 경품 추첨에 응모할 수 있습니다.
-          커피 기프티콘 100명.
+          Google AI Pro 학생 혜택을 이번에 새로 받고 최종 퀴즈를 통과하면 경품
+          추첨에 응모할 수 있습니다. 커피 기프티콘 100명.
         </p>
         <p className="mt-3 text-xs text-white/60">
           응모에는 이름과 전화번호가 필요하며, 경품 지급 안내 목적으로만 쓰고 지급

@@ -84,13 +84,15 @@ export function StepRunner({ step }: { step: Step }) {
       pr.checks[step.id] = true;
       pr.stepTimes[step.id] = seconds;
       if (step.id === "benefit") {
-        // 0=완료, 1=이미 사용중, 2=나중에
-        pr.signup = answerIndex === 2 ? "clicked" : "done";
+        // 0=방금 인증(경품 자격), 1=전부터 사용중, 2=나중에
+        pr.signup =
+          answerIndex === 0 ? "done" : answerIndex === 1 ? "existing" : "clicked";
       }
     });
     setProgress(p);
     track("step_complete", { step: step.id, seconds });
-    if (step.id === "benefit" && answerIndex !== 2) track("signup_confirmed");
+    // 사인업 KPI 는 신규 가입만 센다
+    if (step.id === "benefit" && answerIndex === 0) track("signup_confirmed");
   }
 
   function submit() {
@@ -108,7 +110,8 @@ export function StepRunner({ step }: { step: Step }) {
   }
 
   const needsSignupNudge =
-    step.id === "research" && progress !== null && progress.signup !== "done";
+    step.id === "research" &&
+    (progress?.signup === "none" || progress?.signup === "clicked");
 
   return (
     <main style={{ paddingBottom: navH + 24 }}>
@@ -403,7 +406,7 @@ export function StepRunner({ step }: { step: Step }) {
             </button>
             <p className="mt-1 text-center text-[11px] leading-relaxed text-[var(--color-muted)]">
               {step.optional
-                ? "이 단계는 건너뛰어도 수료할 수 있어요."
+                ? "건너뛰어도 수료할 수 있어요. 단, 경품 응모는 이번에 혜택을 새로 받은 분만 할 수 있어요."
                 : "건너뛰면 경품 응모를 할 수 없어요. 최종 퀴즈는 STEP 1~4를 모두 마쳐야 열립니다."}
             </p>
           </div>

@@ -56,6 +56,15 @@ export async function POST(req: Request) {
     );
   }
 
+  // 경품은 이번에 학생 혜택을 새로 받은 사람만. STEP 0 자기 신고라 완전한 검증은 아니다.
+  const signup = (b.progress as { signup?: unknown } | null)?.signup;
+  if (signup !== "done") {
+    return NextResponse.json(
+      { error: "경품 응모는 Google AI Pro 학생 혜택을 새로 받은 분만 할 수 있습니다." },
+      { status: 403 }
+    );
+  }
+
   if (!WEBHOOK || !SECRET) {
     console.error("[entry] ENTRY_WEBHOOK_URL / ENTRY_SHARED_SECRET 미설정");
     return NextResponse.json(

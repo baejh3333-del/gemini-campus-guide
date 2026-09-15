@@ -2,12 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { loadProgress, updateProgress, type Progress } from "@/lib/progress";
+import {
+  loadProgress,
+  updateProgress,
+  markDone,
+  type Progress,
+} from "@/lib/progress";
+import { stepById } from "@/content/steps";
 import { track } from "@/lib/analytics";
 import { EntryForm } from "@/components/EntryForm";
 import { ResetButton } from "@/components/ResetButton";
 import { Sparkle } from "@/components/Sparkle";
-import { copyText } from "@/components/ui";
+import { copyText, OpenButton } from "@/components/ui";
 import { TOOLS } from "@/content/tools";
 
 const SHARE_TEXT =
@@ -29,6 +35,17 @@ export default function DonePage() {
     const trimmed = v.slice(0, 20);
     setName(trimmed);
     updateProgress((pr) => void (pr.certName = trimmed));
+  }
+
+  // STEP 0 에서 "나중에"를 골랐거나 건너뛴 사람이 인증을 마치고 돌아온 경우
+  function confirmSignup() {
+    setP(
+      updateProgress((pr) => {
+        pr.signup = "done";
+        markDone(pr, "benefit");
+      })
+    );
+    track("signup_confirmed", { from: "done" });
   }
 
   if (p === null) return <main className="min-h-dvh" />;
@@ -121,7 +138,47 @@ export default function DonePage() {
       </p>
 
       <div className="mt-8">
-        <EntryForm />
+        {/* 경품은 이번에 학생 혜택을 새로 받은 사람만. 자기 신고 기준이다. */}
+        {p.signup === "done" ? (
+          <EntryForm />
+        ) : (
+          <div className="card space-y-3">
+            <h2 className="text-lg font-extrabold">경품 응모 안내</h2>
+            {p.signup === "existing" ? (
+              <p className="prose-body">
+                이번 경품은 Google AI Pro 학생 혜택을 새로 받은 분을 위한 것이라,
+                전부터 혜택을 쓰고 계셨다면 응모 대상이 아니에요. 배운 내용은 계속
+                활용하실 수 있어요.
+              </p>
+            ) : (
+              <>
+                <p className="prose-body">
+                  경품 응모는 Google AI Pro 학생 혜택을 새로 받은 분만 할 수 있어요.
+                  아직 인증 전이라면 지금 받고 오세요. 1분이면 됩니다.
+                </p>
+                <OpenButton
+                  href={stepById("benefit")!.practice.openUrl}
+                  label="혜택 받으러 가기"
+                  step="benefit"
+                  event="signup_click"
+                />
+              </>
+            )}
+            <button
+              type="button"
+              onClick={confirmSignup}
+              className={
+                p.signup === "existing"
+                  ? "w-full py-1 text-xs text-[var(--color-muted)] underline underline-offset-2"
+                  : "btn-ghost w-full"
+              }
+            >
+              {p.signup === "existing"
+                ? "잘못 골랐어요, 이번에 새로 인증했습니다"
+                : "인증까지 완료했어요"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 다음에 뭘 보면 되는지 */}
