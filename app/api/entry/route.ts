@@ -91,6 +91,15 @@ export async function POST(req: Request) {
       ok?: boolean;
       duplicate?: boolean;
     };
+    // Apps Script 는 실패해도 200 을 준다(비밀키 불일치, 로그인 HTML 등).
+    // 본문의 ok 를 확인하지 않으면 시트에 안 쌓였는데 "응모 완료"가 뜬다.
+    if (out.ok !== true) {
+      console.error("[entry] webhook rejected");
+      return NextResponse.json(
+        { error: "접수 서버에 문제가 있습니다. 잠시 후 다시 시도해 주세요." },
+        { status: 502 }
+      );
+    }
     if (out.duplicate) {
       return NextResponse.json({ ok: true, duplicate: true });
     }

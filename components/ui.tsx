@@ -5,7 +5,7 @@ import type { Block } from "@/content/steps";
 import { track, type EventName } from "@/lib/analytics";
 
 /** 인앱 브라우저(에브리타임·카카오톡)에서는 navigator.clipboard 가 없을 수 있다. */
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text);

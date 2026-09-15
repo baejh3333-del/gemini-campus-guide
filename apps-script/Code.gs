@@ -56,13 +56,13 @@ function doPost(e) {
       var p = body.progress || {};
       sheet.appendRow([
         new Date(),
-        name,
+        cell(name),
         phone, // 문자열로 넣어야 앞자리 0 이 살아남는다
-        (p.completed || []).join(","),
-        JSON.stringify(p.stepTimes || {}),
-        p.quizAttempts || "",
-        p.signup || "",
-        p.startedAt || "",
+        cell(Array.isArray(p.completed) ? p.completed.join(",") : ""),
+        cell(JSON.stringify(p.stepTimes || {})),
+        cell(p.quizAttempts),
+        cell(p.signup),
+        cell(p.startedAt),
       ]);
       return json({ ok: true });
     } finally {
@@ -92,6 +92,14 @@ function getSheet() {
     sheet.getRange("C:C").setNumberFormat("@");
   }
   return sheet;
+}
+
+// appendRow 는 = + - @ 로 시작하는 문자열을 수식으로 해석한다.
+// 이름에 =IMAGE("..."&C3) 를 넣으면 시트를 여는 순간 다른 응모자 번호가 샐 수 있다.
+// 앞에 ' 를 붙이면 그대로 글자로 저장된다. 길이도 잘라 시트 오염을 막는다.
+function cell(v) {
+  var s = v == null ? "" : String(v).slice(0, 500);
+  return /^[=+\-@]/.test(s) ? "'" + s : s;
 }
 
 function json(obj) {

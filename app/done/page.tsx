@@ -7,6 +7,7 @@ import { track } from "@/lib/analytics";
 import { EntryForm } from "@/components/EntryForm";
 import { ResetButton } from "@/components/ResetButton";
 import { Sparkle } from "@/components/Sparkle";
+import { copyText } from "@/components/ui";
 import { TOOLS } from "@/content/tools";
 
 const SHARE_TEXT =
@@ -60,11 +61,13 @@ export default function DonePage() {
         await navigator.share({ title: "AI 마스터 챌린지", text: SHARE_TEXT, url });
         return;
       }
-      await navigator.clipboard.writeText(`${SHARE_TEXT} ${url}`);
+    } catch {
+      return; // 사용자가 공유를 취소한 경우
+    }
+    // 인앱 브라우저에는 navigator.share·clipboard 가 없을 수 있어 폴백 있는 copyText 를 쓴다
+    if (await copyText(`${SHARE_TEXT} ${url}`)) {
       setShared(true);
       setTimeout(() => setShared(false), 2500);
-    } catch {
-      /* 사용자가 공유를 취소한 경우 — 아무것도 하지 않는다 */
     }
   }
 
