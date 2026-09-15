@@ -97,6 +97,10 @@ export function PromptBuilder({ persist = true }: { persist?: boolean }) {
 
       <div>
         <div className="label mb-2">2. 네 칸을 채웁니다</div>
+        <p className="mb-3 text-xs leading-relaxed text-[var(--color-muted)]">
+          칸마다 한 줄이면 충분해요. 과제 유형에 맞는 세부 지침은 완성된
+          프롬프트에 자동으로 붙습니다.
+        </p>
         <div className="space-y-3">
           {FIELDS.map((f) => (
             <label key={f.key} className="block">

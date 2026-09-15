@@ -48,22 +48,40 @@ assert.ok(validateEntry({ ...good, phone: "123" }).phone, "잘못된 번호 거�
 // ── 프롬프트 조립 ─────────────────────────────────────────
 assert.equal(buildPrompt(EMPTY_BUILDER), "", "전부 비면 빈 문자열");
 
+// 유형 없이(preset "") 조립하면 학생이 적은 것만 들어간다
+const raw = { ...EMPTY_BUILDER, preset: "" };
 assert.equal(
-  buildPrompt({ ...EMPTY_BUILDER, role: "  한국사 교수  " }),
+  buildPrompt({ ...raw, role: "  한국사 교수  " }),
   "너는 한국사 교수야.",
   "역할만 있을 때 공백이 정리된다"
 );
+assert.equal(buildPrompt({ ...raw, role: "교수님" }), "너는 교수님이야.", "받침 있으면 이야");
 
 // 공백만 든 칸은 없는 것으로 친다 (빈 줄이 끼지 않아야 함)
 const partial = buildPrompt({
-  ...EMPTY_BUILDER,
+  ...raw,
   role: "튜터",
   context: "   ",
   task: "요약해줘",
-  format: "표로",
+  format: "표로\n- 100자 이내",
 });
-assert.equal(partial, "너는 튜터야.\n\n요약해줘\n\n조건:\n표로", "빈 칸 제외");
+assert.equal(
+  partial,
+  "너는 튜터야.\n\n요청: 요약해줘\n\n조건:\n- 표로\n- 100자 이내",
+  "빈 칸 제외, 형식은 한 줄씩 목록으로"
+);
 assert.equal(partial.includes("\n\n\n"), false, "빈 줄이 겹치지 않는다");
+
+// 유형을 고르면 한 줄 입력 뒤에 세부 지침이 붙는다 (짧게 써도 상세한 프롬프트)
+for (const p of BUILDER_PRESETS) {
+  const out = buildPrompt({ ...applyPreset(EMPTY_BUILDER, p.id) });
+  for (const extra of [p.more.role, p.more.context, p.more.task, ...p.more.format]) {
+    assert.ok(out.includes(extra), `프리셋 ${p.id} 의 세부 지침이 빠짐: ${extra}`);
+  }
+  // 칸이 비면 그 칸의 세부 지침도 같이 빠진다
+  const noTask = buildPrompt({ ...applyPreset(EMPTY_BUILDER, p.id), task: "" });
+  assert.equal(noTask.includes(p.more.task), false, `프리셋 ${p.id}: 빈 칸의 지침이 남음`);
+}
 
 // ── 과제 유형 전환 ────────────────────────────────────────
 const report = BUILDER_PRESETS.find((p) => p.id === "report")!;

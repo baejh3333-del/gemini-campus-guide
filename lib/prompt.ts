@@ -60,12 +60,33 @@ export function fillFromPreset(current: BuilderState): BuilderState {
   };
 }
 
-/** 4블록 -> 하나의 프롬프트. 빈 칸은 통째로 빠진다. */
+/** 받침이 있으면 "이야", 없으면 "야" — 교수님이야 / 코치야 */
+function ya(word: string): string {
+  const c = word.charCodeAt(word.length - 1) - 0xac00;
+  return c >= 0 && c < 11172 && c % 28 !== 0 ? "이야" : "야";
+}
+
+/**
+ * 4블록 -> 하나의 프롬프트. 빈 칸은 통째로 빠진다.
+ * 학생은 칸마다 한 줄만 적고, 유형별 세부 지침(preset.more)이 각 블록 뒤에 붙는다.
+ */
 export function buildPrompt(s: BuilderState): string {
+  const more = BUILDER_PRESETS.find((p) => p.id === s.preset)?.more;
+  const role = s.role.trim();
+  const context = s.context.trim();
+  const task = s.task.trim();
+  // 여러 줄로 적었거나 직접 "-"를 붙였어도 조건 목록 한 줄씩으로 정리한다
+  const format = s.format
+    .split("\n")
+    .map((l) => l.trim().replace(/^[-•·]\s*/, ""))
+    .filter(Boolean);
+
   const parts: string[] = [];
-  if (s.role.trim()) parts.push(`너는 ${s.role.trim()}야.`);
-  if (s.context.trim()) parts.push(s.context.trim());
-  if (s.task.trim()) parts.push(s.task.trim());
-  if (s.format.trim()) parts.push(`조건:\n${s.format.trim()}`);
+  if (role) parts.push([`너는 ${role}${ya(role)}.`, more?.role].filter(Boolean).join(" "));
+  if (context) parts.push([`상황: ${context}`, more?.context].filter(Boolean).join("\n"));
+  if (task) parts.push([`요청: ${task}`, more?.task].filter(Boolean).join("\n"));
+  if (format.length) {
+    parts.push(["조건:", ...[...format, ...(more?.format ?? [])].map((f) => `- ${f}`)].join("\n"));
+  }
   return parts.join("\n\n");
 }

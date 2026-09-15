@@ -13,8 +13,8 @@ export default function PromptBuilderPage() {
         프롬프트 빌더
       </h1>
       <p className="prose-body mt-3">
-        과제가 생길 때마다 여기서 만들어 쓰세요. 역할 · 맥락 · 작업 · 형식 네 칸만
-        채우면 됩니다. 입력한 내용은 이 기기에만 저장됩니다.
+        과제가 생길 때마다 여기서 만들어 쓰세요. 역할 · 맥락 · 작업 · 형식 네 칸을
+        한 줄씩만 채우면 됩니다. 입력한 내용은 이 기기에만 저장됩니다.
       </p>
 
       <div className="card mt-6">
