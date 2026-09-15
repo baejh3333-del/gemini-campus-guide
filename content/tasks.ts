@@ -143,7 +143,7 @@ export const TASKS: TaskRecipe[] = [
       },
       {
         toolId: "notebooklm",
-        why: "주차별로 쌓아두면 나중에 '3주차와 7주차를 연결해서 설명해줘' 같은 것도 됩니다.",
+        why: "주차별로 쌓아두면 나중에 '3주차와 7주차를 연결해서 설명해 주세요' 같은 것도 됩니다.",
       },
     ],
     watchOut:

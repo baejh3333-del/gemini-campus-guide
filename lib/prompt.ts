@@ -60,12 +60,6 @@ export function fillFromPreset(current: BuilderState): BuilderState {
   };
 }
 
-/** 받침이 있으면 "이야", 없으면 "야" — 교수님이야 / 코치야 */
-function ya(word: string): string {
-  const c = word.charCodeAt(word.length - 1) - 0xac00;
-  return c >= 0 && c < 11172 && c % 28 !== 0 ? "이야" : "야";
-}
-
 /**
  * 4블록 -> 하나의 프롬프트. 빈 칸은 통째로 빠진다.
  * 학생은 칸마다 한 줄만 적고, 유형별 세부 지침(preset.more)이 각 블록 뒤에 붙는다.
@@ -82,7 +76,7 @@ export function buildPrompt(s: BuilderState): string {
     .filter(Boolean);
 
   const parts: string[] = [];
-  if (role) parts.push([`너는 ${role}${ya(role)}.`, more?.role].filter(Boolean).join(" "));
+  if (role) parts.push([`당신은 ${role}입니다.`, more?.role].filter(Boolean).join(" "));
   if (context) parts.push([`상황: ${context}`, more?.context].filter(Boolean).join("\n"));
   if (task) parts.push([`요청: ${task}`, more?.task].filter(Boolean).join("\n"));
   if (format.length) {

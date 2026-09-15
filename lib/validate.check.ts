@@ -52,22 +52,21 @@ assert.equal(buildPrompt(EMPTY_BUILDER), "", "전부 비면 빈 문자열");
 const raw = { ...EMPTY_BUILDER, preset: "" };
 assert.equal(
   buildPrompt({ ...raw, role: "  한국사 교수  " }),
-  "너는 한국사 교수야.",
+  "당신은 한국사 교수입니다.",
   "역할만 있을 때 공백이 정리된다"
 );
-assert.equal(buildPrompt({ ...raw, role: "교수님" }), "너는 교수님이야.", "받침 있으면 이야");
 
 // 공백만 든 칸은 없는 것으로 친다 (빈 줄이 끼지 않아야 함)
 const partial = buildPrompt({
   ...raw,
   role: "튜터",
   context: "   ",
-  task: "요약해줘",
+  task: "요약해 주세요",
   format: "표로\n- 100자 이내",
 });
 assert.equal(
   partial,
-  "너는 튜터야.\n\n요청: 요약해줘\n\n조건:\n- 표로\n- 100자 이내",
+  "당신은 튜터입니다.\n\n요청: 요약해 주세요\n\n조건:\n- 표로\n- 100자 이내",
   "빈 칸 제외, 형식은 한 줄씩 목록으로"
 );
 assert.equal(partial.includes("\n\n\n"), false, "빈 줄이 겹치지 않는다");
