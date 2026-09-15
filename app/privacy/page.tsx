@@ -10,7 +10,7 @@ export const metadata = { title: "개인정보 처리방침 | 15분 제미나이
 const OPERATOR = {
   team: "gemini student Ambassador 강원대",
   manager: "배정현",
-  email: "baejh3333@kangwon.ac.kr",
+  email: "202312604@kangwon.ac.kr",
   destroyBy: "2026년 10월 31일",
 };
 
