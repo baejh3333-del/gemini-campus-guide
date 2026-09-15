@@ -14,7 +14,10 @@ export default function Home() {
   const doneCount = p?.completed.length ?? 0;
   const started = doneCount > 0;
   // 아직 안 끝낸 첫 스텝으로 보낸다. 다 끝냈으면 퀴즈로.
-  const nextStep = STEPS.find((s) => !p?.completed.includes(s.id));
+  // 이미 시작했다면 건너뛴 선택 스텝(STEP 0)으로는 되돌리지 않는다.
+  const nextStep = STEPS.find(
+    (s) => !(started && s.optional) && !p?.completed.includes(s.id)
+  );
   const resumeHref = p && canTakeQuiz(p)
     ? p.quiz.passed
       ? "/done"
