@@ -19,6 +19,8 @@ export type Progress = {
   signup: "none" | "clicked" | "done" | "existing";
   /** 수료증에 표시할 이름. 캡처하려다 새로고침해도 날아가지 않게 저장한다. */
   certName: string;
+  /** 경품 응모를 마쳤는가. 이 기기에서는 초기화 전까지 다시 응모할 수 없다. */
+  entered: boolean;
 };
 
 const KEY = "gemini-camp:v1";
@@ -35,6 +37,7 @@ export function emptyProgress(): Progress {
     stepTimes: {},
     signup: "none",
     certName: "",
+    entered: false,
   };
 }
 
@@ -98,6 +101,8 @@ export function parseProgress(raw: string | null): Progress {
 
   // 저장 시점에 이미 잘라 넣지만, 손으로 고친 값이 들어올 수도 있으니 여기서도 자른다
   if (typeof o.certName === "string") base.certName = o.certName.slice(0, 20);
+
+  if (o.entered === true) base.entered = true;
 
   return base;
 }

@@ -59,6 +59,9 @@ good.checks.prompt = true;
 good.signup = "done";
 good.startedAt = "2026-09-21T00:00:00.000Z";
 assert.deepEqual(parseProgress(JSON.stringify(good)), good, "정상 데이터 왕복");
+// 응모 완료 표시는 true 일 때만 살아남는다 (초기화하면 다시 응모 가능)
+assert.equal(parseProgress(JSON.stringify({ ...good, entered: true })).entered, true, "entered 보존");
+assert.equal(parseProgress(JSON.stringify({ ...good, entered: "yes" })).entered, false, "entered 쓰레기 무시");
 // 전부터 쓰던 사람은 경품 응모 자격이 없으므로 done 과 섞이면 안 된다
 assert.equal(
   parseProgress(JSON.stringify({ ...good, signup: "existing" })).signup,

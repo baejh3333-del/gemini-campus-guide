@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { loadProgress } from "@/lib/progress";
-import { validateEntry, hasErrors, type EntryErrors } from "@/lib/validate";
+import { loadProgress, updateProgress } from "@/lib/progress";
+import {
+  validateEntry,
+  hasErrors,
+  formatPhone,
+  type EntryErrors,
+} from "@/lib/validate";
 import { track } from "@/lib/analytics";
 
 export function EntryForm() {
@@ -11,8 +16,9 @@ export function EntryForm() {
   const [phone, setPhone] = useState("");
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<EntryErrors>({});
+  // 이미 응모한 기기에서는 폼 대신 완료 화면. 초기화해야 다시 응모할 수 있다.
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">(
-    "idle"
+    () => (loadProgress().entered ? "done" : "idle")
   );
   const [serverMsg, setServerMsg] = useState("");
 
@@ -49,6 +55,7 @@ export function EntryForm() {
         setServerMsg(data.error || "잠시 후 다시 시도해 주세요.");
         return;
       }
+      updateProgress((pr) => void (pr.entered = true));
       setState("done");
       track("entry_submit");
     } catch {
@@ -102,7 +109,7 @@ export function EntryForm() {
           type="tel"
           inputMode="numeric"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(formatPhone(e.target.value))}
           autoComplete="tel"
           className="w-full min-h-[50px] rounded-[14px] border-[1.5px] border-[var(--color-line)] px-4 text-[16px] transition-[border-color,box-shadow] duration-200 focus:border-[var(--color-brand-mid)] focus:shadow-[0_0_0_4px_rgba(66,133,244,.14)] focus:outline-none"
           placeholder="010-1234-5678"

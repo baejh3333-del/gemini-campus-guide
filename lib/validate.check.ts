@@ -1,6 +1,12 @@
 // 자체 점검: 응모 폼 검증 + 프롬프트 조립
 import assert from "node:assert/strict";
-import { validateEntry, hasErrors, isValidPhone, normalizePhone } from "./validate";
+import {
+  validateEntry,
+  hasErrors,
+  isValidPhone,
+  normalizePhone,
+  formatPhone,
+} from "./validate";
 import { buildPrompt, applyPreset, fillFromPreset, EMPTY_BUILDER } from "./prompt";
 import { BUILDER_PRESETS } from "../content/templates";
 import { TOOLS } from "../content/tools";
@@ -30,6 +36,22 @@ for (const bad of [
   assert.equal(isValidPhone(bad), false, `거부해야 함: ${bad}`);
 }
 assert.equal(normalizePhone("010-1234-5678"), "01012345678", "하이픈 제거");
+
+// 입력하는 대로 하이픈이 붙는다
+for (const [typed, shown] of [
+  ["010", "010"],
+  ["0101", "010-1"],
+  ["0101234", "010-1234"],
+  ["01012341", "010-1234-1"],
+  ["0101234123", "010-1234-123"], // 010 은 10번째 숫자에서 모양이 튀지 않는다
+  ["0112345678", "011-234-5678"],
+  ["01012341234", "010-1234-1234"],
+  ["010-1234-12345", "010-1234-1234"], // 11자리 넘게는 안 들어간다
+  ["010 1234 1234", "010-1234-1234"],
+]) {
+  assert.equal(formatPhone(typed), shown, `formatPhone(${typed})`);
+  if (shown.length >= 12) assert.equal(isValidPhone(shown), true, `포맷 결과가 유효: ${shown}`);
+}
 
 // ── 폼 전체 ───────────────────────────────────────────────
 const good = { name: "홍길동", phone: "010-1234-5678", consent: true };

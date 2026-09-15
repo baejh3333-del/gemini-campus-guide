@@ -3,6 +3,20 @@
 
 export const normalizePhone = (raw: string) => raw.replace(/[^0-9]/g, "");
 
+/**
+ * 입력하는 대로 010-1234-5678 모양으로. 10자리 옛 번호(011-234-5678)만 3-3-4.
+ * 010 은 항상 11자리라, 10번째 숫자에서 모양이 3-3-4 로 튀었다 돌아오지 않게 뺀다.
+ */
+export function formatPhone(raw: string): string {
+  const d = normalizePhone(raw).slice(0, 11);
+  if (d.length < 4) return d;
+  if (d.length < 8) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  if (d.length === 10 && !d.startsWith("010")) {
+    return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  }
+  return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+}
+
 // 숫자와 구분기호 외의 글자가 섞이면 오타다. 그냥 걸러내면
 // "010-1234-567a" 가 조용히 다른 유효 번호(010-123-4567)로 바뀌어
 // 경품 안내가 엉뚱한 사람에게 간다. 그래서 모양부터 먼저 본다.
