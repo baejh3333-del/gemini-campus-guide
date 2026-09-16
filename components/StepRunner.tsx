@@ -164,7 +164,7 @@ export function StepRunner({ step }: { step: Step }) {
         {needsSignupNudge && (
           <div className="rounded-xl border border-[var(--color-warn)] bg-[var(--color-warn-soft)] p-4">
             <p className="mb-3 text-sm leading-relaxed font-semibold text-[var(--color-warn)]">
-              여기서부터는 Pro 기능을 씁니다. 아직 12개월 무료 혜택을 안 받으셨다면
+              여기서부터는 무료 혜택으로 열리는 기능을 씁니다. 아직 혜택을 안 받으셨다면
               지금 받는 게 좋아요.
             </p>
             <Link href="/learn/benefit" className="btn-ghost w-full">

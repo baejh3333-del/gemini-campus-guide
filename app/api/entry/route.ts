@@ -60,7 +60,7 @@ export async function POST(req: Request) {
   const signup = (b.progress as { signup?: unknown } | null)?.signup;
   if (signup !== "done") {
     return NextResponse.json(
-      { error: "경품 응모는 Google AI Pro 학생 혜택을 새로 받은 분만 할 수 있습니다." },
+      { error: "경품 응모는 Google AI 대학생 1년 무료 혜택을 새로 받은 분만 할 수 있습니다." },
       { status: 403 }
     );
   }

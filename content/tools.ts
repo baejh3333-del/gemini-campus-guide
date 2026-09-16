@@ -11,7 +11,7 @@ export type Tool = {
   where: string;
   how: string[];
   examples: string[];
-  plan: "무료" | "Pro";
+  plan: "무료" | "Plus 추천";
   url: string;
   /** 사이트 안의 심화 가이드가 있으면 */
   guideHref?: string;
@@ -74,7 +74,7 @@ export const TOOLS: Tool[] = [
       "학부 레포트 주제의 핵심 쟁점 3가지와 대립하는 입장 정리하기",
       "공모전 준비 전 해당 산업의 최근 5년 동향 훑기",
     ],
-    plan: "Pro",
+    plan: "Plus 추천",
     url: "https://gemini.google.com/app",
   },
   {
@@ -112,7 +112,7 @@ export const TOOLS: Tool[] = [
       "발표 표지용 일러스트를 학과 색상에 맞춰 만들기",
       "복잡한 순환 구조를 다이어그램 이미지로 만들기",
     ],
-    plan: "Pro",
+    plan: "Plus 추천",
     url: "https://gemini.google.com/images?hl=ko",
     guideHref: "/tools/nano-banana",
   },

@@ -123,7 +123,7 @@ export default function Home() {
       <section className="card mt-8">
         <h2 className="text-base font-extrabold">시작 전에</h2>
         <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-[var(--color-muted)]">
-          <li>· 구글 계정과 본인 학교 이메일(ex. @kangwon.ac.kr)이 필요합니다.</li>
+          <li>· 개인 구글 계정과 강원대 포털 계정이 필요합니다.</li>
           <li>
             · 제미나이를 <b className="text-[var(--color-ink)]">다른 창이나 앱</b>으로
             열어두고, 이 페이지와 오가며 진행합니다. 여기서 AI가 답을 만들어 주지는
@@ -138,9 +138,14 @@ export default function Home() {
       <section className="ink-panel mt-4 rounded-[22px] p-5">
         <h2 className="text-base font-extrabold">수료하면 응모할 수 있어요</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-white/80">
-          Google AI Pro 학생 혜택을 이번에 새로 받고 최종 퀴즈를 통과하면 경품
-          추첨에 응모할 수 있습니다. 커피 기프티콘 100명.
+          Google AI 대학생 1년 무료 혜택을 이번에 새로 받고 최종 퀴즈를 통과하면 경품
+          추첨에 응모할 수 있습니다.
         </p>
+        <ul className="mt-3 space-y-1 text-[14px] leading-relaxed text-white/80">
+          <li>· 올리브영 5만 원권 2명</li>
+          <li>· 배민 2만 원권 5명</li>
+          <li>· 배민·올리브영 5천 원권 20명</li>
+        </ul>
         <p className="mt-3 text-xs text-white/60">
           응모에는 이름과 전화번호가 필요하며, 경품 지급 안내 목적으로만 쓰고 지급
           완료 후 파기합니다.{" "}

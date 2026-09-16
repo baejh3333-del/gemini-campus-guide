@@ -61,7 +61,7 @@ export default function ToolsPage() {
               </h2>
               <span
                 className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                  t.plan === "Pro"
+                  t.plan === "Plus 추천"
                     ? "bg-[linear-gradient(135deg,var(--color-brand-mid),var(--color-brand-deep))] text-white"
                     : "border border-[var(--color-line)] bg-white/70 text-[var(--color-muted)]"
                 }`}

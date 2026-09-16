@@ -146,14 +146,14 @@ export default function DonePage() {
             <h2 className="text-lg font-extrabold">경품 응모 안내</h2>
             {p.signup === "existing" ? (
               <p className="prose-body">
-                이번 경품은 Google AI Pro 학생 혜택을 새로 받은 분을 위한 것이라,
+                이번 경품은 Google AI 대학생 1년 무료 혜택을 새로 받은 분을 위한 것이라,
                 전부터 혜택을 쓰고 계셨다면 응모 대상이 아니에요. 배운 내용은 계속
                 활용하실 수 있어요.
               </p>
             ) : (
               <>
                 <p className="prose-body">
-                  경품 응모는 Google AI Pro 학생 혜택을 새로 받은 분만 할 수 있어요.
+                  경품 응모는 Google AI 대학생 1년 무료 혜택을 새로 받은 분만 할 수 있어요.
                   아직 인증 전이라면 지금 받고 오세요. 1분이면 됩니다.
                 </p>
                 <OpenButton

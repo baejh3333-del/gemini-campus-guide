@@ -69,7 +69,7 @@ export function TaskPicker() {
                       </span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                          tool.plan === "Pro"
+                          tool.plan === "Plus 추천"
                             ? "bg-[linear-gradient(135deg,var(--color-brand-mid),var(--color-brand-deep))] text-white"
                             : "border border-[var(--color-line)] bg-white/70 text-[var(--color-muted)]"
                         }`}

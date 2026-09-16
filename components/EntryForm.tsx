@@ -82,7 +82,7 @@ export function EntryForm() {
       <div>
         <h2 className="text-lg font-extrabold">경품 응모하기</h2>
         <p className="mt-1 text-sm text-[var(--color-muted)]">
-          커피 기프티콘 100명
+          올리브영 5만 원권 2명 · 배민 2만 원권 5명 · 배민·올리브영 5천 원권 20명
         </p>
       </div>
 
