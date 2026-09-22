@@ -117,7 +117,7 @@ export default function DonePage() {
           placeholder="여기에 이름을 넣어보세요"
           className="w-full border-b border-white/30 bg-transparent pb-2 text-[20px] font-bold text-white placeholder:text-[15px] placeholder:font-normal placeholder:text-white/40 focus:border-white focus:outline-none"
         />
-        <p className="mt-4 text-sm text-white/60">{today} · 강원대 AI 마스터 챌린지</p>
+        <p className="mt-4 text-sm text-white/60">{today} · GSA team 강원대 AI 마스터 챌린지</p>
         <div className="mt-4 flex flex-wrap gap-1.5">
           {["프롬프트 4블록", "Deep Research", "NotebookLM", "Gems"].map((t) => (
             <span

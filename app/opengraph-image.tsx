@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "15분 만에 제미나이 정복하기 — 강원대 AI 마스터 챌린지";
+export const alt = "15분 만에 제미나이 정복하기 — GSA team 강원대 AI 마스터 챌린지";
 
 export default function OgImage() {
   return new ImageResponse(
@@ -45,7 +45,7 @@ export default function OgImage() {
           >
             15
           </div>
-          강원대 AI 마스터 챌린지
+          GSA team 강원대 AI 마스터 챌린지
         </div>
 
         <div

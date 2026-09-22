@@ -13,7 +13,7 @@ const SITE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "15분 만에 제미나이 정복하기 | 강원대 AI 마스터 챌린지",
+  title: "15분 만에 제미나이 정복하기 | GSA team 강원대 AI 마스터 챌린지",
   description:
     "레포트·시험·발표에 바로 쓰는 제미나이 사용법. 15분 과정을 끝내면 경품 응모까지.",
   openGraph: {

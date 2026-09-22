@@ -28,7 +28,7 @@ export default function Home() {
     <main className="stagger px-5 pt-10 pb-8">
       <p className="label flex items-center gap-1.5 text-[var(--color-brand)]">
         <Sparkle size={14} />
-        강원대 AI 마스터 챌린지
+        GSA team 강원대 AI 마스터 챌린지
       </p>
       <h1 className="mt-3 text-[38px] leading-[1.13] font-extrabold tracking-[-0.033em]">
         15분 만에
