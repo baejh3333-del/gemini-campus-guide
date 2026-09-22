@@ -54,7 +54,12 @@ for (const [typed, shown] of [
 }
 
 // ── 폼 전체 ───────────────────────────────────────────────
-const good = { name: "홍길동", phone: "010-1234-5678", consent: true };
+const good = {
+  name: "홍길동",
+  phone: "010-1234-5678",
+  image: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
+  consent: true,
+};
 assert.equal(hasErrors(validateEntry(good)), false, "정상 입력 통과");
 
 // 동의 없이는 절대 통과하면 안 된다
@@ -66,6 +71,15 @@ assert.ok(
   "21자 이름 거부"
 );
 assert.ok(validateEntry({ ...good, phone: "123" }).phone, "잘못된 번호 거부");
+assert.ok(validateEntry({ ...good, image: undefined }).image, "캡처 없음 거부");
+assert.ok(
+  validateEntry({ ...good, image: "data:image/jpeg;base64,iVBORw0KGgo=" }).image,
+  "JPEG 가 아닌 파일 거부"
+);
+assert.ok(
+  validateEntry({ ...good, image: "data:image/jpeg;base64,/9j/" + "A".repeat(3_000_000) }).image,
+  "너무 큰 캡처 거부"
+);
 
 // ── 프롬프트 조립 ─────────────────────────────────────────
 assert.equal(buildPrompt(EMPTY_BUILDER), "", "전부 비면 빈 문자열");

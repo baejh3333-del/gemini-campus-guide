@@ -123,7 +123,7 @@ export default function Home() {
       <section className="card mt-8">
         <h2 className="text-base font-extrabold">시작 전에</h2>
         <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-[var(--color-muted)]">
-          <li>· 개인 구글 계정과 강원대 포털 계정이 필요합니다.</li>
+          <li>· 개인 구글 계정과 재학 인증 수단(학교 포털 계정이나 학교 이메일)이 필요합니다.</li>
           <li>
             · 제미나이를 <b className="text-[var(--color-ink)]">다른 창이나 앱</b>으로
             열어두고, 이 페이지와 오가며 진행합니다. 여기서 AI가 답을 만들어 주지는

@@ -46,12 +46,13 @@ export async function POST(req: Request) {
   const name = typeof b.name === "string" ? b.name.trim() : "";
   const phone = typeof b.phone === "string" ? b.phone : "";
   const consent = b.consent === true;
+  const image = b.image;
 
   // 클라이언트 검증은 UX용일 뿐이므로 서버에서 다시 검사한다.
-  const errs = validateEntry({ name, phone, consent });
+  const errs = validateEntry({ name, phone, image, consent });
   if (hasErrors(errs)) {
     return NextResponse.json(
-      { error: errs.name || errs.phone || errs.consent },
+      { error: errs.name || errs.phone || errs.image || errs.consent },
       { status: 400 }
     );
   }
@@ -81,6 +82,7 @@ export async function POST(req: Request) {
         secret: SECRET,
         name,
         phone: normalizePhone(phone),
+        image,
         // 추첨 전 이상치 확인용. 개인 식별과 무관한 학습 기록.
         progress: b.progress ?? null,
         submittedAt: new Date().toISOString(),

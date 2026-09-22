@@ -10,6 +10,13 @@
  *      - 실행 계정: 나
  *      - 액세스 권한: 모든 사용자
  *    배포 후 나오는 /exec URL 을 Vercel 환경변수 ENTRY_WEBHOOK_URL 에 넣는다.
+ *    첫 배포 때 Google Drive 권한을 묻는다. 캡처를 "응모 캡처" 폴더에 저장하기 위해서다.
+ *
+ * 이미 배포해 둔 경우: 이 파일로 교체한 뒤 배포 > 배포 관리 > 수정 > 버전: 새 버전.
+ * (그냥 저장만 하면 /exec 는 옛 코드로 돈다. URL 은 바뀌지 않는다.)
+ *
+ * 캡처는 스크립트 소유자 내 드라이브의 "응모 캡처" 폴더에 쌓인다. 공유하지 말 것.
+ * 파기할 때 시트와 함께 이 폴더도 휴지통 비우기까지 해야 한다.
  *
  * 주의: 이 URL 은 절대 클라이언트 코드나 공개 저장소에 넣지 않는다.
  * 반드시 Next.js 의 /api/entry 를 거쳐서만 호출되게 한다.
@@ -36,6 +43,10 @@ function doPost(e) {
     if (!/^01[016789][0-9]{7,8}$/.test(phone)) {
       return json({ ok: false, error: "bad phone" });
     }
+    var image = String(body.image || "");
+    if (!/^data:image\/jpeg;base64,\/9j\//.test(image) || image.length > 3000000) {
+      return json({ ok: false, error: "bad image" });
+    }
 
     var lock = LockService.getScriptLock();
     lock.waitLock(10000); // 동시 제출로 중복 검사가 새는 것을 막는다
@@ -54,6 +65,16 @@ function doPost(e) {
         }
       }
 
+      // 중복이 아닐 때만 저장해야 같은 사람 캡처가 폴더에 여러 장 쌓이지 않는다.
+      var file = getFolder().createFile(
+        Utilities.newBlob(
+          Utilities.base64Decode(image.split(",")[1]),
+          "image/jpeg",
+          Utilities.formatDate(new Date(), "Asia/Seoul", "MMdd_HHmmss") +
+            "_" + phone.slice(-4) + ".jpg"
+        )
+      );
+
       var p = body.progress || {};
       var started = new Date(p.startedAt);
       sheet.appendRow([
@@ -64,6 +85,7 @@ function doPost(e) {
         isNaN(started) ? "" : started,
         cell(studyTime(p.stepTimes)),
         cell(p.quizAttempts),
+        file.getUrl(),
       ]);
       return json({ ok: true });
     } finally {
@@ -79,13 +101,22 @@ function getSheet() {
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(["제출시각", "이름", "전화번호", "학습시작", "학습시간", "퀴즈시도"]);
+    sheet.appendRow(["제출시각", "이름", "전화번호", "학습시작", "학습시간", "퀴즈시도", "캡처"]);
     // 전화번호는 텍스트로, 시각은 "9월 15일 16:12" 처럼 날짜·시·분까지만
     sheet.getRange("C:C").setNumberFormat("@");
     sheet.getRange("A:A").setNumberFormat('M"월" d"일" HH:mm');
     sheet.getRange("D:D").setNumberFormat('M"월" d"일" HH:mm');
   }
+  // 캡처 기능 전에 만든 시트에는 G열 제목이 없다
+  if (sheet.getRange(1, 7).getValue() === "") sheet.getRange(1, 7).setValue("캡처");
   return sheet;
+}
+
+var FOLDER_NAME = "응모 캡처";
+
+function getFolder() {
+  var it = DriveApp.getFoldersByName(FOLDER_NAME);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
 }
 
 var STEP_LABELS = [

@@ -11,9 +11,33 @@ import {
 } from "@/lib/validate";
 import { track } from "@/lib/analytics";
 
+// 폰 스크린샷은 원본이 수 MB 라 긴 변 2000px JPEG 로 줄여 보낸다. 글자는 충분히 읽힌다.
+// PNG·HEIC 등 무엇을 골라도 JPEG 로 바뀌어 서버 검증이 단순해진다.
+async function toJpeg(file: File): Promise<string> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    // decode() 는 탭이 가려져 있으면 끝나지 않는 브라우저가 있어 onload 로 기다린다
+    await new Promise((ok, fail) => {
+      img.onload = ok;
+      img.onerror = fail;
+      img.src = url;
+    });
+    const scale = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(img.naturalWidth * scale);
+    canvas.height = Math.round(img.naturalHeight * scale);
+    canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/jpeg", 0.8);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 export function EntryForm() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [image, setImage] = useState("");
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<EntryErrors>({});
   // 이미 응모한 기기에서는 폼 대신 완료 화면. 초기화해야 다시 응모할 수 있다.
@@ -24,7 +48,7 @@ export function EntryForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const errs = validateEntry({ name, phone, consent });
+    const errs = validateEntry({ name, phone, image, consent });
     setErrors(errs);
     if (hasErrors(errs)) return;
 
@@ -38,6 +62,7 @@ export function EntryForm() {
         body: JSON.stringify({
           name,
           phone,
+          image,
           consent,
           // 추첨 전 이상치를 눈으로 거르기 위한 학습 기록
           progress: {
@@ -84,6 +109,11 @@ export function EntryForm() {
         <p className="mt-1 text-sm text-[var(--color-muted)]">
           올리브영 5만 원권 2명 · 배민 2만 원권 5명 · 배민·올리브영 5천 원권 20명
         </p>
+        <p className="mt-2 rounded-xl bg-[var(--color-ground)] p-3 text-[13px] leading-relaxed">
+          첨부한 <b>Google AI Plus 가입 화면 캡처</b>로 이번 캠페인 기간에 새로
+          가입했는지 확인합니다. 확인되지 않으면 당첨이 취소되고 다음 순번에게
+          넘어갑니다.
+        </p>
       </div>
 
       <label className="block">
@@ -121,6 +151,46 @@ export function EntryForm() {
         )}
       </label>
 
+      <label className="block">
+        <span className="mb-1 block text-sm font-bold">가입 화면 캡처</span>
+        <span className="mb-2 block text-xs text-[var(--color-muted)]">
+          요금제 이름(Google AI Plus)과 가입 날짜가 보이게. 이메일 등 다른 정보는
+          가려도 됩니다.
+        </span>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            setImage("");
+            if (!f) return;
+            try {
+              setImage(await toJpeg(f));
+              setErrors((er) => ({ ...er, image: undefined }));
+            } catch {
+              setErrors((er) => ({
+                ...er,
+                image: "이미지를 읽지 못했어요. 다른 캡처 파일로 다시 골라 주세요.",
+              }));
+            }
+          }}
+          className="block w-full text-sm file:mr-3 file:min-h-[44px] file:rounded-[12px] file:border-0 file:bg-[var(--color-ground)] file:px-4 file:font-bold"
+        />
+        {image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image}
+            alt="첨부한 가입 화면 캡처 미리보기"
+            className="mt-2 max-h-48 rounded-xl border border-[var(--color-line)]"
+          />
+        )}
+        {errors.image && (
+          <span className="mt-1 block text-xs text-[var(--color-warn)]">
+            {errors.image}
+          </span>
+        )}
+      </label>
+
       <div className="rounded-xl bg-[var(--color-ground)] p-4">
         <label className="flex cursor-pointer items-start gap-3">
           <input
@@ -132,7 +202,8 @@ export function EntryForm() {
           <span className="text-[13px] leading-relaxed">
             <b>[필수]</b> 개인정보 수집·이용에 동의합니다.
             <br />
-            수집 항목: 이름, 휴대폰 번호 · 목적: 경품 추첨 및 지급 안내 · 보유기간:
+            수집 항목: 이름, 휴대폰 번호, 혜택 가입 화면 캡처 · 목적:
+            경품 추첨, 당첨 자격 확인 및 지급 안내 · 보유기간:
             경품 지급 완료 후 즉시 파기(2026년 10월 31일 이전).
             <br />
             동의를 거부할 수 있으며, 이 경우 경품 응모만 제한되고 학습 내용은 계속

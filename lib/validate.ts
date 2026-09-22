@@ -31,17 +31,34 @@ export const isValidName = (raw: string) => {
   return n.length >= 2 && n.length <= 20;
 };
 
-export type EntryErrors = { name?: string; phone?: string; consent?: string };
+// 가입 화면 캡처. 클라이언트가 캔버스로 줄여 JPEG data URL 로 보낸다.
+// Vercel 요청 본문 한도(4.5MB) 안에 넉넉히 들도록 base64 기준 3MB 로 자른다.
+export const MAX_IMAGE_CHARS = 3_000_000;
+export const isValidImage = (v: unknown): v is string =>
+  typeof v === "string" &&
+  v.length <= MAX_IMAGE_CHARS &&
+  // /9j/ = JPEG 매직넘버(FF D8 FF). 이름만 JPEG 인 다른 파일을 막는다.
+  /^data:image\/jpeg;base64,\/9j\/[A-Za-z0-9+/]+=*$/.test(v);
+
+export type EntryErrors = {
+  name?: string;
+  phone?: string;
+  image?: string;
+  consent?: string;
+};
 
 export function validateEntry(input: {
   name: string;
   phone: string;
+  image: unknown;
   consent: boolean;
 }): EntryErrors {
   const e: EntryErrors = {};
   if (!isValidName(input.name)) e.name = "이름을 2자 이상 정확히 입력해 주세요.";
   if (!isValidPhone(input.phone))
     e.phone = "휴대폰 번호를 정확히 입력해 주세요. 예) 010-1234-5678";
+  if (!isValidImage(input.image))
+    e.image = "Google AI Plus 가입 화면 캡처를 첨부해 주세요.";
   if (!input.consent) e.consent = "개인정보 수집·이용에 동의해야 응모할 수 있습니다.";
   return e;
 }

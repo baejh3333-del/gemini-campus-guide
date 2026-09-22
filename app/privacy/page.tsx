@@ -39,6 +39,11 @@ export default function PrivacyPage() {
               · 학습 진행 기록(완료한 단계, 단계별 소요시간, 퀴즈 응시 횟수) —
               부정 응모 확인 목적
             </li>
+            <li>
+              · Google AI Plus 가입 화면 캡처 — 이번 캠페인 기간에
+              혜택을 새로 받았는지 확인하는 목적. 요금제 이름과 가입 날짜만 보이면
+              되며, 계정 이메일 등 다른 정보는 가리고 보내셔도 됩니다.
+            </li>
           </ul>
           <p className="mt-2 text-[var(--color-muted)]">
             학번, 주소, 이메일, 결제정보 등 그 밖의 개인정보는 수집하지 않습니다.
@@ -48,7 +53,8 @@ export default function PrivacyPage() {
         <section>
           <h2 className="mb-2 text-base font-extrabold">2. 수집·이용 목적</h2>
           <p>
-            경품 추첨 진행, 당첨자 확인 및 경품 지급 안내. 이 외의 목적으로는
+            경품 추첨 진행, 당첨 자격(혜택 신규 가입) 확인 및 경품 지급 안내. 캡처로
+            자격이 확인되지 않으면 당첨이 취소되고 다음 순번에게 넘어갑니다. 이 외의 목적으로는
             이용하지 않으며, 마케팅 정보 발송이나 제3자 제공에도 사용하지 않습니다.
           </p>
         </section>
@@ -57,7 +63,8 @@ export default function PrivacyPage() {
           <h2 className="mb-2 text-base font-extrabold">3. 보유 및 이용 기간</h2>
           <p>
             경품 지급이 완료된 즉시 파기하며, 늦어도{" "}
-            <b>{OPERATOR.destroyBy}</b> 이전에 모든 응모 정보를 삭제합니다. 별도의
+            <b>{OPERATOR.destroyBy}</b> 이전에 모든 응모 정보와 첨부한 캡처를
+            삭제합니다. 별도의
             백업 사본은 보관하지 않습니다.
           </p>
         </section>
@@ -75,7 +82,7 @@ export default function PrivacyPage() {
           <h2 className="mb-2 text-base font-extrabold">5. 제3자 제공 및 처리 위탁</h2>
           <p>
             수집한 정보를 제3자에게 제공하지 않습니다. 다만 응모 내역의 보관을 위해
-            Google Workspace(Google Sheets)를 이용하며, 접근 권한은 운영팀 담당자로
+            Google Workspace(Google Sheets, 캡처는 Google Drive)를 이용하며, 접근 권한은 운영팀 담당자로
             제한됩니다.
           </p>
         </section>

@@ -154,7 +154,8 @@ export default function DonePage() {
               <>
                 <p className="prose-body">
                   경품 응모는 Google AI 대학생 1년 무료 혜택을 새로 받은 분만 할 수 있어요.
-                  아직 인증 전이라면 지금 받고 오세요. 1분이면 됩니다.
+                  아직 인증 전이라면 지금 받고 오세요. 1분이면 됩니다. 가입이 끝나면
+                  완료 화면을 스크린샷으로 찍어 두세요. 응모할 때 첨부해야 해요.
                 </p>
                 <OpenButton
                   href={stepById("benefit")!.practice.openUrl}
