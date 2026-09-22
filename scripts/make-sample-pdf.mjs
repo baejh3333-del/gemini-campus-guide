@@ -27,7 +27,7 @@ const doc = new PDFDocument({
   margins: { top: 64, bottom: 64, left: 56, right: 56 },
   info: {
     Title: "[샘플] 커뮤니케이션과 사회 3주차 — 미디어 효과 이론",
-    Author: "강원대 AI 마스터 챌린지 운영팀",
+    Author: "GSA team 강원대 AI 마스터 챌린지 운영팀",
     Subject: "NotebookLM 실습용 샘플 강의자료",
   },
 });
@@ -199,7 +199,7 @@ bullets([
 
 doc.moveDown(1);
 note(
-  "본 문서는 강원대 AI 마스터 챌린지의 NotebookLM 실습을 위해 작성된 샘플입니다. " +
+  "본 문서는 GSA team 강원대 AI 마스터 챌린지의 NotebookLM 실습을 위해 작성된 샘플입니다. " +
     "학부 개론 수준으로 요약한 것이므로 실제 시험 준비에는 담당 교수님의 강의자료를 사용하세요."
 );
 

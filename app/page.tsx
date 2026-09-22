@@ -26,7 +26,7 @@ export default function Home() {
 
   return (
     <main className="stagger px-5 pt-10 pb-8">
-      <p className="label flex items-center gap-1.5 text-[var(--color-brand)]">
+      <p className="label flex items-center gap-1.5 normal-case! text-[var(--color-brand)]">
         <Sparkle size={14} />
         GSA team 강원대 AI 마스터 챌린지
       </p>
@@ -147,7 +147,8 @@ export default function Home() {
           <li>· 배민·올리브영 5천 원권 20명</li>
         </ul>
         <p className="mt-3 text-xs text-white/60">
-          응모에는 이름과 전화번호가 필요하며, 경품 지급 안내 목적으로만 쓰고 지급
+          응모에는 이름, 전화번호, 혜택 가입 화면 캡처가 필요하며, 당첨 자격 확인과
+          경품 지급 안내 목적으로만 쓰고 지급
           완료 후 파기합니다.{" "}
           <Link href="/privacy" className="underline underline-offset-2">
             처리방침 보기
