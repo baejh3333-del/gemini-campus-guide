@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // og:image 는 절대 URL 이어야 카카오톡·에브리타임이 썸네일을 읽는다.
@@ -85,6 +86,9 @@ gtag('js',new Date());gtag('config','${GA_ID}');`}
             </nav>
           </footer>
         </div>
+
+        {/* 방문자 수는 Vercel 대시보드 → Analytics 탭에서 본다(탭에서 Enable 필요). */}
+        <Analytics />
       </body>
     </html>
   );

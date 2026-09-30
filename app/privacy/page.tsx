@@ -100,8 +100,9 @@ export default function PrivacyPage() {
           <p>
             학습 진행 상황(완료한 단계, 프롬프트 빌더에 입력한 내용)은{" "}
             <b>여러분의 브라우저 안에만</b> 저장되며 서버로 전송되지 않습니다. 브라우저
-            데이터를 지우면 함께 사라집니다. 방문 통계 확인을 위해 Google Analytics를
-            사용합니다.
+            데이터를 지우면 함께 사라집니다. 방문 통계 확인을 위해 Google Analytics와
+            Vercel Web Analytics를 사용합니다. Vercel Web Analytics는 쿠키를 쓰지 않고
+            개인을 식별하지 않는 방식으로 방문 수와 페이지 조회를 집계합니다.
           </p>
           <p className="mt-2 text-[var(--color-muted)]">
             이 사이트는 제미나이를 대신 실행하지 않습니다. 여러분이 제미나이에
