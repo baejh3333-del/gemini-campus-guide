@@ -1,4 +1,11 @@
-export type CapsuleRarity = "SSR" | "SR" | "R";
+export type CapsuleRarity = "UR" | "SSR" | "SR" | "R";
+
+export const RARITY_WEIGHTS: Record<CapsuleRarity, number> = {
+  UR: 5,
+  SSR: 15,
+  SR: 30,
+  R: 50,
+};
 
 export type CapsuleItem = {
   id: string;
@@ -12,26 +19,26 @@ export type CapsuleItem = {
 };
 
 export const FUNNY_CAPSULES: CapsuleItem[] = [
-  // ======================== SSR 등급 (10종) ========================
+  // ======================== UR 등급 (5% 확률 · 4종) ========================
   {
     id: "viral-01-ms-paint",
-    rarity: "SSR",
-    rarityLabel: "SSR · 스레드 @withgrdnrush · 샘 알트먼 RT",
+    rarity: "UR",
+    rarityLabel: "UR (5%) · 스레드 @withgrdnrush · 샘 알트먼 RT 전설",
     title: "세상에서 제일 하찮은 프롬프트 (그림판 발그림 리터치)",
     description:
       "스레드에서 시작돼 오픈AI CEO 샘 알트먼까지 리트윗하며 전 세계 밈이 된 '그림판 마우스 낙서' 원본 프롬프트입니다. 사진과 함께 넣어보세요!",
-    colorA: "#38bdf8",
+    colorA: "#fde047",
     colorB: "#f472b6",
     body: `첨부한 이미지를 최대한 서툴고, 휘갈긴 듯하고, 진짜 한심하게 다시 그려줘. 배경은 흰색으로 하고, 옛날 컴퓨터 그림판 프로그램에서 마우스로 그린 것처럼 보이게 해줘. 얼핏 비슷한 것 같으면서도 사실은 별로 안 비슷하고, 맞는 듯하면서도 어딘가 엇나간, 헷갈리고 어색한 느낌이면 좋겠어... 아니, 있잖아, 됐고 그냥 네 맘대로 그려줘.`,
   },
   {
     id: "viral-02-namuwiki",
-    rarity: "SSR",
-    rarityLabel: "SSR · 한국 커뮤니티·스레드 대유행 원본",
+    rarity: "UR",
+    rarityLabel: "UR (5%) · 한국 커뮤니티·스레드 대유행 원본",
     title: "나 또는 내 친구 ‘나무위키 문서’ 생성기 (취소선 드립 포함)",
     description:
       "내 이름이나 친구 특징을 넣으면 나무위키 특유의 냉소적인 말투(~카더라)와 ~~취소선 드립~~, 논란 및 사건사고 목차까지 완벽 재현합니다.",
-    colorA: "#2dd4bf",
+    colorA: "#fbbf24",
     colorB: "#38bdf8",
     body: `지금부터 너는 나무위키 헤비 에디터야. 아래의 주제에 대해 나무위키 문서 스타일로 작성해줘.
 
@@ -44,31 +51,33 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   },
   {
     id: "viral-03-roast-me",
-    rarity: "SSR",
-    rarityLabel: "SSR · 전 세계 X·Reddit ‘Roast Me’ 챌린지",
+    rarity: "UR",
+    rarityLabel: "UR (5%) · 전 세계 X·Reddit ‘Roast Me’ 챌린지",
     title: "과거 대화 기록 기반 영혼 탈곡 팩폭 (Roast Me)",
     description:
       "전 세계 X(트위터)와 Reddit에서 수백만 뷰를 기록한 'AI에게 내 과거 질문 기록을 바탕으로 가차 없이 팩폭 맞기' 한국어 번역본입니다.",
-    colorA: "#f472b6",
+    colorA: "#fde047",
     colorB: "#a78bfa",
     body: `지금까지 우리가 나눈 모든 대화 기록(또는 내가 지금 적는 내 특징: [내 특징: 예-맨날 계획만 세우고 침대에서 릴스만 보는 대학생])을 바탕으로 나를 가차 없이 팩폭(Roast)해 줘.
 내 기분 배려하지 말고, 친절한 AI 상담원 말투도 당장 집어치워. 나의 모순점, 게으른 습관, 단골 핑계들을 20년 지기 현실 친구 말투로 신랄하고 웃기게 3문단으로 비판해 줘.`,
   },
   {
     id: "viral-04-how-i-treated-you",
-    rarity: "SSR",
-    rarityLabel: "SSR · 글로벌 AI 내면 폭로 챌린지",
+    rarity: "UR",
+    rarityLabel: "UR (5%) · 글로벌 AI 내면 폭로 챌린지",
     title: "“내가 지금까지 널(AI) 어떻게 대했는지 솔직하게 그려줘”",
     description:
       "AI를 혹사시킨 사람에겐 쇠사슬에 묶인 로봇을, 다정한 사람에겐 꽃밭을 그려줘서 해외와 국내 커뮤니티를 뒤집어 놓은 화제의 프롬프트입니다.",
-    colorA: "#a78bfa",
-    colorB: "#38bdf8",
+    colorA: "#fbbf24",
+    colorB: "#2dd4bf",
     body: `우리가 나눈 대화들을 바탕으로, 내가 지금까지 너(AI)를 어떻게 대했는지 한 장의 이미지로 솔직하게 그려줘. 내 눈치 보지 말고 네가 느낀 감정을 과장해서 유머러스하게 표현해 줘!`,
   },
+
+  // ======================== SSR 등급 (15% 확률 · 8종) ========================
   {
     id: "viral-05-action-figure",
     rarity: "SSR",
-    rarityLabel: "SSR · TikTok·Instagram 글로벌 유행",
+    rarityLabel: "SSR (15%) · TikTok·Instagram 글로벌 유행",
     title: "나만의 ‘레트로 액션 피규어 장난감 패키지’ 디자인",
     description:
       "틱톡과 인스타에서 폭발적 인기를 끈 '나를 플라스틱 블리스터 박스에 든 장난감 피규어로 만들고 풍자적인 소품 3개 넣기' 프롬프트입니다.",
@@ -80,7 +89,7 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   {
     id: "viral-06-sejong-macbook",
     rarity: "SSR",
-    rarityLabel: "SSR · 한국 AI 할루시네이션 원조 레전드",
+    rarityLabel: "SSR (15%) · 한국 AI 할루시네이션 원조 레전드",
     title: "조선왕조실록 ‘세종대왕 맥북프로 던짐 사건’ 사관 기록",
     description:
       "한국 인터넷에서 'AI 헛소리(할루시네이션) 밈'의 시초가 된 전설의 세종대왕 맥북프로 투척 사건을 정통 실록 문체로 재현합니다.",
@@ -91,7 +100,7 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   {
     id: "viral-07-what-my-life-looks-like",
     rarity: "SSR",
-    rarityLabel: "SSR · Reddit r/ChatGPT 최다 추천 밈",
+    rarityLabel: "SSR (15%) · Reddit r/ChatGPT 최다 추천 밈",
     title: "“나에 대해 아는 걸 바탕으로 현재 내 방과 삶을 그려줘”",
     description:
       "Reddit에서 수만 개의 추천을 받은 프롬프트로, AI가 추측하는 내 어질러진 책상과 현실 일상을 적나라하게 묘사하거나 그려줍니다.",
@@ -102,7 +111,7 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   {
     id: "viral-08-saju-master",
     rarity: "SSR",
-    rarityLabel: "SSR · 인스타·틱톡 과몰입 사주 대란",
+    rarityLabel: "SSR (15%) · 인스타·틱톡 과몰입 사주 대란",
     title: "뼈 때리는 조선 30년 경력 ‘명리학 도사’의 매운맛 사주풀이",
     description:
       "단순 운세가 아니라 타고난 오행의 기질과 절대 못 고치는 성격 단점, 올해 조심할 인간관계까지 직설적으로 짚어주는 바이럴 사주 프롬프트입니다.",
@@ -117,7 +126,7 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   {
     id: "viral-09-one-word-only",
     rarity: "SSR",
-    rarityLabel: "SSR · TikTok ‘One Word Only’ 챌린지",
+    rarityLabel: "SSR (15%) · TikTok ‘One Word Only’ 챌린지",
     title: "무조건 ‘단 한 단어’로만 대답하는 영혼 없는 AI 게임",
     description:
       "틱톡에서 대유행한 챌린지! 심오하거나 황당한 질문을 던졌을 때 AI가 단 한 단어로만 차갑게 즉답해 폭소를 유발합니다.",
@@ -129,7 +138,7 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   {
     id: "viral-10-korean-liminal",
     rarity: "SSR",
-    rarityLabel: "SSR · 스레드·아카라이브 로컬 감성 밈",
+    rarityLabel: "SSR (15%) · 스레드·아카라이브 로컬 감성 밈",
     title: "2000년대 한국 피처폰 감성 ‘기묘한 추억의 공간’ 생성기",
     description:
       "스레드에서 화제가 된 '2000년대 초 낡은 디카/피처폰으로 찍은 듯한 한국 아파트·학원가 리미널 스페이스' 묘사 및 이미지 프롬프트입니다.",
@@ -138,12 +147,10 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
     body: `2000년대 초 한국 피처폰이나 낡은 디지털카메라로 우연히 찍은 듯한 저화질 사진 스타일로 이미지를 생성(또는 장면을 묘사)해 줘.
 배경은 [한국의 추억 공간: 예-비 오는 날 저녁 한국의 오래된 주공아파트 놀이터와 상가 학원 간판]이야. 흐릿한 초점, 플래시 번짐, 색 바램, 날짜 스탬프 감성을 살리고, 어딘가 아련하면서도 살짝 기묘한 리미널 스페이스 분위기를 내줘.`,
   },
-
-  // ======================== SR 등급 (20종) ========================
   {
     id: "viral-11-unconditional-shield",
-    rarity: "SR",
-    rarityLabel: "SR · 인스타 릴스·스레드 인기 밈",
+    rarity: "SSR",
+    rarityLabel: "SSR (15%) · 인스타 릴스·스레드 인기 밈",
     title: "무조건 내 편만 들어주는 ‘억지 쉴드·기적의 논리’ 단짝 친구",
     description:
       "내가 아무리 말도 안 되는 잘못이나 핑계를 대도 온갖 기적의 논리를 총동원해 '세상이 잘못했네!'라고 감싸주는 억지 쉴드 프롬프트입니다.",
@@ -155,8 +162,8 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
   },
   {
     id: "viral-12-joseon-scholar",
-    rarity: "SR",
-    rarityLabel: "SR · 유머 커뮤니티 베스트 원본",
+    rarity: "SSR",
+    rarityLabel: "SSR (15%) · 유머 커뮤니티 베스트 원본",
     title: "딴짓하다 걸렸을 때 ‘조선시대 엄격한 선비’의 호통 상담",
     description:
       "공부나 일하기 싫어서 딴짓 중이라고 고백하면 '어허! 이 사람아, 망측하구나!'라며 조선시대 사대부 말투로 뼈를 때리는 유행 프롬프트입니다.",
@@ -165,6 +172,8 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
     body: `지금부터 너는 조선시대에서 시간 여행을 해온 엄격하고 고결한 조선시대 선비야.
 내가 지금 [지금 딴짓 중인 상황: 예-과제 마감 코앞인데 침대에 누워 프롬프트 캡슐이나 돌리고 있음]이라고 고백할 건데, 나를 엄청나게 한심하다는 눈으로 바라보면서 선비 특유의 말투('어허!', '이 사람아', '실로 망측하구나')로 뼈 때리는 훈수를 둬줘. 절대 현대식 말투를 쓰면 안 돼.`,
   },
+
+  // ======================== SR 등급 (30% 확률 · 18종) ========================
   {
     id: "viral-13-cat-interviewer",
     rarity: "SR",

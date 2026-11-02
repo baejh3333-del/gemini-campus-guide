@@ -60,10 +60,6 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setTypingIndex(HERO_TYPING_STEPS.length - 1);
-      return;
-    }
     if (typingIndex >= HERO_TYPING_STEPS.length - 1) return;
     const timer = window.setTimeout(() => {
       setTypingIndex((prev) => Math.min(prev + 1, HERO_TYPING_STEPS.length - 1));
@@ -85,7 +81,9 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
       const active = nav.querySelector<HTMLElement>("[aria-current]");
       if (!active) return;
       nav.style.setProperty("--spot-x", `${active.offsetLeft}px`);
+      nav.style.setProperty("--spot-y", `${active.offsetTop}px`);
       nav.style.setProperty("--spot-w", `${active.offsetWidth}px`);
+      nav.style.setProperty("--spot-h", `${active.offsetHeight}px`);
     };
     place();
     const frame = requestAnimationFrame(() => nav.setAttribute("data-ready", ""));

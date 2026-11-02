@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FUNNY_CAPSULES,
+  RARITY_WEIGHTS,
   type CapsuleItem,
   type CapsuleRarity,
 } from "@/content/funny-capsules";
@@ -285,7 +286,25 @@ export function CapsuleMachineSection() {
 
   function pullCapsule() {
     if (machineState === "mixing" || machineState === "dropping") return;
-    const candidates = pool.length > 0 ? pool : FUNNY_CAPSULES;
+
+    let candidates: CapsuleItem[] = [];
+    if (filterRarity !== "ALL") {
+      candidates = pool.length > 0 ? pool : FUNNY_CAPSULES;
+    } else {
+      // Weighted probability roll: UR 5% (< 5), SSR 15% (< 20), SR 30% (< 50), R 50% (< 100)
+      const roll = Math.random() * 100;
+      const targetRarity: CapsuleRarity =
+        roll < RARITY_WEIGHTS.UR
+          ? "UR"
+          : roll < RARITY_WEIGHTS.UR + RARITY_WEIGHTS.SSR
+            ? "SSR"
+            : roll < RARITY_WEIGHTS.UR + RARITY_WEIGHTS.SSR + RARITY_WEIGHTS.SR
+              ? "SR"
+              : "R";
+      const tierItems = FUNNY_CAPSULES.filter((c) => c.rarity === targetRarity);
+      candidates = tierItems.length > 0 ? tierItems : FUNNY_CAPSULES;
+    }
+
     const filtered =
       candidates.length > 1 && currentCapsule
         ? candidates.filter((c) => c.id !== currentCapsule.id)
@@ -354,10 +373,11 @@ export function CapsuleMachineSection() {
         <div className="capsule-pool-filters" role="group" aria-label="희귀도 등급 선택">
           {(
             [
-              { key: "ALL", label: "전체" },
-              { key: "SSR", label: "SSR" },
-              { key: "SR", label: "SR" },
-              { key: "R", label: "R" },
+              { key: "ALL", label: "전체 (확률 뽑기)" },
+              { key: "UR", label: "UR (5%)" },
+              { key: "SSR", label: "SSR (15%)" },
+              { key: "SR", label: "SR (30%)" },
+              { key: "R", label: "R (50%)" },
             ] as const
           ).map((r) => (
             <button
@@ -387,6 +407,7 @@ export function CapsuleMachineSection() {
             onPointerMove={handleDomePointerMove}
             onPointerLeave={handleDomePointerLeave}
             onClick={shakeDome}
+            style={{ "--dome-scale": 1 } as React.CSSProperties}
           >
             <div className="gacha-dome-glare" aria-hidden="true" />
             <div className="gacha-orbs-container is-physics" aria-hidden="true">
@@ -443,7 +464,7 @@ export function CapsuleMachineSection() {
                         : "프롬프트 캡슐 뽑기 ↻"}
                 </button>
                 <span className="gacha-pool-count">
-                  SSR · SR · R 희귀도 프롬프트 {pool.length}종 대기 중
+                  UR 5% · SSR 15% · SR 30% · R 50% (총 {pool.length}종)
                 </span>
               </div>
             </div>

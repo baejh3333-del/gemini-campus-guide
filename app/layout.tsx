@@ -3,6 +3,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import localFont from "next/font/local";
+import CustomCursor from "../components/CustomCursor";
 import "./globals.css";
 import "./library.css";
 
@@ -68,6 +69,7 @@ gtag('js',new Date());gtag('config','${GA_ID}');`}
 
         {/* 화면 아래에서 피어오르는 배경. 콘텐츠보다 뒤에 깔린다. */}
         <div className="bloom" aria-hidden />
+        <CustomCursor />
 
         <div className="site-frame relative z-[1] mx-auto min-h-dvh max-w-[560px]">
           {children}

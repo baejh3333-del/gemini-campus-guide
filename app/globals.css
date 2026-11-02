@@ -348,10 +348,24 @@ summary::-webkit-details-marker {
   pointer-events: none;
 }
 
+@media (pointer: fine) {
+  html,
+  body,
+  body * {
+    cursor: none !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .custom-cursor-root {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  body:not(:has(.library-page)) *,
+  body:not(:has(.library-page)) *::before,
+  body:not(:has(.library-page)) *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     /* 무한 반복까지 막지 않으면 0.01ms 로 계속 도는 낭비가 남는다 */
