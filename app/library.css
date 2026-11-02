@@ -3918,3 +3918,541 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     min-height: 38px;
   }
 }
+
+/* Theme controls and white palette. */
+.library-header-actions { display:flex; align-items:center; gap:16px; }
+.theme-toggle { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:40px; padding:0 13px; border:1px solid #64748b66; border-radius:24px; color:inherit; font-size:12px; white-space:nowrap; }
+.theme-toggle:hover { background:#88888820; }
+html[data-theme="light"] body:has(.library-page) { color-scheme:light; }
+@media(max-width:600px) { .library-header-actions { gap:8px; } .theme-toggle { padding:0 10px; } .theme-toggle span:last-child { display:none; } }
+html[data-theme="light"] /* v2 styles are scoped so the retained course and builder keep working independently. */
+body:has(.library-page) { background: #ffffff; color: #131416;}
+html[data-theme="light"] .library-page { color: #131416;}
+html[data-theme="light"] .wordmark-light { color: #434952;}
+html[data-theme="light"] .library-intro > p:last-child { color: #525861;}
+html[data-theme="light"] .library-tabs a { color: #494e55;}
+html[data-theme="light"] .library-tabs a:hover { background: #dedfe2; color: #131416;}
+html[data-theme="light"] .library-tabs a[aria-current] { background: linear-gradient(115deg, #b5cae0, #234e80);}
+html[data-theme="light"] .library-search { background: #dfe0e3; color: #525861;}
+html[data-theme="light"] .library-search:focus-within { background: #d7d9de;}
+html[data-theme="light"] .library-search input { color: #131416;}
+html[data-theme="light"] .library-search input::placeholder { color: #5d626a;}
+html[data-theme="light"] .library-filters button { color: #3f444d;}
+html[data-theme="light"] .library-filters button[aria-pressed=true] { background: #afbfd3;}
+html[data-theme="light"] .library-section-heading > span { color: #666c75;}
+html[data-theme="light"] .library-art { background: #ebecee;}
+html[data-theme="light"] .library-card-info p { color: #696f78;}
+html[data-theme="light"] .benefit-strip { background: #d9dfe9; color: #1f2c42;}
+html[data-theme="light"] .library-footer { color: #797f89;}
+html[data-theme="light"] .library-empty { background: #e6e7ea;}
+html[data-theme="light"] .library-empty p { color: #525861;}
+html[data-theme="light"] .library-tool { background: #e2e3e7;}
+html[data-theme="light"] .library-tool p { color: #525861;}
+html[data-theme="light"] .library-back { color: #494f58;}
+html[data-theme="light"] .original-post { background: #eaebeed9;}
+html[data-theme="light"] .detail-section > p { color: #3f444d;}
+html[data-theme="light"] .library-steps p { color: #3f444d;}
+html[data-theme="light"] .library-prompt-section { background: #e3e4e7;}
+html[data-theme="light"] .library-prompt-text { color: #30363f;}
+html[data-theme="light"] .library-copy-actions button { color: #334155;}
+html[data-theme="light"] .library-student-subscribe { background: #c1cee0;}
+html[data-theme="light"] .library-student-subscribe:hover { background: #aabdd6;}
+html[data-theme="light"] .library-header-note { color: #494e55;}
+html[data-theme="light"] .library-header a.library-header-note:hover { color: #131416;}
+html[data-theme="light"] .library-intro::before { background: radial-gradient(ellipse at 50% 50%, #4285f48c 0%, #5e3f824d 45%, #d965701f 75%, transparent 100%);}
+html[data-theme="light"] .library-intro::after {
+  background: radial-gradient(ellipse 50% 50% at 50% calc(50% + 3px), #ffffff 99.4%, transparent 100%), linear-gradient(90deg, transparent, #4285f4b3 30%, #c2e7ff 50%, #5e3f82b3 70%, transparent);}
+html[data-theme="light"] .library-intro > p:last-child { color: #494e55;}
+html[data-theme="light"] .library-search { background: #dfe0e3;}
+html[data-theme="light"] .library-filters button { color: #494e55; border-color: #0000001a;}
+html[data-theme="light"] .library-filters button[aria-pressed=true] { background: #0b0d0e; color: #334155;}
+html[data-theme="light"] .library-section-heading > span { color: #747a83;}
+html[data-theme="light"] .library-art { background: #eeeff1;}
+html[data-theme="light"] .library-card-info p { color: #747a83;}
+html[data-theme="light"] .benefit-strip { color: #494e55;}
+html[data-theme="light"] .library-footer { color: #747a83;}
+html[data-theme="light"] .detail-section > p { color: #494e55;}
+html[data-theme="light"] .library-steps p { color: #494e55;}
+html[data-theme="light"] .library-prompt-section { background: #eeeff1; border-color: #0000001a;}
+html[data-theme="light"] .library-prompt-text { color: #494e55;}
+html[data-theme="light"] .open-gemini { color: #494e55;}
+html[data-theme="light"] /* full-screen hero → content sheet rises over it (scroll-driven) */
+.library-header { background: linear-gradient(#ffffff 35%, transparent);}
+html[data-theme="light"] .library-intro > p:not(.library-eyebrow) { color: #494e55;}
+html[data-theme="light"] .library-intro > .hero-cue { color: #747a83;}
+html[data-theme="light"] .library-sheet { background: #ffffff;}
+html[data-theme="light"] .library-sheet::before { background: linear-gradient(to bottom, transparent, #ffffff 92%);}
+html[data-theme="light"] /* reduced-motion kept active on .library-intro */
+/* "Ask Gemini" glow search (design.google ref): gradient rim, html[data-theme="light"] side glow, html[data-theme="light"] star-dot halo */
+.library-search { color: #494e55;
+  background: linear-gradient(#ececf0, #ececf0) padding-box, linear-gradient(90deg, #ff5fa8, #5e3f82 50%, #4285f4) border-box;}
+html[data-theme="light"] .library-search:focus-within { background: linear-gradient(#e7e6ec, #e7e6ec) padding-box, linear-gradient(90deg, #ff5fa8, #5e3f82 50%, #4285f4) border-box;}
+html[data-theme="light"] .library-search::before {
+  background: linear-gradient(90deg, #ff5fa8, #5e3f82 50%, #4285f4);}
+html[data-theme="light"] .library-tabs a { background: #f4f5f8; color: #60666f;}
+html[data-theme="light"] .library-tabs a:hover { background: #edeef1; color: #131416; border-color: #0000002e;}
+html[data-theme="light"] .library-tabs a[aria-current] { background: linear-gradient(115deg, #b5cae0, #234e80);}
+html[data-theme="light"] .library-filters button:hover { color: #131416;}
+html[data-theme="light"] .library-filters button[aria-pressed=true] { box-shadow: 0 0 22px #0b0d0e33;}
+html[data-theme="light"] .library-copy-actions button::after { background: linear-gradient(100deg, transparent 30%, #00000080 50%, transparent 70%);}
+html[data-theme="light"] .library-copy-actions button.is-done { color: #334155;}
+html[data-theme="light"] .library-back:hover, html[data-theme="light"] .open-gemini:hover, html[data-theme="light"] .library-footer a:hover { color: #131416;}
+html[data-theme="light"] .library-tabs a { background: #f4f5f8cc; border-color: #00000012; color: #60666f;}
+html[data-theme="light"] .library-tabs a:hover { background: #f0f0f3cc; color: #131416;}
+html[data-theme="light"] .library-tabs a[aria-current] { background: #f4f5f8b3; color: #000000;}
+html[data-theme="light"] .library-filters button[aria-pressed=true] { background: #00000014; color: #000000; border-color: #0000003d;}
+html[data-theme="light"] .library-intro h1 {
+  color: #000000;}
+html[data-theme="light"] .library-intro > p:not(.library-eyebrow) {
+  color: #090d11;}
+html[data-theme="light"] button.hero-cue {
+  color: #2b313a;}
+html[data-theme="light"] button.hero-cue:hover {
+  color: #000000;}
+html[data-theme="light"] .library-card:hover .library-art, html[data-theme="light"] .library-card:focus-visible .library-art {
+  box-shadow: 0 20px 52px -22px #4285f499, inset 0 1px 0 #00000026;}
+html[data-theme="light"] .agent-pill {
+  color: #000000;}
+html[data-theme="light"] .axis-card {
+  background:
+    radial-gradient(circle at 50% 98%, #e4eaf8 0%, #b4c4ed 26%, transparent 58%),
+    linear-gradient(180deg, #f5f9ff 0%, #68a8fb 28%, #266ee0 66%, #13398c 100%);}
+html[data-theme="light"] .axis-card .axis-dot-1 { background: #edf0f6;}
+html[data-theme="light"] .axis-card .axis-dot-2 { background: #9aa5b4;}
+html[data-theme="light"] .axis-card .axis-dot-3 { background: #11151b; box-shadow: 0 0 8px #000000;}
+html[data-theme="light"] .axis-card .axis-dot-4 { background: #000000; box-shadow: 0 0 8px #000000;}
+html[data-theme="light"] /* 8. Prismatic Edge Frame & Emerging Hemisphere on Tool Cards (Image 2 top-right) */
+.library-tool {
+  background: linear-gradient(#f1f1f4, #f1f1f4) padding-box,
+    linear-gradient(135deg, #00000024 0%, #0000000d 55%, #fde04788 80%, #3b82f6cc 100%) border-box;}
+html[data-theme="light"] .tool-hemisphere {
+  background: radial-gradient(circle at 22% 50%, #000000 0%, #fde68a 18%, #60a5fa 48%, #1d4ed8 74%, transparent 95%);}
+html[data-theme="light"] /* Card Info Hierarchy: Title + Description + Category/Action Meta */
+.library-card-info h3 {
+  color: #000000;}
+html[data-theme="light"] .library-card-desc {
+  color: #212831 !important;}
+html[data-theme="light"] .library-card-meta {
+  color: #747a83 !important;}
+html[data-theme="light"] .library-card:hover .meta-action {
+  color: #131416;}
+html[data-theme="light"] .open-gemini-btn {
+  background: #e1e4ea;
+  color: #131416;}
+html[data-theme="light"] .open-gemini-btn:hover {
+  background: #d4d8e1;}
+html[data-theme="light"] .open-gemini-btn.is-ready {
+  background: linear-gradient(#dde1ea, #dde1ea) padding-box,
+    linear-gradient(90deg, #a78bfa, #fb923c 35%, #4ade80 68%, #38bdf8) border-box;
+  color: #000000;}
+html[data-theme="light"] .playground-sort {
+  background: #e9eaee;}
+html[data-theme="light"] .playground-sort button {
+  color: #525861;}
+html[data-theme="light"] .playground-sort button[aria-pressed=true] {
+  background: #0000001c;
+  color: #000000;}
+html[data-theme="light"] .playground-share-btn {
+  color: #334155;}
+html[data-theme="light"] .playground-share-btn.is-open {
+  background: #dcdee4;
+  color: #11151b;}
+html[data-theme="light"] /* Composer Form */
+.playground-composer {
+  background: linear-gradient(#efeff3, #efeff3) padding-box,
+    linear-gradient(125deg, #f472b688, #818cf888 48%, #38bdf888) border-box;}
+html[data-theme="light"] .composer-header h3 {
+  color: #000000;}
+html[data-theme="light"] .composer-header p {
+  color: #525861;}
+html[data-theme="light"] .composer-field > span, html[data-theme="light"] .composer-label-bar > span, html[data-theme="light"] .composer-preview-label {
+  color: #212831;}
+html[data-theme="light"] .composer-field input, html[data-theme="light"] .composer-field select, html[data-theme="light"] .composer-field textarea {
+  background: #e4e6eb;
+  color: #000000;}
+html[data-theme="light"] .composer-helpers button {
+  background: #cfd4df;}
+html[data-theme="light"] .composer-helpers button:hover {
+  background: #bac2d4;}
+html[data-theme="light"] .composer-variant-grid button {
+  background: #e4e6eb;
+  color: #525861;}
+html[data-theme="light"] .composer-variant-grid button[aria-pressed=true] {
+  background: #c8d0dd;
+  color: #000000;}
+html[data-theme="light"] .composer-cancel {
+  color: #212831;}
+html[data-theme="light"] .composer-submit {
+  color: #334155;}
+html[data-theme="light"] .playground-author-badge {
+  color: #11151b;}
+html[data-theme="light"] .card-like-chip {
+  background: #0000000d;
+  color: #212831;}
+html[data-theme="light"] .playground-runner {
+  background: #eceef2;
+  box-shadow: 0 28px 80px -20px #ffffffcc, 0 0 40px -14px #4285f466;}
+html[data-theme="light"] .runner-top h3 {
+  color: #000000;}
+html[data-theme="light"] .runner-top p {
+  color: #525861;}
+html[data-theme="light"] .runner-close {
+  background: #00000012;
+  color: #11151b;}
+html[data-theme="light"] .runner-vars {
+  background: #e2e4eb;}
+html[data-theme="light"] .runner-vars-title span {
+  color: #525861;}
+html[data-theme="light"] .runner-var-input input {
+  background: #f0f1f5;
+  color: #000000;}
+html[data-theme="light"] .runner-prompt-box {
+  background: #f3f3f6;}
+html[data-theme="light"] .runner-prompt-meta {
+  color: #525861;}
+html[data-theme="light"] .runner-like-btn {
+  background: #00000012;
+  color: #11151b;}
+html[data-theme="light"] .runner-copy-btn {
+  color: #334155;}
+html[data-theme="light"] .runner-copy-btn.is-done {
+  color: #334155;}
+html[data-theme="light"] /* UI 개선 1~3: 첫 화면 행동 유도, html[data-theme="light"] 헤더 대비, html[data-theme="light"] 등장 블러 완화 */
+
+/* 1. 흐릿한 "스크롤" 문구를 눈에 띄는 알약형 CTA 로 */
+button.hero-cue {
+  color: #0b0d0e;}
+html[data-theme="light"] button.hero-cue:hover, html[data-theme="light"] button.hero-cue:focus-visible {
+  color: #000000;}
+html[data-theme="light"] /* 2. 헤더: 어두운 히어로 위에서도 읽히도록 대비와 터치 영역 확보 */
+.library-header-note, html[data-theme="light"] .library-header a.library-header-note { color: #131416;}
+html[data-theme="light"] /* Search Bar: Frosted Studio Command Bar */
+.library-search {
+  background: linear-gradient(#e6eaf2, #e6eaf2) padding-box,
+    linear-gradient(110deg, #38bdf888 0%, #6366f166 50%, #2dd4bf88 100%) border-box;}
+html[data-theme="light"] .library-search:focus-within {
+  background: linear-gradient(#dde2ee, #dde2ee) padding-box,
+    linear-gradient(110deg, #38bdf8 0%, #818cf8 50%, #2dd4bf 100%) border-box;}
+html[data-theme="light"] /* v9 — Hero Circular Constellation Nodes & Sequential Link-Drawing Motion Graphics */
+.library-search {
+  background:
+    linear-gradient(#e6eaf2, #e6eaf2) padding-box,
+    linear-gradient(110deg, #38bdf8 0%, #818cf8 45%, #f472b6 75%, #2dd4bf 100%) border-box;}
+html[data-theme="light"] /* 2 Subtle Relay Ring Nodes */
+.bp-relay {
+  background:
+    radial-gradient(circle, #38bdf8 22%, #e6eaf2 28%) padding-box,
+    linear-gradient(125deg, #38bdf8 0%, #818cf8 50%, #2dd4bf 100%) border-box;}
+html[data-theme="light"] /* 4 Main Circular Topic Nodes (Search-Bar Gradient Rim + Ambient Glow) */
+.bp-circle {
+  background:
+    radial-gradient(circle at 50% 30%, #d4dae9 0%, #eaedf3 78%) padding-box,
+    linear-gradient(125deg, #38bdf8 0%, #818cf8 45%, #f472b6 75%, #2dd4bf 100%) border-box;}
+html[data-theme="light"] .bp-circle strong {
+  color: #070a0d;}
+html[data-theme="light"] .search-mirror-placeholder {
+  color: #5d626a;}
+html[data-theme="light"] .capsule-header-bar {
+  background:
+    linear-gradient(145deg, #e2e6f0, #eceff5) padding-box,
+    linear-gradient(115deg, #38bdf855 0%, #818cf844 48%, #f472b655 100%) border-box;}
+html[data-theme="light"] .capsule-header-bar h2 {
+  color: #000000;}
+html[data-theme="light"] .capsule-header-bar p {
+  color: #4b5766;}
+html[data-theme="light"] .capsule-pool-filters button {
+  color: #212831;
+  background: #dce0eb;}
+html[data-theme="light"] .capsule-pool-filters button[aria-pressed=true] {
+  color: #000000;}
+html[data-theme="light"] /* Neon Glass Gacha Machine Card */
+.gacha-machine-card {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(56, 189, 248, .15), transparent 65%),
+    linear-gradient(180deg, #e0e4ef 0%, #eef1f7 100%) padding-box,
+    linear-gradient(135deg, #38bdf866 0%, #818cf855 50%, #f472b666 100%) border-box;}
+html[data-theme="light"] .gacha-top-cap {
+  background: #dbe0eb;}
+html[data-theme="light"] .gacha-orb .orb-half-top {
+  background: radial-gradient(circle at 35% 35%, #000000aa, var(--orb-a) 65%);}
+html[data-theme="light"] .gacha-orb .orb-half-bot {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--orb-b) 75%, #e6eaf2), #e6eaf2);}
+html[data-theme="light"] /* Gacha Base, html[data-theme="light"] Rotary Dial & Chute */
+.gacha-base {
+  background: linear-gradient(180deg, #d4dae9 0%, #e6e9f2 100%);}
+html[data-theme="light"] .gacha-wheel-btn {
+  background:
+    radial-gradient(circle, #c8d0dd 0%, #d8deed 100%) padding-box,
+    linear-gradient(135deg, #38bdf8, #a78bfa, #f472b6) border-box;}
+html[data-theme="light"] .wheel-center {
+  background: #000000;}
+html[data-theme="light"] .gacha-pull-cta {
+  color: #000000;}
+html[data-theme="light"] .gacha-pool-count {
+  color: #4b5766;}
+html[data-theme="light"] /* Chute & Dropping/Splitting Capsule */
+.gacha-chute {
+  background: #f1f3f8;}
+html[data-theme="light"] .cap-shell-left {
+  background: radial-gradient(circle at 35% 35%, #000000aa, var(--cap-a));}
+html[data-theme="light"] .cap-shell-right {
+  background: radial-gradient(circle at 65% 35%, #00000088, var(--cap-b));}
+html[data-theme="light"] .cap-core-spark {
+  background: #000000;
+  box-shadow: 0 0 20px 6px #000000;}
+html[data-theme="light"] .capsule-reveal-card {
+  background:
+    linear-gradient(160deg, #dfe3ef 0%, #edf0f6 100%) padding-box,
+    linear-gradient(125deg, #38bdf8 0%, #818cf8 48%, #f472b6 80%, #2dd4bf 100%) border-box;}
+html[data-theme="light"] .capsule-cat-pill {
+  background: #00000012;
+  color: #212831;}
+html[data-theme="light"] .capsule-reveal-card h3 {
+  color: #000000;}
+html[data-theme="light"] .capsule-desc {
+  color: #4b5766;}
+html[data-theme="light"] .capsule-vars-box {
+  background: #dbe0eb;}
+html[data-theme="light"] .capsule-vars-title span {
+  color: #334155;}
+html[data-theme="light"] .capsule-var-field input {
+  background: #eef1f7;
+  color: #000000;}
+html[data-theme="light"] .capsule-prompt-preview {
+  background: #f1f3f8;}
+html[data-theme="light"] .capsule-prompt-preview pre {
+  color: #11151b;}
+html[data-theme="light"] .capsule-copy-btn {
+  color: #334155;}
+html[data-theme="light"] .capsule-copy-btn.is-done {
+  color: #334155;}
+html[data-theme="light"] /* Standby Card before First Pull */
+.capsule-standby-card {
+  background: #e6e9f2;}
+html[data-theme="light"] .standby-ring {
+  background: #000000;}
+html[data-theme="light"] .capsule-standby-card h3 {
+  color: #000000;}
+html[data-theme="light"] .capsule-standby-card p {
+  color: #4b5766;}
+html[data-theme="light"] .standby-pull-btn {
+  color: #000000;
+  background:
+    linear-gradient(#dbe0eb, #dbe0eb) padding-box,
+    linear-gradient(110deg, #38bdf8, #a78bfa, #f472b6) border-box;}
+html[data-theme="light"] /* Pulled Capsule History Tray */
+.capsule-history-tray {
+  background: #e7eaf2;}
+html[data-theme="light"] .capsule-history-head h4 {
+  color: #11151b;}
+html[data-theme="light"] .capsule-history-head span {
+  color: #334155;}
+html[data-theme="light"] .history-capsule-chip {
+  background: #d4dae9;
+  color: #212831;}
+html[data-theme="light"] .history-capsule-chip:hover, html[data-theme="light"] .history-capsule-chip.is-selected {
+  color: #000000;}
+html[data-theme="light"] .skill-guide-banner {
+  background:
+    linear-gradient(120deg, #dce2ef 0%, #e9ecf4 100%) padding-box,
+    linear-gradient(110deg, #38bdf866 0%, #a78bfa66 50%, #2dd4bf66 100%) border-box;}
+html[data-theme="light"] .skill-guide-banner-text {
+  color: #212831;}
+html[data-theme="light"] .skill-guide-banner-text code {
+  background: #c8d0dd;}
+html[data-theme="light"] .skill-banner-pill {
+  color: #334155;}
+html[data-theme="light"] .skill-guide-open-btn {
+  color: #000000;
+  background:
+    linear-gradient(#d2d8e8, #d2d8e8) padding-box,
+    linear-gradient(110deg, #38bdf8, #a78bfa, #f472b6) border-box;}
+html[data-theme="light"] .card-skill-dl-btn {
+  color: #334155;}
+html[data-theme="light"] .card-skill-guide-btn {
+  background: #dee3ef;}
+html[data-theme="light"] .card-skill-guide-btn:hover {
+  background: #cdd6e8;
+  color: #000000;}
+html[data-theme="light"] .skill-raw-details {
+  background: #eaedf4;}
+html[data-theme="light"] .skill-raw-details summary {
+  color: #212831;}
+html[data-theme="light"] .skill-raw-details summary:hover {
+  background: #dadfed;
+  color: #000000;}
+html[data-theme="light"] /* Detail Page Skill Action Bar */
+.skill-action-bar {
+  background: #e0e5f0;}
+html[data-theme="light"] .skill-action-info p {
+  color: #212831 !important;}
+html[data-theme="light"] .skill-dl-btn {
+  color: #334155;}
+html[data-theme="light"] .skill-guide-trigger-btn {
+  color: #000000;
+  background: #cbd3e5;}
+html[data-theme="light"] .skill-guide-modal {
+  background:
+    linear-gradient(165deg, #d9deed 0%, #e9ecf4 100%) padding-box,
+    linear-gradient(125deg, #38bdf8 0%, #a78bfa 50%, #f472b6 100%) border-box;
+  color: #030506;}
+html[data-theme="light"] .skill-guide-header h3 {
+  color: #000000;}
+html[data-theme="light"] .skill-guide-header p {
+  color: #4b5766;}
+html[data-theme="light"] .skill-guide-close {
+  background: #c8d0dd;
+  color: #212831;}
+html[data-theme="light"] .skill-guide-close:hover {
+  background: #aeb9c8;
+  color: #000000;}
+html[data-theme="light"] /* Visual Replica of Gemini's "기능 업로드 (Skill Upload)" UI */
+.skill-ui-mockup {
+  background: #17181c;
+  color: #cbd2dd;}
+html[data-theme="light"] .mockup-top-bar {
+  color: #9fa6b1;}
+html[data-theme="light"] .mockup-tab.is-active {
+  background: #25282d;
+  color: #dbe0eb;}
+html[data-theme="light"] .mockup-create-btn {
+  background: #25282d;
+  color: #dbe0eb;}
+html[data-theme="light"] .mockup-dialog-box {
+  background: #000000;}
+html[data-theme="light"] .mockup-dialog-title {
+  color: #dbe0eb;}
+html[data-theme="light"] .mockup-dropzone {
+  color: #b1b9c5;}
+html[data-theme="light"] .mockup-dropzone p {
+  color: #cbd2dd;}
+html[data-theme="light"] .mockup-dropzone small {
+  color: #828791;}
+html[data-theme="light"] .mockup-reqs {
+  color: #b1b9c5;}
+html[data-theme="light"] .mockup-reqs strong {
+  color: #dbe0eb;}
+html[data-theme="light"] .mockup-reqs code {
+  background: #090a0c;}
+html[data-theme="light"] .skill-guide-steps li {
+  background: #dbe0eb;}
+html[data-theme="light"] .skill-guide-steps strong {
+  color: #000000;}
+html[data-theme="light"] .skill-guide-steps p {
+  color: #4b5766;}
+html[data-theme="light"] .skill-download-cta {
+  color: #334155;}
+html[data-theme="light"] .skill-open-gemini-cta {
+  color: #000000;
+  background: #c8d0dd;}
+html[data-theme="light"] .skill-close-cta {
+  color: #212831;
+  background: #d8deed;}
+html[data-theme="light"] .library-intro > p:not(.library-eyebrow) {
+    color: #212831;}
+html[data-theme="light"] .library-tabs a {
+    color: #2b313a;
+    border-color: #0000001f;}
+html[data-theme="light"] .library-filters.is-category-filters button {
+    background: #eaedf3;
+    color: #363c45;}
+html[data-theme="light"] .library-filters.is-category-filters button[aria-pressed=true] {
+    color: #000000;}
+html[data-theme="light"] .playground-filters button {
+    background: #eaedf3;
+    color: #363c45;}
+html[data-theme="light"] .playground-filters button[aria-pressed=true] {
+    color: #000000;}/* Explicit accessible contrast for light surfaces and interactive states. */
+html[data-theme="light"] .library-page { --lib-muted: #475569; color: #172033; }
+html[data-theme="light"] .library-page :focus-visible { outline-color: #1558b8; }
+html[data-theme="light"] .library-page :is(input, textarea, select) { color: #172033; }
+html[data-theme="light"] .library-page :is(input, textarea)::placeholder { color: #526174; opacity: 1; }
+html[data-theme="light"] :is(.library-eyebrow, .title-dot, .tool-number, .tool-action, .open-gemini, .benefit-strip a, .library-empty a, .library-copy-actions p) { color: #1558b8; }
+html[data-theme="light"] :is(.library-card-info p, .library-section-heading > span, .library-footer, .library-header-note, .wordmark-light, .capsule-vars-title span, .capsule-history-head span) { color: #475569; }
+html[data-theme="light"] .library-card:hover h3 { color: #1558b8; }
+html[data-theme="light"] .library-tabs a[aria-current],
+html[data-theme="light"] .library-filters button[aria-pressed=true],
+html[data-theme="light"] .library-filters.is-category-filters button[aria-pressed=true],
+html[data-theme="light"] .playground-filters button[aria-pressed=true] { background: #dbeafe; color: #153e75; border-color: #6793cb; text-shadow: none; }
+html[data-theme="light"] .library-student-subscribe { color: #1558b8; border-color: #1558b8; }
+html[data-theme="light"] .library-steps li > span { background: #dbeafe; color: #153e75; }
+html[data-theme="light"] :is(.capsule-copy-btn, .skill-banner-pill, .card-skill-dl-btn, .skill-dl-btn, .skill-download-cta) { background: #1558b8; color: #fff; text-shadow: none; }
+html[data-theme="light"] .capsule-copy-btn.is-done { background: #166534; color: #fff; }
+html[data-theme="light"] .library-copy-actions button { background: #1558b8; color: #fff; }
+html[data-theme="light"] .library-copy-actions button.is-done { background: #166534; color: #fff; }
+html[data-theme="light"] :is(.library-back:hover, .open-gemini:hover, .library-footer a:hover, .library-header a.library-header-note:hover) { color: #0842a0; }
+/* Card metadata and secondary actions on white backgrounds. */
+html[data-theme="light"] .library-card-info .meta-category { color: #1558b8; }
+html[data-theme="light"] .library-card-info :is(.meta-action, .meta-dot) { color: #475569; }
+html[data-theme="light"] .card-skill-guide-btn { background: #e8f0fe; color: #153e75; border-color: #6793cb; }
+html[data-theme="light"] .card-skill-guide-btn:hover { background: #dbeafe; color: #0842a0; border-color: #1558b8; }
+html[data-theme="light"] .kind-badge.is-skill { background: #e0f2fe; color: #075985; border-color: #7caec6; }
+html[data-theme="light"] .kind-badge.is-gem { background: #ede9fe; color: #5b21b6; border-color: #a896d1; }
+html[data-theme="light"] .kind-badge.is-prompt { background: #fce7f3; color: #9d174d; border-color: #cc8ba6; }
+/* Fade decorative hero edges into the white content surface. */
+html[data-theme="light"] .library-intro {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+}
+html[data-theme="light"] .library-sheet::before {
+  height: clamp(100px, 22svh, 240px);
+  background: linear-gradient(to bottom, rgb(255 255 255 / 0), #fff 100%);
+}
+html[data-theme="light"] .detail-hero + .library-sheet::before { height: 100px; }
+html[data-theme="light"] .library-intro.detail-hero::after { opacity: .35; }
+html[data-theme="light"] .hero-aurora-stage {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+}
+.finder-launcher { position:fixed; bottom:calc(22px + env(safe-area-inset-bottom)); left:22px; z-index:90; padding:14px 20px; border-radius:999px; background:#1558b8; color:#fff; font-weight:700; box-shadow:0 6px 28px #0003; cursor:pointer; }
+.finder-dialog { position:fixed; inset:auto auto calc(84px + env(safe-area-inset-bottom)) 22px; margin:0; padding:0; width:min(400px, calc(100vw - 32px)); max-height: min(660px, calc(100dvh - 110px)); border:1px solid #374151; border-radius:22px; background:#151922; color:#eef2f7; box-shadow:0 20px 80px #0005; }
+.finder-dialog::backdrop { background:rgb(0 0 0 / .25); }
+.finder-shell { display:flex; flex-direction:column; max-height: min(660px, calc(100dvh - 110px)); }
+.finder-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:20px; border-bottom:1px solid #64748b55; }
+.finder-header h2 { font-weight:700; font-size:16px; }
+.finder-header p { font-size:12px; color:#b8c4d6; margin-top:4px; }
+.finder-header button { min-width:40px; min-height:40px; cursor:pointer; }
+.finder-messages { overflow-y:auto; overscroll-behavior:contain; padding:16px; min-height:180px; }
+.finder-message { padding:13px; margin-bottom:12px; border-radius:14px; background:#232c3b; font-size:14px; line-height:1.65; }
+.finder-message.is-user { margin-left:32px; background:#183d72; }
+.finder-speaker { font-size:11px; font-weight:700; display:block; margin-bottom:4px; }
+.finder-result { display:block; padding:12px; margin-top:10px; background:#151922; border:1px solid #64748b88; border-radius:12px; }
+.finder-result strong { color:#a8c7fa; display:block; }
+.finder-result span { display:block; font-size:12px; margin-top:5px; }
+.finder-suggestions { display:flex; gap:6px; flex-wrap:wrap; padding:8px 16px; }
+.finder-suggestions button { border:1px solid #64748b88; padding:7px 10px; border-radius:20px; font-size:11px; cursor:pointer; }
+.finder-form { display:flex; gap:8px; padding:12px 16px 16px; }
+.finder-form input { width:100%; min-width:0; border:1px solid #64748b; border-radius:12px; padding:12px; background:#151922; color:#eef2f7; font-size:14px; }
+.finder-form input::placeholder { color:#b8c4d6; }
+.finder-form button { flex-shrink:0; background:#1558b8; color:#fff; padding:10px 15px; border-radius:12px; cursor:pointer; }
+.finder-form button:disabled { opacity:.5; cursor:default; }
+.finder-dialog :focus-visible, .finder-launcher:focus-visible { outline:3px solid #4285f4; outline-offset:3px; }
+html[data-theme="light"] .finder-dialog { background:#fff; color:#172033; border-color:#cbd5e1; color-scheme:light; }
+html[data-theme="light"] .finder-header p { color:#475569; }
+html[data-theme="light"] .finder-message { background:#f1f5f9; }
+html[data-theme="light"] .finder-message.is-user { background:#dbeafe; }
+html[data-theme="light"] .finder-result { background:#fff; border-color:#b5c3d6; }
+html[data-theme="light"] .finder-result strong { color:#1558b8; }
+html[data-theme="light"] .finder-form input { color:#172033; background:#fff; }
+html[data-theme="light"] .finder-form input::placeholder { color:#526174; }
+@media(max-width:600px) { .finder-launcher { left:16px; bottom:calc(16px + env(safe-area-inset-bottom)); font-size:13px; } .finder-dialog { left:16px; } }
+/* Keep the custom cursor inside the modal top layer. */
+@media (pointer: fine) {
+  dialog[open], dialog[open] *, dialog::backdrop { cursor: none !important; }
+}
+.draft-assistant { margin:20px 0; padding:18px; border:1px solid #64748b88; border-radius:16px; background:#172033; color:#eef2f7; font-size:14px; line-height:1.7; }
+.draft-assistant summary { cursor:pointer; font-weight:700; }
+.draft-assistant p { margin:10px 0; }
+.draft-assistant textarea { display:block; width:100%; padding:12px; margin:8px 0; border:1px solid #64748b; border-radius:10px; background:#0f172a; color:#eef2f7; }
+.draft-assistant textarea::placeholder { color:#b8c4d6; }
+.draft-assistant button { padding:10px 16px; background:#1558b8; color:#fff; border-radius:10px; cursor:pointer; }
+.draft-assistant button:disabled { opacity:.5; cursor:wait; }
+.draft-conversation { max-height:240px; overflow:auto; white-space:pre-wrap; }
+.draft-preview { border-top:1px solid #64748b; margin-top:16px; padding-top:16px; }
+.draft-preview pre { white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; margin:12px 0; max-height:320px; overflow:auto; }
+html[data-theme="light"] .draft-assistant { background:#f1f5f9; color:#172033; }
+html[data-theme="light"] .draft-assistant textarea { background:#fff; color:#172033; }
+html[data-theme="light"] .draft-assistant textarea::placeholder { color:#526174; }
+.artwork-generate { padding:12px 16px; border-radius:12px; background:#1558b8; color:#fff; font-size:13px; cursor:pointer; margin:8px 0; }
+.artwork-generate:disabled { opacity:.55; cursor:wait; }
+.artwork-help { font-size:12px; line-height:1.6; margin-bottom:12px; }

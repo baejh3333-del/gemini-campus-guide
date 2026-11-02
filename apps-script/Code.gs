@@ -78,6 +78,7 @@ function doPost(e) {
           cell(promptBody, 4000),
           0,
           1,
+          cell(p.artwork || "", 44000),
         ]);
 
         return json({
@@ -88,6 +89,7 @@ function doPost(e) {
             author: author,
             category: category,
             variant: variant,
+            artwork: p.artwork || "",
             title: title,
             description: description,
             body: promptBody,
@@ -105,7 +107,7 @@ function doPost(e) {
           var currentVal = Number(sheet.getRange(rowIdx, col).getValue()) || 0;
           var nextVal = currentVal + 1;
           sheet.getRange(rowIdx, col).setValue(nextVal);
-          var rowValues = sheet.getRange(rowIdx, 1, 1, 10).getValues()[0];
+          var rowValues = sheet.getRange(rowIdx, 1, 1, 11).getValues()[0];
           return json({ ok: true, prompt: rowToPrompt(rowValues) });
         }
         // 기본 제공(Seed) 프롬프트에 첫 복사/좋아요가 눌렸을 때 시트에 행 자동 생성
@@ -179,17 +181,20 @@ function getSheet() {
       "프롬프트본문",
       "복사수",
       "좋아요수",
+      "AI아트워크",
     ]);
     sheet.setFrozenRows(1);
     sheet.getRange("A:H").setNumberFormat("@");
   }
+  if (!sheet.getRange(1, 11).getValue()) sheet.getRange(1, 11).setValue("AI아트워크");
+  sheet.getRange("K:K").setNumberFormat("@");
   return sheet;
 }
 
 function readAllPrompts(sheet) {
   var last = sheet.getLastRow();
   if (last <= 1) return [];
-  var values = sheet.getRange(2, 1, last - 1, 10).getValues();
+  var values = sheet.getRange(2, 1, last - 1, 11).getValues();
   var list = [];
   for (var i = values.length - 1; i >= 0; i--) {
     var item = rowToPrompt(values[i]);
@@ -220,6 +225,7 @@ function rowToPrompt(row) {
     author: unquote(row[2]) || "익명 학우",
     category: unquote(row[3]) || "릴스·카드뉴스",
     variant: unquote(row[4]) || "orbit",
+    artwork: unquote(row[10]) || "",
     title: unquote(row[5]),
     description: unquote(row[6]),
     body: unquote(row[7]),

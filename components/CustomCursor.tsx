@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Point = [number, number];
 
@@ -179,6 +180,14 @@ const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], summary, input, textarea, select, label[for], [data-cursor="button"]';
 
 export default function CustomCursor() {
+  const [surface, setSurface] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const sync = () => setSurface(document.querySelector<HTMLDialogElement>("dialog[open]") ?? document.body);
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+    return () => observer.disconnect();
+  }, []);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const shapeGroupRef = useRef<SVGGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -204,11 +213,6 @@ export default function CustomCursor() {
       return;
     }
 
-    let mouseX = -100;
-    let mouseY = -100;
-    let renderX = -100;
-    let renderY = -100;
-    let hasMoved = false;
     let isVisible = false;
     let isHoveringButton = false;
     let isScrolling = false;
@@ -255,13 +259,8 @@ export default function CustomCursor() {
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (!hasMoved) {
-        renderX = mouseX;
-        renderY = mouseY;
-        hasMoved = true;
-      }
+      // Keep pointer position immediate; animate only the decorative shape.
+      wrapper.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       if (!isVisible) {
         isVisible = true;
         wrapper.style.opacity = "1";
@@ -324,11 +323,6 @@ export default function CustomCursor() {
       const dt = Math.min(0.032, Math.max(0.001, (now - lastTime) / 1000));
       lastTime = now;
 
-      // 1. 마우스 위치 추적
-      const posFactor = 1 - Math.exp(-32 * dt);
-      renderX += (mouseX - renderX) * posFactor;
-      renderY += (mouseY - renderY) * posFactor;
-
       // 2. 2차 스프링 물리 계산
       const scrollTarget = isScrolling ? 1 : 0;
       const scrollStiffness = isScrolling ? 260 : 195;
@@ -377,8 +371,7 @@ export default function CustomCursor() {
       const sx = 1 / Math.sqrt(sy);
       const dynamicTilt = scrollVel * 1.6;
 
-      wrapper.style.transform = `translate3d(${renderX.toFixed(2)}px, ${(renderY + shiftYPos).toFixed(2)}px, 0)`;
-      shapeGroup.style.transform = `scale(${(sx * pressScalePos).toFixed(3)}, ${(sy * pressScalePos).toFixed(3)}) rotate(${dynamicTilt.toFixed(2)}deg)`;
+      shapeGroup.style.transform = `scale(${(sx * pressScalePos).toFixed(3)}, ${(sy * pressScalePos).toFixed(3)}) translateY(${shiftYPos.toFixed(2)}px) rotate(${dynamicTilt.toFixed(2)}deg)`;
       pathEl.setAttribute("d", pointsToSvgPath(currentPoints));
 
       // 5. 테두리(Stroke) 그라데이션 컬러 보간
@@ -445,9 +438,9 @@ export default function CustomCursor() {
       window.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("mouseleave", onMouseLeave);
     };
-  }, []);
+  }, [surface]);
 
-  return (
+  const cursor = (
     <div
       ref={wrapperRef}
       aria-hidden="true"
@@ -518,4 +511,5 @@ export default function CustomCursor() {
       </svg>
     </div>
   );
+  return surface ? createPortal(cursor, surface) : null;
 }

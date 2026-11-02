@@ -8,6 +8,7 @@ export type PlaygroundPrompt = {
   category: Category;
   author: string;
   variant: LibraryPrompt["thumbnail"]["variant"];
+  artwork?: string;
   copies: number;
   likes: number;
   createdAt: string;

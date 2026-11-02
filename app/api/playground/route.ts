@@ -188,6 +188,7 @@ export async function POST(req: Request) {
     category,
     author,
     variant,
+    artwork: typeof body.artwork === "string" && body.artwork.length <= 44000 && /^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(body.artwork) ? body.artwork : undefined,
     copies: 0,
     likes: 1,
     createdAt: new Date().toISOString().slice(0, 10),

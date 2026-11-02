@@ -1,3 +1,4 @@
+import ThemeToggle from "./ThemeToggle";
 import Link from "next/link";
 
 const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "https://goo.gle/kangwonchuncheon";
@@ -19,6 +20,7 @@ export function LibraryHeader({ back, onHomeClick }: { back?: string; onHomeClic
         </svg>
         <span>AI <span className="wordmark-light">프롬프트 저장소</span></span>
       </Link>
+      <div className="library-header-actions">
       {back ? (
         <Link href={back} className="library-header-note">← 목록으로</Link>
       ) : (
@@ -31,6 +33,8 @@ export function LibraryHeader({ back, onHomeClick }: { back?: string; onHomeClic
           Gemini 학생 혜택 가입 ↗
         </a>
       )}
+      <ThemeToggle />
+      </div>
     </header>
   );
 }

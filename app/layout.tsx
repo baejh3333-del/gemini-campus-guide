@@ -3,6 +3,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 import localFont from "next/font/local";
+import PromptFinder from "../components/PromptFinder";
 import CustomCursor from "../components/CustomCursor";
 import "./globals.css";
 import "./library.css";
@@ -46,13 +47,14 @@ export const viewport: Viewport = {
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={pretendard.variable} suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.getItem("site-theme")==="light"?"light":"dark"}catch{}` }} /></head>
       <body>
         {GA_ID ? (
           <>
@@ -70,6 +72,7 @@ gtag('js',new Date());gtag('config','${GA_ID}');`}
         {/* 화면 아래에서 피어오르는 배경. 콘텐츠보다 뒤에 깔린다. */}
         <div className="bloom" aria-hidden />
         <CustomCursor />
+        <PromptFinder />
 
         <div className="site-frame relative z-[1] mx-auto min-h-dvh max-w-[560px]">
           {children}

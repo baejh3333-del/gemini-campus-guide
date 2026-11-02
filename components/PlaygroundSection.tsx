@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import PromptDraftAssistant from "./PromptDraftAssistant";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { CATEGORIES, type Category, type LibraryPrompt } from "@/lib/prompt-library";
 import {
   SEED_PLAYGROUND_PROMPTS,
@@ -23,7 +24,7 @@ function toLibraryPrompt(item: PlaygroundPrompt): LibraryPrompt {
     steps: [],
     category: item.category,
     kind: "prompt",
-    thumbnail: { variant: item.variant },
+    thumbnail: { variant: item.variant, src: item.artwork },
     copyCount: item.copies,
   };
 }
@@ -46,6 +47,9 @@ export function PlaygroundSection({ query }: { query: string }) {
   const [category, setCategory] = useState<Category>("릴스·카드뉴스");
   const [variant, setVariant] = useState<LibraryPrompt["thumbnail"]["variant"]>("orbit");
   const [body, setBody] = useState("");
+  const [artwork, setArtwork] = useState<string>();
+  const [artBusy, setArtBusy] = useState(false);
+  const artPending = useRef(false);
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -118,6 +122,18 @@ export function PlaygroundSection({ query }: { query: string }) {
     setBody((prev) => `${prev}${prev.endsWith(" ") || !prev ? "" : " "}[바꿔 쓸 항목]`);
   }
 
+  async function generateArtwork() {
+    if (artPending.current) return;
+    artPending.current = true; setArtBusy(true); setFormError("");
+    try {
+      const r = await fetch("/api/prompt-artwork", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body }), signal: AbortSignal.timeout(115000) });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error);
+      setArtwork(data.artwork);
+    } catch(e) { setFormError(e instanceof Error ? e.message : "이미지를 만들지 못했어요."); }
+    finally { artPending.current = false; setArtBusy(false); }
+  }
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setFormError("");
@@ -142,6 +158,7 @@ export function PlaygroundSection({ query }: { query: string }) {
           author: author.trim() || "익명 학우",
           category,
           variant,
+          artwork,
           body,
         }),
       });
@@ -168,6 +185,7 @@ export function PlaygroundSection({ query }: { query: string }) {
         // ignore
       }
 
+      setArtwork(undefined);
       setTitle("");
       setDescription("");
       setBody("");
@@ -280,7 +298,7 @@ export function PlaygroundSection({ query }: { query: string }) {
     steps: [],
     category,
     kind: "prompt",
-    thumbnail: { variant },
+    thumbnail: { variant, src: artwork },
     copyCount: 0,
   };
 
@@ -324,7 +342,7 @@ export function PlaygroundSection({ query }: { query: string }) {
             className={`playground-share-btn ${showComposer ? "is-open" : ""}`}
             onClick={() => setShowComposer((prev) => !prev)}
           >
-            <span>{showComposer ? "✕ 닫기" : "＋ 내 프롬프트 공유하기"}</span>
+            <span>{showComposer ? "✕ 닫기" : "＋ 내 프롬프트 공유하기·만들기"}</span>
           </button>
         </div>
       </div>
@@ -334,13 +352,14 @@ export function PlaygroundSection({ query }: { query: string }) {
         <form className="playground-composer" onSubmit={handleCreate}>
           <div className="composer-header">
             <div>
-              <h3>나만의 프롬프트 공유하기</h3>
+              <h3>나만의 프롬프트 공유하기·만들기</h3>
               <p>
                 바꿔 쓸 부분에 <code>[수업명]</code>, <code>[주제]</code>처럼 대괄호를 넣으면 다른 학우들이 빈칸을 바로 채워 쓸 수 있어요.
               </p>
             </div>
           </div>
 
+          <PromptDraftAssistant onApply={draft => { setTitle(draft.title); setDescription(draft.description); setBody(draft.body); setCategory(draft.category); }} />
           <div className="composer-grid">
             <div className="composer-fields">
               <div className="composer-row">
@@ -415,7 +434,10 @@ export function PlaygroundSection({ query }: { query: string }) {
 
             {/* Live Card Artwork Picker */}
             <div className="composer-preview-col">
-              <span className="composer-preview-label">카드 아트워크 선택</span>
+              <span className="composer-preview-label">프롬프트에 맞는 AI 아트워크</span>
+              <button type="button" className="artwork-generate" disabled={artBusy || submitting || !title.trim() || body.trim().length < 10} onClick={generateArtwork}>{artBusy ? "AI가 아트워크를 그리고 있어요…" : artwork ? "✦ AI 아트워크 다시 만들기" : "✦ 내용에 맞춰 AI 아트워크 만들기"}</button>
+              <p className="artwork-help">제목과 본문을 작성한 뒤 생성하세요. 내용 수정 후 다시 만들 수 있어요.</p>
+              {artwork && <button type="button" onClick={() => setArtwork(undefined)}>기본 아트워크로 돌아가기</button>}
               <div className="composer-preview-card">
                 <LibraryVisual prompt={previewPrompt} />
               </div>
@@ -444,7 +466,7 @@ export function PlaygroundSection({ query }: { query: string }) {
             >
               취소
             </button>
-            <button type="submit" className="composer-submit" disabled={submitting}>
+            <button type="submit" className="composer-submit" disabled={submitting || artBusy}>
               {submitting ? "공유 중..." : "플레이그라운드에 올리기 ↗"}
             </button>
           </div>
@@ -641,7 +663,7 @@ export function PlaygroundSection({ query }: { query: string }) {
             className="playground-share-btn"
             onClick={() => setShowComposer(true)}
           >
-            ＋ 내 프롬프트 공유하기
+            ＋ 내 프롬프트 공유하기·만들기
           </button>
         </div>
       )}
