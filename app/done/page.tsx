@@ -5,15 +5,12 @@ import Link from "next/link";
 import {
   loadProgress,
   updateProgress,
-  markDone,
   type Progress,
 } from "@/lib/progress";
-import { stepById } from "@/content/steps";
 import { track } from "@/lib/analytics";
-import { EntryForm } from "@/components/EntryForm";
 import { ResetButton } from "@/components/ResetButton";
 import { Sparkle } from "@/components/Sparkle";
-import { copyText, OpenButton } from "@/components/ui";
+import { copyText } from "@/components/ui";
 import { TOOLS } from "@/content/tools";
 
 const SHARE_TEXT =
@@ -37,17 +34,6 @@ export default function DonePage() {
     updateProgress((pr) => void (pr.certName = trimmed));
   }
 
-  // STEP 0 에서 "나중에"를 골랐거나 건너뛴 사람이 인증을 마치고 돌아온 경우
-  function confirmSignup() {
-    setP(
-      updateProgress((pr) => {
-        pr.signup = "done";
-        markDone(pr, "benefit");
-      })
-    );
-    track("signup_confirmed", { from: "done" });
-  }
-
   if (p === null) return <main className="min-h-dvh" />;
 
   if (!p.quiz.passed) {
@@ -55,7 +41,7 @@ export default function DonePage() {
       <main className="px-5 py-12">
         <h1 className="text-2xl font-extrabold">아직 수료 전이에요</h1>
         <p className="prose-body mt-3">
-          최종 퀴즈를 통과하면 수료증과 응모 화면이 열립니다.
+          최종 퀴즈를 통과하면 수료증 화면이 열립니다.
         </p>
         <Link href="/quiz" className="btn-primary mt-6 w-full">
           최종 퀴즈 풀러 가기
@@ -137,51 +123,6 @@ export default function DonePage() {
         위 카드를 캡처해서 에브리타임이나 단톡방에 올려도 좋아요.
       </p>
 
-      <div className="mt-8">
-        {/* 경품은 이번에 학생 혜택을 새로 받은 사람만. 자기 신고 기준이다. */}
-        {p.signup === "done" ? (
-          <EntryForm />
-        ) : (
-          <div className="card space-y-3">
-            <h2 className="text-lg font-extrabold">경품 응모 안내</h2>
-            {p.signup === "existing" ? (
-              <p className="prose-body">
-                이번 경품은 Google AI 대학생 1년 무료 혜택을 새로 받은 분을 위한 것이라,
-                전부터 혜택을 쓰고 계셨다면 응모 대상이 아니에요. 배운 내용은 계속
-                활용하실 수 있어요.
-              </p>
-            ) : (
-              <>
-                <p className="prose-body">
-                  경품 응모는 Google AI 대학생 1년 무료 혜택을 새로 받은 분만 할 수 있어요.
-                  아직 인증 전이라면 지금 받고 오세요. 1분이면 됩니다. 가입이 끝나면
-                  완료 화면을 스크린샷으로 찍어 두세요. 응모할 때 첨부해야 해요.
-                </p>
-                <OpenButton
-                  href={stepById("benefit")!.practice.openUrl}
-                  label="혜택 받으러 가기"
-                  step="benefit"
-                  event="signup_click"
-                />
-              </>
-            )}
-            <button
-              type="button"
-              onClick={confirmSignup}
-              className={
-                p.signup === "existing"
-                  ? "w-full py-1 text-xs text-[var(--color-muted)] underline underline-offset-2"
-                  : "btn-ghost w-full"
-              }
-            >
-              {p.signup === "existing"
-                ? "잘못 골랐어요, 이번에 새로 인증했습니다"
-                : "인증까지 완료했어요"}
-            </button>
-          </div>
-        )}
-      </div>
-
       {/* 다음에 뭘 보면 되는지 */}
       <section className="mt-10">
         <h2 className="text-lg font-extrabold">여기서 끝내지 마세요</h2>
@@ -189,6 +130,9 @@ export default function DonePage() {
           다음 과제 때 다시 찾아올 수 있게, 자주 쓰는 것만 정리해 뒀습니다.
         </p>
         <div className="mt-4 space-y-2">
+          <Link href="/" className="btn-primary w-full">
+            프롬프트 저장소 둘러보기
+          </Link>
           <Link href="/tools/prompt-builder" className="btn-ghost w-full">
             프롬프트 빌더 다시 쓰기
           </Link>
@@ -202,7 +146,7 @@ export default function DonePage() {
       <div className="mt-10 border-t border-[var(--color-line)] pt-5">
         <ResetButton
           label="이 기기에서 내 기록 지우기 / 처음부터 하기"
-          note="이 브라우저에 저장된 진행 상황, 프롬프트 빌더 입력, 수료증 이름이 지워집니다. 이미 제출한 응모는 취소되지 않습니다."
+          note="이 브라우저에 저장된 진행 상황, 프롬프트 빌더 입력, 수료증 이름이 지워집니다."
         />
       </div>
     </main>

@@ -9,9 +9,11 @@ export const metadata = { title: "제미나이 기능 사전 | 15분 제미나�
 export default function ToolsPage() {
   return (
     <main className="stagger px-5 pt-8 pb-12">
-      <Link href="/" className="text-sm text-[var(--color-muted)]">
-        ← 처음으로
-      </Link>
+      <div className="flex items-center gap-3 text-sm text-[var(--color-muted)]">
+        <Link href="/">← 프롬프트 저장소</Link>
+        <span className="text-xs text-[var(--color-line)]">|</span>
+        <Link href="/learn">15분 챌린지 홈</Link>
+      </div>
       <p className="label mt-4 flex items-center gap-1.5 text-[var(--color-brand)]">
         <Sparkle size={14} />
         제미나이에만 있는 것

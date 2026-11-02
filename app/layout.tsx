@@ -2,7 +2,18 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
+import localFont from "next/font/local";
 import "./globals.css";
+import "./library.css";
+
+const pretendard = localFont({
+  src: [
+    { path: "../assets/fonts/Pretendard-Regular.otf", weight: "400", style: "normal" },
+    { path: "../assets/fonts/Pretendard-Bold.otf", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+  variable: "--font-pretendard",
+});
 
 // og:image 는 절대 URL 이어야 카카오톡·에브리타임이 썸네일을 읽는다.
 // 미설정 시 Vercel 이 배포별 URL(프리뷰 주소)을 쓰므로 실제 도메인을 넣을 것.
@@ -14,12 +25,12 @@ const SITE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "15분 만에 제미나이 정복하기 | GSA team 강원대 AI 마스터 챌린지",
+  title: "프롬프트 저장소 | GSA team 강원대 AI 마스터 챌린지",
   description:
-    "레포트·시험·발표에 바로 쓰는 제미나이 사용법. 15분 과정을 끝내면 경품 응모까지.",
+    "레포트·시험공부·발표·일상에 필요한 프롬프트를 찾고, 내 Gemini에서 바로 사용하세요.",
   openGraph: {
-    title: "15분 만에 제미나이 정복하기",
-    description: "재학생 12개월 무료 혜택부터, 레포트·시험에 바로 쓰는 실습까지.",
+    title: "프롬프트 저장소 | GSA team",
+    description: "발견하고, 복사하고, 내 Gemini에서 시작하세요.",
     type: "website",
   },
 };
@@ -29,7 +40,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // 인앱 브라우저에서 확대가 막히면 접근성이 나빠진다. 확대는 열어 둔다.
   maximumScale: 5,
-  themeColor: "#1a73e8",
+  themeColor: "#0b0b0c",
 };
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -40,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={pretendard.variable}>
       <body>
         {GA_ID ? (
           <>
@@ -58,9 +69,9 @@ gtag('js',new Date());gtag('config','${GA_ID}');`}
         {/* 화면 아래에서 피어오르는 배경. 콘텐츠보다 뒤에 깔린다. */}
         <div className="bloom" aria-hidden />
 
-        <div className="relative z-[1] mx-auto min-h-dvh max-w-[560px]">
+        <div className="site-frame relative z-[1] mx-auto min-h-dvh max-w-[560px]">
           {children}
-          <footer className="mt-10 border-t border-[var(--color-line)] px-5 py-8 text-xs leading-relaxed text-[var(--color-muted)]">
+          <footer className="legacy-footer mt-10 border-t border-[var(--color-line)] px-5 py-8 text-xs leading-relaxed text-[var(--color-muted)]">
             <p className="mb-3 font-semibold text-[var(--color-ink)]">
               AI는 초안·검증·학습을 돕는 도구입니다. 제출물의 최종 책임은 본인에게
               있습니다.
@@ -71,6 +82,12 @@ gtag('js',new Date());gtag('config','${GA_ID}');`}
               본인의 언어로 다시 쓰는 것을 권장합니다.
             </p>
             <nav className="flex flex-wrap gap-x-4 gap-y-2">
+              <Link href="/" className="underline underline-offset-2">
+                프롬프트 저장소
+              </Link>
+              <Link href="/learn" className="underline underline-offset-2">
+                15분 챌린지 홈
+              </Link>
               <Link href="/tools" className="underline underline-offset-2">
                 기능 사전
               </Link>

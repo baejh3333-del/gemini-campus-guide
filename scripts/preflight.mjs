@@ -1,9 +1,5 @@
 /**
  * 배포 전 점검.  npm run preflight
- *
- * README 체크리스트는 놓치기 쉬우므로, 놓치면 안 되는 것만 여기서 실제로 막는다.
- * 가장 큰 위험은 개인정보(전화번호)를 수집하면서 처리방침 담당자가 비어 있는 상태로
- * 배포되는 것 — 체크박스가 아니라 종료 코드로 잡는다.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -31,24 +27,10 @@ if (!privacy) {
   if (holes.length) {
     fails.push(
       `개인정보 처리방침의 담당자 정보가 비어 있습니다 (${holes.join(", ")}).\n` +
-        "     이름과 휴대폰 번호를 수집하는 사이트입니다. 담당자 없이 배포하면 안 됩니다.\n" +
         "     → app/privacy/page.tsx 의 OPERATOR 를 실제 값으로 채우세요."
     );
   } else {
     oks.push("개인정보 처리방침 담당자 정보");
-  }
-
-  // 파기 시점이 지났는지 (캠페인이 밀리면 문서와 실제가 어긋난다)
-  const m = privacy.match(/destroyBy:\s*"(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일"/);
-  if (m) {
-    const due = new Date(+m[1], +m[2] - 1, +m[3]);
-    if (due < new Date()) {
-      warns.push(
-        `처리방침의 파기 예정일(${m[0].split('"')[1]})이 이미 지났습니다. 날짜를 갱신하세요.`
-      );
-    } else {
-      oks.push("개인정보 파기 예정일");
-    }
   }
 }
 
@@ -68,19 +50,7 @@ if (!fs.existsSync(pdfPath)) {
   }
 }
 
-// ── 3. Apps Script 공유 비밀키 ──────────────────────────
-const gs = read("apps-script/Code.gs");
-if (gs && gs.includes("여기에-ENTRY_SHARED_SECRET")) {
-  warns.push(
-    "apps-script/Code.gs 의 SECRET 이 기본값입니다.\n" +
-      "     이 파일은 배포되지 않지만, 구글에 붙여넣기 전에 긴 무작위 문자열로 바꾸고\n" +
-      "     Vercel 의 ENTRY_SHARED_SECRET 과 같은 값으로 맞추세요."
-  );
-} else if (gs) {
-  oks.push("Apps Script 공유 비밀키");
-}
-
-// ── 4. 실수로 커밋될 수 있는 것 ─────────────────────────
+// ── 3. 실수로 커밋될 수 있는 것 ─────────────────────────
 if (fs.existsSync(path.join(root, ".env.local"))) {
   const env = read(".env.local") || "";
   if (/change-me|XXXX|your-domain/.test(env)) {
@@ -92,10 +62,8 @@ if (fs.existsSync(path.join(root, ".env.local"))) {
   }
 }
 
-// ── 5. 환경변수 (배포 환경에서 실행할 때만 의미가 있다) ──
+// ── 4. 환경변수 (배포 환경에서 실행할 때만 의미가 있다) ──
 const ENV = [
-  ["ENTRY_WEBHOOK_URL", "없으면 경품 응모가 503", true],
-  ["ENTRY_SHARED_SECRET", "없으면 경품 응모가 503", true],
   ["NEXT_PUBLIC_SIGNUP_URL", "없으면 UTM 없는 기본 링크 → 사인업 KPI 귀속 불가", false],
   ["NEXT_PUBLIC_SITE_URL", "없으면 공유 썸네일이 프리뷰 주소를 가리킴", false],
   ["NEXT_PUBLIC_GA_ID", "없으면 계측 전부 없음", false],

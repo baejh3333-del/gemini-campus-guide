@@ -1,17 +1,11 @@
 import Link from "next/link";
 
-export const metadata = { title: "개인정보 처리방침 | 15분 제미나이" };
+export const metadata = { title: "개인정보 처리방침 | GSA 프롬프트 저장소" };
 
-/* ───────────────────────────────────────────────────────────
-   개인정보 보호 책임자. 이름과 전화번호를 수집하므로 비워 둘 수 없다.
-   여기가 비면 npm run preflight 가 배포를 막는다.
-   destroyBy 는 캠페인이 밀리면 실제와 어긋나니 함께 갱신할 것.
-   ─────────────────────────────────────────────────────────── */
 const OPERATOR = {
   team: "gemini student Ambassador 강원대",
   manager: "배정현",
   email: "202312604@kangwon.ac.kr",
-  destroyBy: "2026년 10월 31일",
 };
 
 export default function PrivacyPage() {
@@ -21,88 +15,29 @@ export default function PrivacyPage() {
         ← 처음으로
       </Link>
       <h1 className="mt-3 text-[26px] leading-tight font-extrabold">
-        개인정보 수집·이용 동의 및 처리방침
+        개인정보 처리방침
       </h1>
       <p className="mt-3 text-sm text-[var(--color-muted)]">
-        {/* 조사는 팀명의 받침에 따라 달라진다. "에서는" 은 받침과 무관해 안전하다. */}
-        {OPERATOR.team}(이하 &ldquo;운영팀&rdquo;)에서는 경품 추첨 및 지급을 위해
-        아래와 같이 최소한의 개인정보를 수집합니다.
+        {OPERATOR.team}(이하 &ldquo;운영팀&rdquo;)은 이용자의 개인정보를 별도 서버에 수집·저장하지 않으며, 학습 편의를 위한 최소한의 브라우저 저장소와 익명 방문 통계만 사용합니다.
       </p>
 
       <div className="mt-8 space-y-7 text-[14px] leading-relaxed">
         <section>
-          <h2 className="mb-2 text-base font-extrabold">1. 수집하는 항목</h2>
-          <ul className="space-y-1.5">
-            <li>· 이름</li>
-            <li>· 휴대폰 번호</li>
-            <li>
-              · 학습 진행 기록(완료한 단계, 단계별 소요시간, 퀴즈 응시 횟수) —
-              부정 응모 확인 목적
-            </li>
-            <li>
-              · Google AI Plus 가입 화면 캡처 — 이번 캠페인 기간에
-              혜택을 새로 받았는지 확인하는 목적. 요금제 이름과 가입 날짜만 보이면
-              되며, 계정 이메일 등 다른 정보는 가리고 보내셔도 됩니다.
-            </li>
-          </ul>
-          <p className="mt-2 text-[var(--color-muted)]">
-            학번, 주소, 이메일, 결제정보 등 그 밖의 개인정보는 수집하지 않습니다.
+          <h2 className="mb-2 text-base font-extrabold">1. 수집하는 개인정보 항목</h2>
+          <p>
+            본 사이트는 회원가입이나 별도의 개인정보(이름, 연락처, 학번, 이메일 등)를 서버로 수집하지 않습니다. (이전 캠페인 경품 응모 접수는 종료되었습니다.)
           </p>
         </section>
 
         <section>
-          <h2 className="mb-2 text-base font-extrabold">2. 수집·이용 목적</h2>
+          <h2 className="mb-2 text-base font-extrabold">2. 브라우저에 저장되는 정보 및 방문 통계</h2>
           <p>
-            경품 추첨 진행, 당첨 자격(혜택 신규 가입) 확인 및 경품 지급 안내. 캡처로
-            자격이 확인되지 않으면 당첨이 취소되고 다음 순번에게 넘어갑니다. 이 외의 목적으로는
-            이용하지 않으며, 마케팅 정보 발송이나 제3자 제공에도 사용하지 않습니다.
+            학습 진행 상황(완료한 단계, 프롬프트 빌더에 입력한 내용, 수료증 표시용 이름)은{" "}
+            <b>여러분의 브라우저(localStorage) 안에만</b> 저장되며 서버로 전송되지 않습니다. 브라우저
+            데이터를 지우거나 초기화 버튼을 누르면 즉시 삭제됩니다.
           </p>
-        </section>
-
-        <section>
-          <h2 className="mb-2 text-base font-extrabold">3. 보유 및 이용 기간</h2>
-          <p>
-            경품 지급이 완료된 즉시 파기하며, 늦어도{" "}
-            <b>{OPERATOR.destroyBy}</b> 이전에 모든 응모 정보와 첨부한 캡처를
-            삭제합니다. 별도의
-            백업 사본은 보관하지 않습니다.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="mb-2 text-base font-extrabold">4. 동의를 거부할 권리</h2>
-          <p>
-            개인정보 수집·이용 동의를 거부할 수 있습니다. 다만 동의하지 않으면 경품
-            응모만 제한되며,{" "}
-            <b>학습 과정과 모든 자료는 그대로 이용하실 수 있습니다.</b>
-          </p>
-        </section>
-
-        <section>
-          <h2 className="mb-2 text-base font-extrabold">5. 제3자 제공 및 처리 위탁</h2>
-          <p>
-            수집한 정보를 제3자에게 제공하지 않습니다. 다만 응모 내역의 보관을 위해
-            Google Workspace(Google Sheets, 캡처는 Google Drive)를 이용하며, 접근 권한은 운영팀 담당자로
-            제한됩니다.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="mb-2 text-base font-extrabold">6. 정보주체의 권리</h2>
-          <p>
-            언제든지 본인의 개인정보에 대한 열람·정정·삭제·처리정지를 요구할 수
-            있습니다. 아래 연락처로 요청하시면 지체 없이 조치합니다.
-          </p>
-        </section>
-
-        <section>
-          <h2 className="mb-2 text-base font-extrabold">7. 이 사이트가 저장하는 것</h2>
-          <p>
-            학습 진행 상황(완료한 단계, 프롬프트 빌더에 입력한 내용)은{" "}
-            <b>여러분의 브라우저 안에만</b> 저장되며 서버로 전송되지 않습니다. 브라우저
-            데이터를 지우면 함께 사라집니다. 방문 통계 확인을 위해 Google Analytics와
-            Vercel Web Analytics를 사용합니다. Vercel Web Analytics는 쿠키를 쓰지 않고
-            개인을 식별하지 않는 방식으로 방문 수와 페이지 조회를 집계합니다.
+          <p className="mt-2">
+            방문 통계 확인을 위해 Google Analytics와 Vercel Web Analytics를 사용합니다. Vercel Web Analytics는 쿠키를 쓰지 않고 개인을 식별하지 않는 방식으로 방문 수와 페이지 조회를 집계합니다.
           </p>
           <p className="mt-2 text-[var(--color-muted)]">
             이 사이트는 제미나이를 대신 실행하지 않습니다. 여러분이 제미나이에
@@ -111,7 +46,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 text-base font-extrabold">8. 개인정보 보호 책임자</h2>
+          <h2 className="mb-2 text-base font-extrabold">3. 문의처 및 개인정보 보호 책임자</h2>
           <ul className="space-y-1">
             <li>· 담당: {OPERATOR.team}</li>
             <li>· 성명: {OPERATOR.manager}</li>

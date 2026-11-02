@@ -2,11 +2,15 @@ node_modules
 .next
 .env*.local
 next-env.d.ts
+tsconfig.tsbuildinfo
 
 # 디자인 캔버스의 "결과물"만 제외한다 (2.5MB, .dc.html 에서 다시 만들 수 있음).
 # .dc.html 은 소스이므로 반드시 남긴다 — canvas.json 이 이 파일들을 가리킨다.
 design/*.html
 !design/*.dc.html
 
-# 운영 내부 문서 — 저장소가 공개라 추적하지 않는다 (로컬에만 둔다)
+# 운영 내부 문서 및 로컬 작업 산출물
 docs/launch-checklist.md
+.superpowers/
+screenshots/
+public/artworks/

@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "15분 만에 제미나이 정복하기 — GSA team 강원대 AI 마스터 챌린지";
+export const alt = "프롬프트 저장소 — GSA team 강원대 AI 마스터 챌린지";
 
 export default function OgImage() {
   return new ImageResponse(
@@ -14,7 +14,7 @@ export default function OgImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          background: "#16181d",
+          background: "#0b0b0c",
           color: "#fff",
           padding: "72px 80px",
         }}
@@ -43,7 +43,7 @@ export default function OgImage() {
               fontWeight: 800,
             }}
           >
-            15
+            ↗
           </div>
           GSA team 강원대 AI 마스터 챌린지
         </div>
@@ -59,16 +59,15 @@ export default function OgImage() {
             letterSpacing: -2,
           }}
         >
-          <div style={{ display: "flex" }}>15분 만에</div>
-          <div style={{ display: "flex" }}>제미나이 정복하기</div>
+          <div style={{ display: "flex" }}>프롬프트 저장소</div>
         </div>
 
         <div style={{ display: "flex", marginTop: 32, fontSize: 34, color: "#a8aeb8" }}>
-          레포트 · 시험공부 · 발표에 바로 쓰는 실습
+          발견하고, 복사하고, 내 Gemini에서 시작하세요.
         </div>
 
         <div style={{ display: "flex", gap: 12, marginTop: 40 }}>
-          {["재학생 12개월 무료", "실습형", "수료 시 경품 응모"].map((t) => (
+          {["레포트·과제", "시험공부", "발표", "일상"].map((t) => (
             <div
               key={t}
               style={{

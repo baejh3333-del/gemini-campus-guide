@@ -6,9 +6,11 @@ export const metadata = { title: "프롬프트 빌더 | 15분 제미나이" };
 export default function PromptBuilderPage() {
   return (
     <main className="px-5 pt-8 pb-12">
-      <Link href="/" className="text-sm text-[var(--color-muted)]">
-        ← 처음으로
-      </Link>
+      <div className="flex items-center gap-3 text-sm text-[var(--color-muted)]">
+        <Link href="/">← 프롬프트 저장소</Link>
+        <span className="text-xs text-[var(--color-line)]">|</span>
+        <Link href="/learn">15분 챌린지 홈</Link>
+      </div>
       <h1 className="mt-3 text-[28px] leading-tight font-extrabold">
         프롬프트 빌더
       </h1>

@@ -118,9 +118,15 @@ export function StepRunner({ step }: { step: Step }) {
       {/* 진행 바 */}
       <div className="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[var(--color-paper)]/95 backdrop-blur">
         <div className="flex items-center justify-between px-5 pt-4 pb-2">
-          <Link href="/" className="text-sm text-[var(--color-muted)]">
-            ← 처음으로
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/learn" className="text-sm font-medium text-[var(--color-muted)]">
+              ← 챌린지 홈
+            </Link>
+            <span className="text-xs text-[var(--color-line)]">|</span>
+            <Link href="/" className="text-xs font-medium text-[var(--color-muted)]">
+              프롬프트 저장소
+            </Link>
+          </div>
           <span className="text-sm font-semibold text-[var(--color-muted)]">
             STEP {step.n} · 약 {step.minutes}분
           </span>
@@ -372,8 +378,8 @@ export function StepRunner({ step }: { step: Step }) {
               이전
             </Link>
           ) : (
-            <Link href="/" className="btn-ghost flex-1">
-              처음
+            <Link href="/learn" className="btn-ghost flex-1">
+              챌린지 홈
             </Link>
           )}
           {/* 확인 문제를 풀기 전에는 이 버튼으로 넘어갈 수 없다. 넘어가려면 아래 건너뛰기. */}
@@ -406,8 +412,8 @@ export function StepRunner({ step }: { step: Step }) {
             </button>
             <p className="mt-1 text-center text-[11px] leading-relaxed text-[var(--color-muted)]">
               {step.optional
-                ? "건너뛰어도 수료할 수 있어요. 단, 경품 응모는 이번에 혜택을 새로 받은 분만 할 수 있어요."
-                : "건너뛰면 경품 응모를 할 수 없어요. 최종 퀴즈는 STEP 1~4를 모두 마쳐야 열립니다."}
+                ? "건너뛰어도 수료할 수 있어요."
+                : "최종 퀴즈는 STEP 1~4를 모두 마쳐야 열립니다."}
             </p>
           </div>
         )}

@@ -1,85 +1,11 @@
-// 자체 점검: 응모 폼 검증 + 프롬프트 조립
+// 자체 점검: 프롬프트 조립 + 콘텐츠 참조
 import assert from "node:assert/strict";
-import {
-  validateEntry,
-  hasErrors,
-  isValidPhone,
-  normalizePhone,
-  formatPhone,
-} from "./validate";
 import { buildPrompt, applyPreset, fillFromPreset, EMPTY_BUILDER } from "./prompt";
 import { BUILDER_PRESETS } from "../content/templates";
 import { TOOLS } from "../content/tools";
 import { TASKS } from "../content/tasks";
 import { GUIDES } from "../content/guides";
 import { STEPS } from "../content/steps";
-
-// ── 전화번호 ──────────────────────────────────────────────
-for (const ok of [
-  "010-1234-5678",
-  "01012345678",
-  "010 1234 5678",
-  "011-234-5678",
-  "0161234567",
-]) {
-  assert.equal(isValidPhone(ok), true, `유효해야 함: ${ok}`);
-}
-for (const bad of [
-  "",
-  "0101234",
-  "02-123-4567",
-  "010-1234-56789",
-  "0201234567",
-  "abc",
-  "010-1234-567a", // 문자를 걸러낸 뒤 자릿수가 모자람
-]) {
-  assert.equal(isValidPhone(bad), false, `거부해야 함: ${bad}`);
-}
-assert.equal(normalizePhone("010-1234-5678"), "01012345678", "하이픈 제거");
-
-// 입력하는 대로 하이픈이 붙는다
-for (const [typed, shown] of [
-  ["010", "010"],
-  ["0101", "010-1"],
-  ["0101234", "010-1234"],
-  ["01012341", "010-1234-1"],
-  ["0101234123", "010-1234-123"], // 010 은 10번째 숫자에서 모양이 튀지 않는다
-  ["0112345678", "011-234-5678"],
-  ["01012341234", "010-1234-1234"],
-  ["010-1234-12345", "010-1234-1234"], // 11자리 넘게는 안 들어간다
-  ["010 1234 1234", "010-1234-1234"],
-]) {
-  assert.equal(formatPhone(typed), shown, `formatPhone(${typed})`);
-  if (shown.length >= 12) assert.equal(isValidPhone(shown), true, `포맷 결과가 유효: ${shown}`);
-}
-
-// ── 폼 전체 ───────────────────────────────────────────────
-const good = {
-  name: "홍길동",
-  phone: "010-1234-5678",
-  image: "data:image/jpeg;base64,/9j/4AAQSkZJRg==",
-  consent: true,
-};
-assert.equal(hasErrors(validateEntry(good)), false, "정상 입력 통과");
-
-// 동의 없이는 절대 통과하면 안 된다
-assert.ok(validateEntry({ ...good, consent: false }).consent, "미동의 거부");
-assert.ok(validateEntry({ ...good, name: "김" }).name, "1자 이름 거부");
-assert.ok(validateEntry({ ...good, name: "  " }).name, "공백 이름 거부");
-assert.ok(
-  validateEntry({ ...good, name: "가".repeat(21) }).name,
-  "21자 이름 거부"
-);
-assert.ok(validateEntry({ ...good, phone: "123" }).phone, "잘못된 번호 거부");
-assert.ok(validateEntry({ ...good, image: undefined }).image, "캡처 없음 거부");
-assert.ok(
-  validateEntry({ ...good, image: "data:image/jpeg;base64,iVBORw0KGgo=" }).image,
-  "JPEG 가 아닌 파일 거부"
-);
-assert.ok(
-  validateEntry({ ...good, image: "data:image/jpeg;base64,/9j/" + "A".repeat(3_000_000) }).image,
-  "너무 큰 캡처 거부"
-);
 
 // ── 프롬프트 조립 ─────────────────────────────────────────
 assert.equal(buildPrompt(EMPTY_BUILDER), "", "전부 비면 빈 문자열");
@@ -201,4 +127,4 @@ for (const g of GUIDES) {
   );
 }
 
-console.log("validate.ts / prompt.ts / 콘텐츠 참조 자체 점검 통과");
+console.log("prompt.ts / 콘텐츠 참조 자체 점검 통과");
