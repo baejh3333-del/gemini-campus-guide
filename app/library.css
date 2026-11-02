@@ -3455,12 +3455,10 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     white-space: nowrap;
   }
 
-  /* 2. Hero Brightness & Aurora Calibration (Matches PC Deep-Black Contrast)
-     On desktop, 3 aurora orbs (440~520px) are spread across 780px width; on a
-     360px phone, they overlapped 100% in the center, making the screen overly bright. */
+  /* 2. Hero Brightness & Aurora Calibration + Generous Spacing Below Intro Text */
   .library-intro:not(.detail-hero) {
-    padding: 88px 12px 20px;
-    gap: 10px;
+    padding: 96px 12px 46px;
+    gap: 12px;
   }
   .library-intro:not(.detail-hero)::before {
     top: 6%;
@@ -3508,7 +3506,7 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     top: 38px;
   }
   .hero-light-beam {
-    bottom: 42px;
+    bottom: 24px;
     width: 84vw;
     opacity: .75;
   }
@@ -3524,41 +3522,74 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     color: #cbd5e1;
   }
 
-  /* 3. Sheet & 5 Navigation Tabs — All 5 Tabs Fit Cleanly on Screen (Zero Clipping!) */
+  /* 3. Sheet & Single-Row Horizontal Drag Tabs (Subtle Edge Peek -> Brightens When Scrolled) */
   .library-sheet {
     padding-inline: 16px;
   }
   .library-tabs {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 14px;
-    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 6px -16px 18px;
+    padding: 10px 20px;
+    width: calc(100% + 32px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  .library-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  /* Subtle corner fade mask so the peeking tab ("기타") softly emerges from the edge and brightens when dragged in */
+  .library-tabs[data-fade-right]:not([data-fade-left]) {
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 78%, rgba(0, 0, 0, .28) 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 78%, rgba(0, 0, 0, .28) 95%, transparent 100%);
+  }
+  .library-tabs[data-fade-left]:not([data-fade-right]) {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .28) 5%, #000 22%, #000 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .28) 5%, #000 22%, #000 100%);
+  }
+  .library-tabs[data-fade-left][data-fade-right] {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .3) 5%, #000 20%, #000 80%, rgba(0, 0, 0, .3) 95%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .3) 5%, #000 20%, #000 80%, rgba(0, 0, 0, .3) 95%, transparent 100%);
   }
   .library-tabs a {
-    flex: 0 1 auto !important;
-    min-height: 36px;
-    padding: 0 11px;
-    font-size: 12px;
+    flex: 0 0 auto !important;
+    scroll-snap-align: center;
+    min-height: 40px;
+    padding: 0 16px;
+    font-size: 13px;
     font-weight: 500;
     border-radius: 999px;
     white-space: nowrap;
+    color: #c2cad6;
+    border-color: #ffffff1f;
+    transition: opacity .3s ease, filter .3s ease, color .3s ease, border-color .3s ease, background .3s ease, transform .2s ease;
   }
   .library-tabs a:first-child {
-    flex: 0 1 auto !important;
+    flex: 0 0 auto !important;
+  }
+  /* Peeking tab at the edge is subtly dimmed; scrolling it into view brightens it to full clarity */
+  .library-tabs a[data-edge-dim] {
+    opacity: .42;
+    filter: brightness(.72);
+    color: #7a8290;
+    border-color: #ffffff0d;
   }
   .tab-spot {
-    top: calc(var(--spot-y, 0px) - 6px);
+    top: calc(var(--spot-y, 0px) - 4px);
     bottom: auto;
-    height: calc(var(--spot-h, 36px) + 12px);
+    height: calc(var(--spot-h, 40px) + 8px);
     left: -6px;
     width: calc(var(--spot-w, 0px) + 12px);
-    filter: blur(16px);
+    filter: blur(14px);
   }
   .library-tabs[data-ready] .tab-spot {
-    opacity: .48;
-    transition: transform .8s cubic-bezier(.22, 1, .36, 1), width .8s cubic-bezier(.22, 1, .36, 1), top .8s cubic-bezier(.22, 1, .36, 1);
+    opacity: .52;
+    transition: transform .65s cubic-bezier(.22, 1, .36, 1), width .65s cubic-bezier(.22, 1, .36, 1);
   }
 
   /* 4. Search Bar — Balanced Neon Glow & Clean Placeholder Fit */
@@ -3566,7 +3597,7 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     min-height: 50px;
     padding: 0 15px;
     gap: 10px;
-    margin-block: 14px 4px;
+    margin-block: 14px 10px;
     border-radius: 999px;
     box-shadow:
       -8px 0 24px -8px rgba(244, 114, 182, .38),
@@ -3607,19 +3638,48 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     margin-right: 6px;
   }
 
-  /* 5. Category Filters — Compact Wrapped Pills so All Categories Are Visible Without Horizontal Cutoffs */
-  .library-filters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
+  /* 5. Category Filters — Clean Bento 2-Column Grid (Replacing Messy 4-Row Jagged Pyramid) */
+  .library-filters.is-category-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
     padding: 12px 0 4px;
-    overflow-x: visible;
+    overflow: visible;
   }
-  .library-filters button {
-    min-height: 34px;
-    padding: 0 12px;
+  .library-filters.is-category-filters button {
+    width: 100%;
+    min-height: 38px;
+    padding: 0 10px;
     font-size: 11.5px;
+    border-radius: 12px;
+    background: #0b0e16;
+    border: 1px solid #ffffff17;
+    color: #b8c0cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .library-filters.is-category-filters button[aria-pressed=true] {
+    background: linear-gradient(115deg, rgba(56, 189, 248, .18), rgba(129, 140, 248, .18));
+    color: #ffffff;
+    border-color: rgba(138, 180, 248, .55);
+    box-shadow: 0 0 20px -8px rgba(56, 189, 248, .55);
+    font-weight: 600;
+  }
+  .library-filters.is-period-filters {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0 4px;
+  }
+  .library-filters.is-period-filters button {
+    min-height: 36px;
+    padding: 0 16px;
+    font-size: 12px;
     border-radius: 999px;
   }
 
@@ -3692,7 +3752,34 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
     padding-top: 12px;
   }
   .playground-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 4px 0;
+  }
+  .playground-filters button {
+    width: 100%;
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 11.5px;
+    border-radius: 12px;
+    background: #0b0e16;
+    border: 1px solid #ffffff17;
+    color: #b8c0cc;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .playground-filters button[aria-pressed=true] {
+    background: linear-gradient(115deg, rgba(244, 114, 182, .18), rgba(129, 140, 248, .18));
+    color: #ffffff;
+    border-color: rgba(244, 114, 182, .55);
+    box-shadow: 0 0 20px -8px rgba(244, 114, 182, .55);
+    font-weight: 600;
   }
   .playground-actions {
     justify-content: space-between;
@@ -3823,11 +3910,11 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
 
 @media (max-width: 380px) {
   .library-tabs {
-    gap: 4px;
+    gap: 6px;
   }
   .library-tabs a {
-    padding: 0 9px;
-    font-size: 11px;
-    min-height: 34px;
+    padding: 0 14px;
+    font-size: 12.5px;
+    min-height: 38px;
   }
 }

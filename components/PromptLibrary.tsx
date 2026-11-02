@@ -77,6 +77,38 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   useLayoutEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
+    const updateScrollHints = () => {
+      const maxScroll = nav.scrollWidth - nav.clientWidth;
+      if (maxScroll <= 4) {
+        nav.removeAttribute("data-fade-left");
+        nav.removeAttribute("data-fade-right");
+      } else {
+        if (nav.scrollLeft > 8) nav.setAttribute("data-fade-left", "");
+        else nav.removeAttribute("data-fade-left");
+        if (nav.scrollLeft < maxScroll - 8) nav.setAttribute("data-fade-right", "");
+        else nav.removeAttribute("data-fade-right");
+      }
+
+      // Brighten items that are within the visible horizontal scroll viewport, dim items peeking at the corner
+      const navRect = nav.getBoundingClientRect();
+      const links = nav.querySelectorAll<HTMLElement>("a");
+      links.forEach((link) => {
+        if (maxScroll <= 4) {
+          link.removeAttribute("data-edge-dim");
+          return;
+        }
+        const r = link.getBoundingClientRect();
+        const visibleLeft = Math.max(r.left, navRect.left);
+        const visibleRight = Math.min(r.right, navRect.right);
+        const visibleRatio = Math.max(0, visibleRight - visibleLeft) / Math.max(1, r.width);
+        if (visibleRatio < 0.78 && !link.hasAttribute("aria-current")) {
+          link.setAttribute("data-edge-dim", "");
+        } else {
+          link.removeAttribute("data-edge-dim");
+        }
+      });
+    };
+
     const place = () => {
       const active = nav.querySelector<HTMLElement>("[aria-current]");
       if (!active) return;
@@ -84,14 +116,25 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
       nav.style.setProperty("--spot-y", `${active.offsetTop}px`);
       nav.style.setProperty("--spot-w", `${active.offsetWidth}px`);
       nav.style.setProperty("--spot-h", `${active.offsetHeight}px`);
+      updateScrollHints();
     };
     place();
-    const frame = requestAnimationFrame(() => nav.setAttribute("data-ready", ""));
+    const activeEl = nav.querySelector<HTMLElement>("[aria-current]");
+    if (activeEl && nav.scrollWidth > nav.clientWidth + 4) {
+      const targetLeft = activeEl.offsetLeft - (nav.clientWidth - activeEl.offsetWidth) / 2;
+      nav.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
+    }
+    const frame = requestAnimationFrame(() => {
+      nav.setAttribute("data-ready", "");
+      updateScrollHints();
+    });
     const observer = new ResizeObserver(place);
     observer.observe(nav);
+    nav.addEventListener("scroll", updateScrollHints, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
+      nav.removeEventListener("scroll", updateScrollHints);
     };
   }, [tab]);
 
@@ -258,7 +301,10 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           </section>
         ) : (
           <>
-            <div className="library-filters" aria-label={tab === "ranking" ? "집계 기간" : "카테고리 필터"}>
+            <div
+              className={`library-filters ${tab === "ranking" ? "is-period-filters" : "is-category-filters"}`}
+              aria-label={tab === "ranking" ? "집계 기간" : "카테고리 필터"}
+            >
               {(tab === "ranking" ? ["오늘", "이번 주", "이번 달"] : ["전체", ...CATEGORIES]).map((label) => (
                 <button
                   type="button"
