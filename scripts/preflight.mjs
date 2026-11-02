@@ -64,6 +64,8 @@ if (fs.existsSync(path.join(root, ".env.local"))) {
 
 // ── 4. 환경변수 (배포 환경에서 실행할 때만 의미가 있다) ──
 const ENV = [
+  ["PLAYGROUND_WEBHOOK_URL", "없으면 플레이그라운드 공유 글이 구글 시트에 영구 저장되지 않음", false],
+  ["PLAYGROUND_SHARED_SECRET", "없으면 플레이그라운드 시트 연동 비활성", false],
   ["NEXT_PUBLIC_SIGNUP_URL", "없으면 UTM 없는 기본 링크 → 사인업 KPI 귀속 불가", false],
   ["NEXT_PUBLIC_SITE_URL", "없으면 공유 썸네일이 프리뷰 주소를 가리킴", false],
   ["NEXT_PUBLIC_GA_ID", "없으면 계측 전부 없음", false],
