@@ -4539,13 +4539,25 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
 }
 
 
-/* The first visit opens on a full-screen orb instead of loading copy. */
-.loading-orb-stage { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; overflow: hidden; background: #000; pointer-events: none; }
-.loading-orb { width: 140vmax; height: 140vmax; flex-shrink: 0; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #a78bfa 52%, #f472b6); box-shadow: 0 0 60px #a78bfa77; animation: loading-orb-contract 1.9s cubic-bezier(.65,0,.25,1) both; }
+/* A centered orb becomes the caret, then travels to the title. */
+.loading-orb-stage { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: transparent; pointer-events: none; }
+.loading-orb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #a78bfa 52%, #f472b6); box-shadow: 0 0 28px #a78bfa66; animation: loading-orb-contract 1.9s cubic-bezier(.65,0,.25,1) both; }
 @keyframes loading-orb-contract {
-  0%, 12% { width: 140vmax; height: 140vmax; border-radius: 50%; }
-  65% { width: 18px; height: 18px; border-radius: 50%; }
-  85%, 100% { width: 4px; height: 38px; border-radius: 999px; }
+  0%, 12% { left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 50%; }
+  36% { left: 50%; top: 50%; width: 14px; height: 14px; border-radius: 50%; }
+  58% { left: 50%; top: 50%; width: 4px; height: 34px; border-radius: 999px; }
+  100% { left: var(--orb-target-x, 50%); top: var(--orb-target-y, 50%); width: 4px; height: 34px; border-radius: 999px; }
 }
-@media (prefers-reduced-motion: reduce) { .loading-orb { animation: none; width: 18px; height: 18px; } }
-
+.is-powering-on .hero-typing-title { visibility: hidden; }
+.is-powering-on > .library-header,
+.is-powering-on > .library-intro > :not(.hero-typing-title),
+.is-powering-on > .library-sheet { animation: interface-power-on 1.9s ease-out both !important; }
+@keyframes interface-power-on {
+  0%, 55% { opacity: 0; filter: brightness(.15); }
+  76% { opacity: .45; filter: brightness(.5); }
+  100% { opacity: 1; filter: brightness(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-orb { animation: none; width: 18px; height: 18px; }
+  .is-powering-on > .library-header, .is-powering-on > .library-intro > :not(.hero-typing-title), .is-powering-on > .library-sheet { animation: none !important; }
+}
