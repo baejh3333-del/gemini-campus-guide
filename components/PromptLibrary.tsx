@@ -22,7 +22,7 @@ const TOOLS = [
 ];
 
 const HERO_TYPING_STEPS: { text: string; dot?: boolean; wait: number }[] = [
-  { text: "", wait: 420 },
+  { text: "", wait: 1900 },
   { text: "ㅍ", wait: 70 },
   { text: "프", wait: 80 },
   { text: "프ㄹ", wait: 60 },
@@ -64,6 +64,10 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setTypingIndex(HERO_TYPING_STEPS.length - 1);
+      return;
+    }
     if (typingIndex >= HERO_TYPING_STEPS.length - 1) return;
     const timer = window.setTimeout(() => {
       setTypingIndex((prev) => Math.min(prev + 1, HERO_TYPING_STEPS.length - 1));
@@ -226,7 +230,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
             {currentTyping.text}
           </span>
           <span
-            className={`typing-morph-cursor ${currentTyping.dot ? "is-dot" : ""}`}
+            className={`typing-morph-cursor ${typingIndex === 0 ? "is-intro" : ""} ${currentTyping.dot ? "is-dot" : ""}`}
             aria-hidden="true"
           />
         </h1>
