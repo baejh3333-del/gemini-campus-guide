@@ -4561,3 +4561,17 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
   .loading-orb { animation: none; width: 18px; height: 18px; }
   .is-powering-on > .library-header, .is-powering-on > .library-intro > :not(.hero-typing-title), .is-powering-on > .library-sheet { animation: none !important; }
 }
+
+/* Loading is a complete screen even before the library markup is streamed. */
+body:has(.loading-orb-stage) { background: #000; }
+body:has(.loading-orb-stage) .legacy-footer,
+body:has(.loading-orb-stage) .bloom,
+body:has(.loading-orb-stage) .finder-launcher { display: none; }
+.loading-orb-stage { background: #000; }
+.is-powering-on .loading-orb-stage { animation: loading-backdrop-release 1.9s linear both; }
+@keyframes loading-backdrop-release {
+  0%, 55% { background-color: #000; }
+  85%, 100% { background-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .is-powering-on .loading-orb-stage { animation: none; } }
+
