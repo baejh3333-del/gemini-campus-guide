@@ -51,6 +51,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const [tab, setTab] = useState(paramTab);
   const [query, setQuery] = useState(paramQuery);
   const [category, setCategory] = useState(paramCategory);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [period, setPeriod] = useState("오늘");
   const [typingIndex, setTypingIndex] = useState(0);
   const [guideModalPrompt, setGuideModalPrompt] = useState<LibraryPrompt | null>(null);
@@ -301,8 +302,15 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           </section>
         ) : (
           <>
+            {tab !== "ranking" && (
+              <button type="button" className="mobile-filter-toggle" aria-expanded={filtersOpen} aria-controls="library-category-filters" onClick={() => setFiltersOpen(!filtersOpen)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2v-9z" /></svg>
+                필터 검색{category !== "전체" && <span className="mobile-filter-dot" aria-label="필터 적용 중" />}
+              </button>
+            )}
             <div
-              className={`library-filters ${tab === "ranking" ? "is-period-filters" : "is-category-filters"}`}
+              id="library-category-filters"
+              className={`library-filters ${tab === "ranking" ? "is-period-filters" : "is-category-filters"} ${filtersOpen ? "is-expanded" : ""}`}
               aria-label={tab === "ranking" ? "집계 기간" : "카테고리 필터"}
             >
               {(tab === "ranking" ? ["오늘", "이번 주", "이번 달"] : ["전체", ...CATEGORIES]).map((label) => (
@@ -310,7 +318,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                   type="button"
                   key={label}
                   aria-pressed={(tab === "ranking" ? period : category) === label}
-                  onClick={() => handleFilterSelect(label)}
+                  onClick={() => { handleFilterSelect(label); setFiltersOpen(false); }}
                 >
                   {label}
                 </button>

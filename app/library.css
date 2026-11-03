@@ -4481,3 +4481,14 @@ html[data-theme="light"] .draft-assistant textarea::placeholder { color:#526174;
   .library-search { margin-block: 28px 16px; }
   .library-page :is(input, textarea, select), .finder-form input { font-size: 16px; }
 }
+
+/* Compact category control on phones; desktop keeps the visible category row. */
+.mobile-filter-toggle { display: none; }
+@media (max-width: 767px) {
+  .mobile-filter-toggle { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; margin: 4px 0 20px; padding: 7px 12px; border: 1px solid #64748b55; border-radius: 10px; background: transparent; color: inherit; font-size: 13px; }
+  .library-filters.is-category-filters:not(.is-expanded) { display: none; }
+  .library-filters.is-category-filters.is-expanded { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0 20px; margin-top: 0; }
+  .library-filters.is-category-filters.is-expanded button { width: auto; min-width: 0; max-width: 100%; min-height: 36px; padding: 8px 12px; font-size: 12px; white-space: normal; }
+  .mobile-filter-dot { width: 6px; height: 6px; border-radius: 50%; background: #4285f4; }
+}
+
