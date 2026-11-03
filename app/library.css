@@ -4456,3 +4456,28 @@ html[data-theme="light"] .draft-assistant textarea::placeholder { color:#526174;
 .artwork-generate { padding:12px 16px; border-radius:12px; background:#1558b8; color:#fff; font-size:13px; cursor:pointer; margin:8px 0; }
 .artwork-generate:disabled { opacity:.55; cursor:wait; }
 .artwork-help { font-size:12px; line-height:1.6; margin-bottom:12px; }
+
+/* Keep scrolling independent of content scale and browser toolbar height. */
+.site-frame:has(.library-page),
+.library-page { min-height: 100svh; }
+.library-intro,
+.library-intro:not(.detail-hero),
+.library-intro > :not(.hero-cue),
+.library-intro:not(.detail-hero) > :not(.hero-cue),
+.library-intro > .hero-cue,
+.library-intro::after {
+  animation: none !important;
+}
+
+@media (max-width: 767px) {
+  .library-page { padding-inline: 24px; }
+  .library-header { padding-inline: 24px; }
+  .library-sheet { padding-inline: 24px; }
+  .library-intro:not(.detail-hero) { padding: 112px 0 64px; gap: 18px; }
+  .library-intro h1 { font-size: clamp(28px, 7.5vw, 36px); }
+  .library-intro > p:not(.library-eyebrow) { line-height: 1.8; }
+  .library-grid { gap: 40px; }
+  .library-art { aspect-ratio: 1.65; }
+  .library-search { margin-block: 28px 16px; }
+  .library-page :is(input, textarea, select), .finder-form input { font-size: 16px; }
+}
