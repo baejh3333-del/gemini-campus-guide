@@ -60,6 +60,7 @@ export default async function PromptDetail({
           <section className="detail-section">
             <h2>어떤 기능이에요?</h2>
             <p>{prompt.description}</p>
+            {prompt.skillNote && <p>{prompt.skillNote}</p>}
           </section>
           <section className="detail-section">
             <h2>이렇게 쓰세요</h2>
@@ -77,7 +78,7 @@ export default async function PromptDetail({
               <h2>{prompt.kind === "skill" ? "SKILL.md 파일 받기 & 사용" : "바로 쓰는 프롬프트"}</h2>
               <span>
                 {prompt.kind === "skill"
-                  ? `공식 원본 전문 (${prompt.body.length.toLocaleString("ko-KR")}자)`
+                  ? `SKILL.md 전문 (${prompt.body.length.toLocaleString("ko-KR")}자)`
                   : prompt.copyCount === null
                     ? "파란 표시 [항목]을 내 상황에 맞게 바꿔보세요"
                     : `${prompt.copyCount.toLocaleString("ko-KR")}회 복사`}
@@ -90,7 +91,7 @@ export default async function PromptDetail({
             {prompt.kind === "skill" && (
               <details className="skill-raw-details">
                 <summary>
-                  <span>원본 SKILL.md 코드 펼쳐보기 ({prompt.body.length.toLocaleString("ko-KR")}자)</span>
+                  <span>SKILL.md 내용 펼쳐보기 ({prompt.body.length.toLocaleString("ko-KR")}자)</span>
                   <span className="details-toggle-hint">클릭하여 열기 / 닫기 ▾</span>
                 </summary>
                 <pre className="library-prompt-text">{prompt.body}</pre>
@@ -98,7 +99,7 @@ export default async function PromptDetail({
             )}
             {prompt.repoUrl && (
               <a href={prompt.repoUrl} target="_blank" rel="noopener noreferrer" className="open-gemini">
-                GitHub 공식 Skill 저장소 원본 보기 ↗
+                GitHub 스킬 원본 보기 ↗
               </a>
             )}
             {prompt.source && (

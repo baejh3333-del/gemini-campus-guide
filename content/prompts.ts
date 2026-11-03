@@ -2,6 +2,7 @@ import { BUILDER_PRESETS, GEM_TEMPLATES } from "./templates";
 import { buildPrompt } from "@/lib/prompt";
 import type { LibraryPrompt } from "@/lib/prompt-library";
 import rawSkills from "./github-skills-raw.json";
+import { STUDY_LIFE_SKILLS } from "./study-life-skills";
 
 const presets: Record<
   string,
@@ -266,5 +267,6 @@ export const LIBRARY_PROMPTS: LibraryPrompt[] = [
       "내 자료나 질문을 보내고, 안내에 따라 대화를 이어가세요.",
     ],
   })),
+  ...STUDY_LIFE_SKILLS,
   ...GITHUB_POPULAR_SKILLS,
 ];
