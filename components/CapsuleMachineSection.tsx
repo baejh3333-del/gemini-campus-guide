@@ -53,6 +53,7 @@ export function CapsuleMachineSection() {
   const [varValues, setVarValues] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
 
+  const revealRef = useRef<HTMLDialogElement>(null);
   const domeRef = useRef<HTMLDivElement>(null);
   const orbRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const bodiesRef = useRef<PhysBody[]>([]);
@@ -323,6 +324,7 @@ export function CapsuleMachineSection() {
 
     window.setTimeout(() => {
       setMachineState("opened");
+      revealRef.current?.showModal();
       setHistory((prev) => [picked, ...prev.filter((item) => item.id !== picked.id)].slice(0, 8));
     }, 1680);
   }
@@ -364,6 +366,17 @@ export function CapsuleMachineSection() {
 
   return (
     <section className="capsule-section">
+      <dialog ref={revealRef} className={"capsule-win tier-" + (currentCapsule?.rarity.toLowerCase() ?? "r")} aria-labelledby="win-title" onClick={e=>{if(e.target===e.currentTarget)e.currentTarget.close()}}>
+        {currentCapsule && <div className="win-content" key={currentCapsule.id}>
+          <button type="button" className="win-close" aria-label="결과 창 닫기" onClick={()=>revealRef.current?.close()}>×</button>
+          <div className="win-effects" aria-hidden="true"><span className="win-wave"/><span className="win-wave second"/>{Array.from({length:20},(_,i)=><i key={i} style={{"--i":i} as React.CSSProperties}>✦</i>)}</div>
+          <p className="win-eyebrow">CAPSULE UNLOCKED</p><div className="win-rarity">{currentCapsule.rarity}</div>
+          <p className="win-tier-name">{{R:"R 캡슐을 뽑았어요!",SR:"SR 캡슐을 뽑았어요!",SSR:"SSR 캡슐을 뽑았어요!",UR:"UR 캡슐을 뽑았어요!"}[currentCapsule.rarity]}</p>
+          <div className="win-orb" aria-hidden="true" style={{background:"linear-gradient(150deg,"+currentCapsule.colorA+" 49%,white 50%,"+currentCapsule.colorB+" 54%)"}}>✦</div>
+          <h2 id="win-title">{currentCapsule.title}</h2><p className="win-description">{currentCapsule.description}</p>
+          <button type="button" className="win-confirm" onClick={()=>{revealRef.current?.close();document.querySelector(".capsule-result-panel")?.scrollIntoView({behavior:"smooth",block:"center"})}}>프롬프트 확인하기 ↗</button>
+        </div>}
+      </dialog>
       <div className="capsule-header-bar">
         <div>
           <span className="capsule-eyebrow">RANDOM PROMPT CAPSULE</span>
