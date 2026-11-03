@@ -11,6 +11,25 @@ import {
 } from "@/lib/playground";
 import { LibraryVisual } from "./LibraryVisual";
 
+let cachedPrompts: PlaygroundPrompt[] | null = null;
+let pendingPrompts: Promise<{ prompts?: PlaygroundPrompt[] }> | null = null;
+
+export function preloadPlayground() {
+  if (!pendingPrompts) {
+    pendingPrompts = fetch("/api/playground")
+      .then((res) => { if (!res.ok) throw new Error("목록 로딩 실패"); return res.json(); })
+      .then((data: { prompts?: PlaygroundPrompt[] }) => {
+        if (Array.isArray(data.prompts)) {
+          cachedPrompts = data.prompts;
+          try { sessionStorage.setItem("playground-list", JSON.stringify(data.prompts)); } catch {}
+        }
+        return data;
+      })
+      .finally(() => { pendingPrompts = null; });
+  }
+  return pendingPrompts;
+}
+
 const LOCAL_CUSTOM_KEY = "gsa-playground-custom:v1";
 const LOCAL_OWNED_KEY = "gsa-playground-owned:v1";
 const LOCAL_LIKED_KEY = "gsa-playground-liked:v1";
@@ -30,7 +49,7 @@ function toLibraryPrompt(item: PlaygroundPrompt): LibraryPrompt {
 }
 
 export function PlaygroundSection({ query }: { query: string }) {
-  const [items, setItems] = useState<PlaygroundPrompt[]>(SEED_PLAYGROUND_PROMPTS);
+  const [items, setItems] = useState<PlaygroundPrompt[]>(cachedPrompts ?? SEED_PLAYGROUND_PROMPTS);
   const [filterCat, setFilterCat] = useState<string>("전체");
   const [sortBy, setSortBy] = useState<"popular" | "latest">("popular");
   const [showComposer, setShowComposer] = useState(false);
@@ -63,8 +82,11 @@ export function PlaygroundSection({ query }: { query: string }) {
       // ignore storage errors
     }
 
-    fetch("/api/playground")
-      .then((res) => res.json())
+    try {
+      const cached = JSON.parse(sessionStorage.getItem("playground-list") || "null");
+      if (Array.isArray(cached)) setItems(cached);
+    } catch {}
+    preloadPlayground()
       .then((data: { prompts?: PlaygroundPrompt[] }) => {
         if (Array.isArray(data.prompts) && data.prompts.length > 0) {
           // Merge with any locally saved custom prompts not yet on server

@@ -71,7 +71,9 @@ async function callAppsScript(payload: Record<string, unknown>) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...payload, secret }),
-    cache: "no-store",
+    ...(payload.action === "list"
+      ? { cache: "force-cache" as const, next: { revalidate: 30 } }
+      : { cache: "no-store" as const }),
   });
   if (!res.ok) {
     throw new Error(`Apps Script HTTP ${res.status}`);

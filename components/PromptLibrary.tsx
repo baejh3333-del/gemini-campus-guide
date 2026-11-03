@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { CATEGORIES, type LibraryPrompt } from "@/lib/prompt-library";
 import { LibraryVisual } from "./LibraryVisual";
 import { LibraryHeader, LibraryFooter, BenefitStrip } from "./LibraryChrome";
-import { PlaygroundSection } from "./PlaygroundSection";
+import { PlaygroundSection, preloadPlayground } from "./PlaygroundSection";
 import { CapsuleMachineSection } from "./CapsuleMachineSection";
 import { SkillGuideModal } from "./SkillGuideModal";
 
@@ -57,6 +57,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const [typingIndex, setTypingIndex] = useState(0);
   const [guideModalPrompt, setGuideModalPrompt] = useState<LibraryPrompt | null>(null);
   const [guideBannerOpen, setGuideBannerOpen] = useState(false);
+
+  useEffect(() => { void preloadPlayground().catch(() => {}); }, []);
 
   const navRef = useRef<HTMLElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
