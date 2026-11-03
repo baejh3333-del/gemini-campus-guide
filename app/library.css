@@ -4538,3 +4538,14 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
   .typing-morph-cursor, .typing-morph-cursor.is-intro, .typing-morph-cursor.is-dot { animation: none; transition: none; }
 }
 
+
+/* The first visit opens on a full-screen orb instead of loading copy. */
+.loading-orb-stage { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; overflow: hidden; background: #000; pointer-events: none; }
+.loading-orb { width: 140vmax; height: 140vmax; flex-shrink: 0; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #a78bfa 52%, #f472b6); box-shadow: 0 0 60px #a78bfa77; animation: loading-orb-contract 1.9s cubic-bezier(.65,0,.25,1) both; }
+@keyframes loading-orb-contract {
+  0%, 12% { width: 140vmax; height: 140vmax; border-radius: 50%; }
+  65% { width: 18px; height: 18px; border-radius: 50%; }
+  85%, 100% { width: 4px; height: 38px; border-radius: 999px; }
+}
+@media (prefers-reduced-motion: reduce) { .loading-orb { animation: none; width: 18px; height: 18px; } }
+

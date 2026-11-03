@@ -8,6 +8,7 @@ import { LibraryHeader, LibraryFooter, BenefitStrip } from "./LibraryChrome";
 import { PlaygroundSection, preloadPlayground } from "./PlaygroundSection";
 import { CapsuleMachineSection } from "./CapsuleMachineSection";
 import { SkillGuideModal } from "./SkillGuideModal";
+import { LoadingOrb } from "./LoadingOrb";
 
 const TABS = [
   { id: "posts", label: "프롬프트 저장소" },
@@ -217,6 +218,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
 
   return (
     <main className="library-page">
+      {typingIndex === 0 && <LoadingOrb />}
       <LibraryHeader onHomeClick={resetAll} />
       <section className="library-intro">
         <div className="hero-aurora-stage" aria-hidden="true">
