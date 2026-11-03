@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CATEGORIES, type LibraryPrompt } from "@/lib/prompt-library";
+import { LIBRARY_FILTERS, matchesLibraryFilters, type LibraryPrompt } from "@/lib/prompt-library";
 import { LibraryVisual } from "./LibraryVisual";
 import { LibraryHeader, LibraryFooter, BenefitStrip } from "./LibraryChrome";
 import { PlaygroundSection, preloadPlayground } from "./PlaygroundSection";
@@ -47,7 +47,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const normalizedTab = rawTab === "categories" ? "posts" : rawTab;
   const paramTab = TABS.some((item) => item.id === normalizedTab) ? normalizedTab! : "posts";
   const paramQuery = params.get("q") ?? "";
-  const paramCategory = (params.get("category") ?? "").split(",").filter((value) => CATEGORIES.includes(value as (typeof CATEGORIES)[number])).join(",");
+  const paramCategory = (params.get("category") ?? "").split(",").filter((value) => LIBRARY_FILTERS.includes(value as (typeof LIBRARY_FILTERS)[number])).join(",");
 
   const [tab, setTab] = useState(paramTab);
   const [query, setQuery] = useState(paramQuery);
@@ -202,7 +202,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     const haystack = `${prompt.title} ${prompt.description} ${prompt.category} ${prompt.skillName ?? ""} ${prompt.source ? `${prompt.source.kind} #${prompt.source.number} ${prompt.source.number}` : ""}`.toLowerCase();
     return (
       haystack.includes(trimmedQuery) &&
-      (tab !== "posts" || !selectedCategories.length || selectedCategories.includes(prompt.category))
+      (tab !== "posts" || matchesLibraryFilters(prompt, selectedCategories))
     );
   });
 
@@ -325,7 +325,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
               className={`library-filters ${tab === "ranking" ? "is-period-filters" : "is-category-filters"} ${filtersOpen ? "is-expanded" : ""}`}
               aria-label={tab === "ranking" ? "집계 기간" : "카테고리 필터"}
             >
-              {(tab === "ranking" ? ["오늘", "이번 주", "이번 달"] : ["전체", ...CATEGORIES]).map((label) => (
+              {(tab === "ranking" ? ["오늘", "이번 주", "이번 달"] : ["전체", ...LIBRARY_FILTERS]).map((label) => (
                 <button
                   type="button"
                   key={label}

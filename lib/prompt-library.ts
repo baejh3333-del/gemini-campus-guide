@@ -10,6 +10,8 @@ export const CATEGORIES = [
   "글쓰기·리서치 (internal-comms)",
 ] as const;
 export type Category = (typeof CATEGORIES)[number];
+export const GITHUB_FILTER = "GitHub 스킬";
+export const LIBRARY_FILTERS = [GITHUB_FILTER, ...CATEGORIES] as const;
 export type LibraryPrompt = {
   id: string;
   title: string;
@@ -29,6 +31,15 @@ export type LibraryPrompt = {
   };
   copyCount: number | null;
 };
+
+export function matchesLibraryFilters(prompt: LibraryPrompt, filters: string[]) {
+  const categories = filters.filter((filter) => filter !== GITHUB_FILTER);
+  const fromGitHub = Boolean(prompt.repoUrl && /^https:\/\/github\.com\//.test(prompt.repoUrl));
+  return (
+    (!filters.includes(GITHUB_FILTER) || fromGitHub) &&
+    (!categories.length || categories.includes(prompt.category))
+  );
+}
 
 // Replace this adapter when moving content to a sheet; screens keep the same interface.
 export interface PromptRepository {
