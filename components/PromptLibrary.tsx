@@ -46,11 +46,12 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const normalizedTab = rawTab === "categories" ? "posts" : rawTab;
   const paramTab = TABS.some((item) => item.id === normalizedTab) ? normalizedTab! : "posts";
   const paramQuery = params.get("q") ?? "";
-  const paramCategory = CATEGORIES.includes(params.get("category") as (typeof CATEGORIES)[number]) ? params.get("category")! : "전체";
+  const paramCategory = (params.get("category") ?? "").split(",").filter((value) => CATEGORIES.includes(value as (typeof CATEGORIES)[number])).join(",");
 
   const [tab, setTab] = useState(paramTab);
   const [query, setQuery] = useState(paramQuery);
   const [category, setCategory] = useState(paramCategory);
+  const selectedCategories = category ? category.split(",") : [];
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [period, setPeriod] = useState("오늘");
   const [typingIndex, setTypingIndex] = useState(0);
@@ -157,15 +158,18 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     if (tab === "ranking") {
       setPeriod(label);
     } else {
-      setCategory(label);
-      syncUrl({ category: label });
+      const next = label === "전체" ? [] : selectedCategories.includes(label)
+        ? selectedCategories.filter((value) => value !== label)
+        : [...selectedCategories, label];
+      setCategory(next.join(","));
+      syncUrl({ category: next.join(",") });
     }
   }
 
   function resetAll() {
     setTab("posts");
     setQuery("");
-    setCategory("전체");
+    setCategory("");
     setTypingIndex(0);
     window.history.replaceState(null, "", "/");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -191,7 +195,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     const haystack = `${prompt.title} ${prompt.description} ${prompt.category} ${prompt.skillName ?? ""} ${prompt.source ? `${prompt.source.kind} #${prompt.source.number} ${prompt.source.number}` : ""}`.toLowerCase();
     return (
       haystack.includes(trimmedQuery) &&
-      (tab !== "posts" || category === "전체" || category === prompt.category)
+      (tab !== "posts" || !selectedCategories.length || selectedCategories.includes(prompt.category))
     );
   });
 
@@ -202,7 +206,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const currentSearch = new URLSearchParams();
   if (tab !== "posts") currentSearch.set("tab", tab);
   if (query) currentSearch.set("q", query);
-  if (category !== "전체") currentSearch.set("category", category);
+  if (!!category) currentSearch.set("category", category);
   const returnTo = currentSearch.toString() ? `/?${currentSearch.toString()}` : "/";
 
   return (
@@ -305,7 +309,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
             {tab !== "ranking" && (
               <button type="button" className="mobile-filter-toggle" aria-expanded={filtersOpen} aria-controls="library-category-filters" onClick={() => setFiltersOpen(!filtersOpen)}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" aria-hidden="true"><path d="M3 4h18l-7 8v7l-4 2v-9z" /></svg>
-                필터 검색{category !== "전체" && <span className="mobile-filter-dot" aria-label="필터 적용 중" />}
+                필터 검색{!!category && <span className="mobile-filter-dot" aria-label="필터 적용 중" />}
               </button>
             )}
             <div
@@ -317,8 +321,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                 <button
                   type="button"
                   key={label}
-                  aria-pressed={(tab === "ranking" ? period : category) === label}
-                  onClick={() => { handleFilterSelect(label); setFiltersOpen(false); }}
+                  aria-pressed={tab === "ranking" ? period === label : label === "전체" ? !selectedCategories.length : selectedCategories.includes(label)}
+                  onClick={() => handleFilterSelect(label)}
                 >
                   <span className="filter-label-full">{label}</span>
                   <span className="filter-label-mobile">{label.replace(/\s*\([^)]*\)/g, "")}</span>
@@ -330,8 +334,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
               <h2>
                 {tab === "ranking" && !trimmedQuery
                   ? `${period} 인기 TOP 5`
-                  : category !== "전체"
-                    ? category
+                  : !!category
+                    ? selectedCategories.map((value) => value.replace(/\s*\([^)]*\)/g, "")).join(" · ")
                     : "릴스·카드뉴스 & GitHub 인기 Skill"}
               </h2>
               {(tab !== "ranking" || trimmedQuery) && <span aria-live="polite">{result.length}개의 프롬프트·스킬</span>}
