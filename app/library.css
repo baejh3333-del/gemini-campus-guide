@@ -4501,3 +4501,10 @@ html[data-theme="light"] .draft-assistant textarea::placeholder { color:#526174;
   .is-category-filters .filter-label-mobile { display: inline; }
 }
 
+
+/* Give tab glows room to fade before the horizontal scroll container clips them. */
+@media (max-width: 767px) {
+  .library-tabs { padding-block: 48px; margin-top: -32px; margin-bottom: -20px; }
+  .library-tabs .tab-spot { filter: blur(12px); }
+}
+
