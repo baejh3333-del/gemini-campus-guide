@@ -4492,3 +4492,12 @@ html[data-theme="light"] .draft-assistant textarea::placeholder { color:#526174;
   .mobile-filter-dot { width: 6px; height: 6px; border-radius: 50%; background: #4285f4; }
 }
 
+
+.filter-label-mobile { display: none; }
+@media (max-width: 767px) {
+  .library-filters.is-category-filters.is-expanded { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: stretch; align-items: stretch; width: 100%; gap: 8px; }
+  .library-filters.is-category-filters.is-expanded button { width: 100%; min-height: 40px; margin: 0; text-align: center; }
+  .is-category-filters .filter-label-full { display: none; }
+  .is-category-filters .filter-label-mobile { display: inline; }
+}
+

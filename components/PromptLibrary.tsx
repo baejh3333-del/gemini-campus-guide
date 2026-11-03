@@ -320,7 +320,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                   aria-pressed={(tab === "ranking" ? period : category) === label}
                   onClick={() => { handleFilterSelect(label); setFiltersOpen(false); }}
                 >
-                  {label}
+                  <span className="filter-label-full">{label}</span>
+                  <span className="filter-label-mobile">{label.replace(/\s*\([^)]*\)/g, "")}</span>
                 </button>
               ))}
             </div>
