@@ -69,6 +69,8 @@ export function PlaygroundSection({ query }: { query: string }) {
   const [variant, setVariant] = useState<LibraryPrompt["thumbnail"]["variant"]>("orbit");
   const [body, setBody] = useState("");
   const [artwork, setArtwork] = useState<string>();
+  const [artworkMode, setArtworkMode] = useState<"svg" | "image">("svg");
+  const selectedArtwork = artworkMode === "image" ? artwork : undefined;
   const [artBusy, setArtBusy] = useState(false);
   const artPending = useRef(false);
   const [formError, setFormError] = useState("");
@@ -170,6 +172,11 @@ export function PlaygroundSection({ query }: { query: string }) {
       return;
     }
 
+    if (artworkMode === "image" && !selectedArtwork) {
+      setFormError("이미지를 먼저 생성하거나 SVG 스타일을 선택해 주세요.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/playground", {
@@ -182,7 +189,7 @@ export function PlaygroundSection({ query }: { query: string }) {
           author: author.trim() || "익명 학우",
           category,
           variant,
-          artwork,
+          artwork: selectedArtwork,
           body,
         }),
       });
@@ -210,6 +217,7 @@ export function PlaygroundSection({ query }: { query: string }) {
       }
 
       setArtwork(undefined);
+      setArtworkMode("svg");
       setTitle("");
       setDescription("");
       setBody("");
@@ -319,7 +327,7 @@ export function PlaygroundSection({ query }: { query: string }) {
     steps: [],
     category,
     kind: "prompt",
-    thumbnail: { variant, src: artwork },
+    thumbnail: { variant, src: selectedArtwork },
     copyCount: 0,
   };
 
@@ -455,25 +463,50 @@ export function PlaygroundSection({ query }: { query: string }) {
 
             {/* Live Card Artwork Picker */}
             <div className="composer-preview-col">
-              <span className="composer-preview-label">프롬프트에 맞는 AI 아트워크</span>
-              <button type="button" className="artwork-generate" disabled={artBusy || submitting || !title.trim() || body.trim().length < 10} onClick={generateArtwork}>{artBusy ? "AI가 아트워크를 그리고 있어요…" : artwork ? "✦ AI 아트워크 다시 만들기" : "✦ 내용에 맞춰 AI 아트워크 만들기"}</button>
-              <p className="artwork-help">제목과 본문을 작성한 뒤 생성하세요. 내용 수정 후 다시 만들 수 있어요.</p>
-              {artwork && <button type="button" onClick={() => setArtwork(undefined)}>기본 아트워크로 돌아가기</button>}
-              <div className="composer-preview-card">
-                <LibraryVisual prompt={previewPrompt} />
+              <span className="composer-preview-label">카드 커버 만들기</span>
+              <div className="composer-variant-grid" role="group" aria-label="커버 방식">
+                <button type="button" aria-pressed={artworkMode === "svg"} disabled={artBusy || submitting} onClick={() => { setArtworkMode("svg"); setFormError(""); }}>
+                  SVG 일러스트
+                </button>
+                <button type="button" aria-pressed={artworkMode === "image"} disabled={artBusy || submitting} onClick={() => { setArtworkMode("image"); setFormError(""); }}>
+                  AI 이미지 생성
+                </button>
               </div>
-              <div className="composer-variant-grid">
-                {VISUAL_VARIANTS.map((v) => (
+              {artworkMode === "svg" ? (
+                <p className="artwork-help">아래에서 카드에 어울리는 SVG 스타일을 골라 보세요.</p>
+              ) : (
+                <>
+                  <p className="artwork-help">제목과 본문을 바탕으로 AI가 이미지를 만들어요.</p>
                   <button
                     type="button"
-                    key={v.id}
-                    aria-pressed={variant === v.id}
-                    onClick={() => setVariant(v.id)}
+                    className="artwork-generate"
+                    disabled={artBusy || submitting || !title.trim() || body.trim().length < 10}
+                    onClick={generateArtwork}
                   >
-                    {v.label}
+                    {artBusy ? "AI가 이미지를 만들고 있어요…" : artwork ? "AI 이미지 다시 만들기" : "AI 이미지 만들기"}
                   </button>
-                ))}
-              </div>
+                </>
+              )}
+              {(artworkMode === "svg" || selectedArtwork) && (
+                <div className="composer-preview-card">
+                  <LibraryVisual prompt={previewPrompt} />
+                </div>
+              )}
+              {artworkMode === "svg" && (
+                <div className="composer-variant-grid" role="group" aria-label="SVG 스타일">
+                  {VISUAL_VARIANTS.map((v) => (
+                    <button
+                      type="button"
+                      key={v.id}
+                      aria-pressed={variant === v.id}
+                      disabled={submitting}
+                      onClick={() => setVariant(v.id)}
+                    >
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
