@@ -4517,27 +4517,9 @@ dialog.capsule-win::-webkit-scrollbar{display:none;width:0;height:0}
 html:has(dialog.capsule-win[open]){overflow:hidden}
 @media(max-height:650px){.win-content{padding-top:24px;padding-bottom:20px}.win-rarity{font-size:52px}.win-orb{width:64px;height:64px;margin:14px auto}.win-tier-name{margin-bottom:14px}.capsule-win h2{margin-top:14px}.win-confirm{margin-top:14px}}
 
-/* Centered orb contracts and stretches into a steady caret before typing. */
-.typing-morph-cursor.is-intro {
-  align-self: center;
-  margin: 0;
-  transform-origin: center;
-  animation: hero-orb-to-caret 1.9s both;
-}
-@keyframes hero-orb-to-caret {
-  0%, 15% { width: .72em; height: .72em; border-radius: 50%; opacity: 1; transform: scale(1); }
-  36% { width: .18em; height: .18em; border-radius: 50%; opacity: 1; transform: scale(1); }
-  56% { width: .085em; height: .84em; border-radius: 999px; opacity: 1; }
-  65% { opacity: 1; }
-  66%, 73% { opacity: 1; }
-  74%, 83% { opacity: 1; }
-  84%, 91% { opacity: 1; }
-  92%, 100% { width: .085em; height: .84em; opacity: 1; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .typing-morph-cursor, .typing-morph-cursor.is-intro, .typing-morph-cursor.is-dot { animation: none; transition: none; }
+  .typing-morph-cursor, .typing-morph-cursor.is-dot { animation: none; transition: none; }
 }
-
 
 /* A centered orb becomes the caret, then travels to the title. */
 .loading-orb-stage { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: transparent; pointer-events: none; }
@@ -4545,8 +4527,8 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
 @keyframes loading-orb-contract {
   0%, 12% { left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 50%; }
   36% { left: 50%; top: 50%; width: 14px; height: 14px; border-radius: 50%; }
-  58% { left: 50%; top: 50%; width: 4px; height: 34px; border-radius: 999px; }
-  100% { left: var(--orb-target-x, 50%); top: var(--orb-target-y, 50%); width: 4px; height: 34px; border-radius: 999px; }
+  58% { left: 50%; top: 50%; width: var(--orb-caret-width, 4px); height: var(--orb-caret-height, 34px); border-radius: 999px; }
+  100% { left: var(--orb-target-x, 50%); top: var(--orb-target-y, 50%); width: var(--orb-caret-width, 4px); height: var(--orb-caret-height, 34px); border-radius: 999px; }
 }
 .is-powering-on .hero-typing-title { visibility: hidden; }
 /* Loading is a complete screen even before the library markup is streamed. */
