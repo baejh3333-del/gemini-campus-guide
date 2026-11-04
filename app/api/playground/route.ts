@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
+import { validateSvgArtwork } from "@/lib/svg-artwork";
 import { CATEGORIES, type Category, type LibraryPrompt } from "@/lib/prompt-library";
 import {
   SEED_PLAYGROUND_PROMPTS,
@@ -190,7 +191,9 @@ export async function POST(req: Request) {
     category,
     author,
     variant,
-    artwork: typeof body.artwork === "string" && body.artwork.length <= 44000 && /^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(body.artwork) ? body.artwork : undefined,
+    artwork: typeof body.artwork === "string" && body.artwork.length <= 44000 &&
+      (/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(body.artwork) || validateSvgArtwork(body.artwork))
+      ? body.artwork : undefined,
     copies: 0,
     likes: 1,
     createdAt: new Date().toISOString().slice(0, 10),

@@ -55,6 +55,10 @@ export function PlaygroundSection({ query }: { query: string }) {
   const [filterCat, setFilterCat] = useState<string>("전체");
   const [sortBy, setSortBy] = useState<"popular" | "latest">("popular");
   const [showComposer, setShowComposer] = useState(false);
+  const composerRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (showComposer) composerRef.current?.scrollIntoView({ block: "start" });
+  }, [showComposer]);
   const [activeItem, setActiveItem] = useState<PlaygroundPrompt | null>(null);
   const [varValues, setVarValues] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -68,9 +72,9 @@ export function PlaygroundSection({ query }: { query: string }) {
   const [category, setCategory] = useState<Category>("릴스·카드뉴스");
   const [variant, setVariant] = useState<LibraryPrompt["thumbnail"]["variant"]>("orbit");
   const [body, setBody] = useState("");
-  const [artwork, setArtwork] = useState<string>();
+  const [artwork, setArtwork] = useState<Partial<Record<"svg" | "image", string>>>({});
   const [artworkMode, setArtworkMode] = useState<"svg" | "image">("svg");
-  const selectedArtwork = artworkMode === "image" ? artwork : undefined;
+  const selectedArtwork = artwork[artworkMode];
   const [artBusy, setArtBusy] = useState(false);
   const artPending = useRef(false);
   const [formError, setFormError] = useState("");
@@ -152,10 +156,10 @@ export function PlaygroundSection({ query }: { query: string }) {
     if (artPending.current) return;
     artPending.current = true; setArtBusy(true); setFormError("");
     try {
-      const r = await fetch("/api/prompt-artwork", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body }), signal: AbortSignal.timeout(115000) });
+      const r = await fetch("/api/prompt-artwork", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, body, mode: artworkMode }), signal: AbortSignal.timeout(115000) });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
-      setArtwork(data.artwork);
+      setArtwork((prev) => ({ ...prev, [artworkMode]: data.artwork }));
     } catch(e) { setFormError(e instanceof Error ? e.message : "이미지를 만들지 못했어요."); }
     finally { artPending.current = false; setArtBusy(false); }
   }
@@ -216,7 +220,7 @@ export function PlaygroundSection({ query }: { query: string }) {
         // ignore
       }
 
-      setArtwork(undefined);
+      setArtwork({});
       setArtworkMode("svg");
       setTitle("");
       setDescription("");
@@ -369,16 +373,17 @@ export function PlaygroundSection({ query }: { query: string }) {
           <button
             type="button"
             className={`playground-share-btn ${showComposer ? "is-open" : ""}`}
+            aria-expanded={showComposer}
             onClick={() => setShowComposer((prev) => !prev)}
           >
-            <span>{showComposer ? "✕ 닫기" : "＋ 내 프롬프트 공유하기·만들기"}</span>
+            <span>{showComposer ? "✕ 닫기" : "＋ AI와 함께 내 프롬프트 만들기"}</span>
           </button>
         </div>
       </div>
 
       {/* Prompt Composer Drawer */}
       {showComposer && (
-        <form className="playground-composer" onSubmit={handleCreate}>
+        <form ref={composerRef} className="playground-composer" onSubmit={handleCreate}>
           <div className="composer-header">
             <div>
               <h3>나만의 프롬프트 공유하기·만들기</h3>
@@ -466,41 +471,41 @@ export function PlaygroundSection({ query }: { query: string }) {
               <span className="composer-preview-label">카드 커버 만들기</span>
               <div className="composer-variant-grid" role="group" aria-label="커버 방식">
                 <button type="button" aria-pressed={artworkMode === "svg"} disabled={artBusy || submitting} onClick={() => { setArtworkMode("svg"); setFormError(""); }}>
-                  SVG 일러스트
+                  AI SVG 생성
                 </button>
                 <button type="button" aria-pressed={artworkMode === "image"} disabled={artBusy || submitting} onClick={() => { setArtworkMode("image"); setFormError(""); }}>
                   AI 이미지 생성
                 </button>
               </div>
-              {artworkMode === "svg" ? (
-                <p className="artwork-help">아래에서 카드에 어울리는 SVG 스타일을 골라 보세요.</p>
-              ) : (
-                <>
-                  <p className="artwork-help">제목과 본문을 바탕으로 AI가 이미지를 만들어요.</p>
-                  <button
-                    type="button"
-                    className="artwork-generate"
-                    disabled={artBusy || submitting || !title.trim() || body.trim().length < 10}
-                    onClick={generateArtwork}
-                  >
-                    {artBusy ? "AI가 이미지를 만들고 있어요…" : artwork ? "AI 이미지 다시 만들기" : "AI 이미지 만들기"}
-                  </button>
-                </>
-              )}
+              <p className="artwork-help">
+                {artworkMode === "svg" ? "제목과 본문을 바탕으로 AI가 새 SVG 일러스트를 그려요." : "제목과 본문을 바탕으로 AI가 이미지를 만들어요."}
+              </p>
+              <button
+                type="button"
+                className="artwork-generate"
+                disabled={artBusy || submitting || !title.trim() || body.trim().length < 10}
+                onClick={generateArtwork}
+              >
+                {artBusy ? "AI가 커버를 만들고 있어요…" : `${artworkMode === "svg" ? "AI SVG" : "AI 이미지"} ${selectedArtwork ? "다시 만들기" : "만들기"}`}
+              </button>
               {(artworkMode === "svg" || selectedArtwork) && (
                 <div className="composer-preview-card">
                   <LibraryVisual prompt={previewPrompt} />
                 </div>
               )}
               {artworkMode === "svg" && (
-                <div className="composer-variant-grid" role="group" aria-label="SVG 스타일">
+                <div className="composer-variant-grid" role="group" aria-label="기본 SVG 스타일">
                   {VISUAL_VARIANTS.map((v) => (
                     <button
                       type="button"
                       key={v.id}
-                      aria-pressed={variant === v.id}
-                      disabled={submitting}
-                      onClick={() => setVariant(v.id)}
+                      aria-pressed={!selectedArtwork && variant === v.id}
+                      disabled={artBusy || submitting}
+                      onClick={() => {
+                        setVariant(v.id);
+                        setArtwork((prev) => ({ ...prev, svg: undefined }));
+                        setFormError("");
+                      }}
                     >
                       {v.label}
                     </button>
@@ -716,9 +721,12 @@ export function PlaygroundSection({ query }: { query: string }) {
           <button
             type="button"
             className="playground-share-btn"
-            onClick={() => setShowComposer(true)}
+            onClick={() => {
+              setShowComposer(true);
+              composerRef.current?.scrollIntoView({ block: "start" });
+            }}
           >
-            ＋ 내 프롬프트 공유하기·만들기
+            ＋ AI와 함께 내 프롬프트 만들기
           </button>
         </div>
       )}

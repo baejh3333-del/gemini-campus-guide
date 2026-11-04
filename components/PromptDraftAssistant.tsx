@@ -24,7 +24,7 @@ export default function PromptDraftAssistant({ onApply }: { onApply: (draft: Dra
     } catch (e) { setError(e instanceof Error ? e.message : "다시 시도해 주세요."); }
     finally { pending.current = false; setBusy(false); }
   }
-  return <details className="draft-assistant"><summary>✦ AI와 함께 프롬프트 만들기</summary><p>아이디어 한 줄이면 충분해요. AI가 구성·조건·출력 형식까지 채워 바로 초안을 만들어요. 초안을 보고 원하는 부분만 수정해 주세요.</p>
+  return <details className="draft-assistant" open><summary>✦ AI와 함께 내 프롬프트 만들기</summary><p>아이디어 한 줄이면 충분해요. AI가 구성·조건·출력 형식까지 채워 바로 초안을 만들어요. 초안을 보고 원하는 부분만 수정해 주세요.</p>
     <div className="draft-conversation" role="log" aria-live="polite">{messages.map((m,i) => <p key={i}><strong>{m.role === "user" ? "나" : "AI"}</strong> · {m.text}</p>)}</div>
     <label htmlFor="draft-request">아이디어 한 줄 또는 수정하고 싶은 점</label><textarea id="draft-request" value={input} maxLength={1500} onChange={e => setInput(e.target.value)} placeholder="예: 교수님께 정중하게 성적 확인을 요청하는 이메일용 프롬프트를 만들어줘" rows={3} />
     <button type="button" disabled={busy || !input.trim()} onClick={send}>{busy ? "초안을 준비하고 있어요…" : "AI가 초안 만들기"}</button>
