@@ -21,7 +21,7 @@ export function LibraryCopy({
       setMessage(
         openedGemini
           ? "프롬프트를 자동 복사하고 Gemini를 열었어요! 열린 창에서 붙여넣기(Ctrl+V)만 누르세요."
-          : "복사했어요. 바로 옆의 '자동 복사 후 Gemini 열기'를 눌러 붙여넣거나 SKILL.md 파일로 업로드해 보세요."
+          : "복사했어요. 원하는 곳에 붙여넣으세요."
       );
       setDone(true);
       setTimeout(() => setDone(false), 3600);
@@ -45,42 +45,44 @@ export function LibraryCopy({
 
   return (
     <div className="library-copy-actions" data-copied={done ? "true" : undefined}>
-      {kind === "skill" && (
+      {kind === "skill" ? (
         <div className="skill-action-bar">
           <div className="skill-action-info">
-            <span className="skill-chip-badge">SKILL.md 파일 첨부 지원</span>
-            <p>텍스트로 복사해 바로 써도 되고, 파일로 받아 Gemini [스킬]에 업로드해 쓸 수도 있어요!</p>
+            <p>내용을 복사하거나, 파일을 내려받아 Gemini의 스킬 메뉴에 업로드하세요.</p>
           </div>
           <div className="skill-action-btns">
             <button type="button" className="skill-dl-btn" onClick={downloadSkillFile}>
-              SKILL.md 다운로드 ↓
+              다운로드 <span aria-hidden="true">↓</span>
+            </button>
+            <button type="button" onClick={() => copy()} className={done ? "is-done" : undefined}>
+              {done ? "복사됨" : "복사"} <span aria-hidden="true">{done ? "✓" : "⧉"}</span>
             </button>
             <button type="button" className="skill-guide-trigger-btn" onClick={() => setGuideOpen(true)}>
-              ❓ Gemini Skill 추가 가이드라인
+              사용법
             </button>
           </div>
         </div>
+      ) : (
+        <div className="library-primary-cta">
+          <button type="button" onClick={() => copy(false)} className={done ? "is-done" : undefined}>
+            {done ? "복사됨" : "프롬프트 복사하기"}{" "}
+            <span aria-hidden="true">{done ? "✓" : "⧉"}</span>
+          </button>
+          <a
+            className={`open-gemini-btn ${done ? "is-ready" : ""}`}
+            href={
+              body.length > 2000
+                ? "https://gemini.google.com/app"
+                : `https://gemini.google.com/app?q=${encodeURIComponent(body)}`
+            }
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => copy(true)}
+          >
+            자동 복사 후 Gemini 열기 <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       )}
-
-      <div className="library-primary-cta">
-        <button type="button" onClick={() => copy(false)} className={done ? "is-done" : undefined}>
-          {done ? "복사됨" : kind === "skill" ? "SKILL.md 텍스트 복사하기" : "프롬프트 복사하기"}{" "}
-          <span aria-hidden="true">{done ? "✓" : "⧉"}</span>
-        </button>
-        <a
-          className={`open-gemini-btn ${done ? "is-ready" : ""}`}
-          href={
-            body.length > 2000
-              ? "https://gemini.google.com/app"
-              : `https://gemini.google.com/app?q=${encodeURIComponent(body)}`
-          }
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => copy(true)}
-        >
-          자동 복사 후 Gemini 열기 <span aria-hidden="true">↗</span>
-        </a>
-      </div>
       <p role="status">{message}</p>
 
       <SkillGuideModal

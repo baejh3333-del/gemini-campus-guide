@@ -3132,24 +3132,11 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
   border: 1px solid rgba(56, 189, 248, .32);
   display: flex;
   align-items: center;
-  justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
 }
 .skill-action-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.skill-chip-badge {
-  align-self: flex-start;
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
-  background: rgba(45, 212, 191, .16);
-  color: #5eead4;
-  border: 1px solid rgba(45, 212, 191, .4);
+  flex-basis: 100%;
 }
 .skill-action-info p {
   margin: 0 !important;
@@ -3161,22 +3148,21 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
   flex-wrap: wrap;
   gap: 8px;
 }
-.skill-dl-btn {
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #06131f;
-  background: linear-gradient(110deg, #38bdf8, #2dd4bf);
+.library-copy-actions .skill-action-btns button {
+  width: auto;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 12px;
+  white-space: nowrap;
 }
-.skill-guide-trigger-btn {
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
+.library-copy-actions .skill-guide-trigger-btn {
   color: #ffffff;
   background: #162038;
   border: 1px solid rgba(167, 139, 250, .5);
+}
+.library-copy-actions .skill-guide-trigger-btn:hover {
+  background: #24334e;
 }
 
 /* Skill Guide Modal Overlay (Rectangular Window Popup) */
@@ -3872,17 +3858,6 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
   .skill-action-bar {
     padding: 14px 16px;
   }
-  .skill-action-btns {
-    width: 100%;
-  }
-  .skill-dl-btn,
-  .skill-guide-trigger-btn {
-    flex: 1;
-    text-align: center;
-    justify-content: center;
-    font-size: 12px;
-    padding: 10px 12px;
-  }
   .skill-guide-backdrop {
     padding: 12px;
   }
@@ -4288,7 +4263,7 @@ html[data-theme="light"] .skill-action-info p {
   color: #212831 !important;}
 html[data-theme="light"] .skill-dl-btn {
   color: #334155;}
-html[data-theme="light"] .skill-guide-trigger-btn {
+html[data-theme="light"] .library-copy-actions .skill-guide-trigger-btn {
   color: #000000;
   background: #cbd3e5;}
 html[data-theme="light"] .skill-guide-modal {
