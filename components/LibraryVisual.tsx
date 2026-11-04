@@ -2,9 +2,15 @@ import type { LibraryPrompt } from "@/lib/prompt-library";
 
 export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
   const { variant, src, alt } = prompt.thumbnail;
+  const isSvgCover = src?.startsWith("data:image/svg+xml;base64,");
   return (
     <div className={`library-art art-${variant}`}>
-      {src ? (
+      {isSvgCover ? (
+        <div className="art-object art-generated-svg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={src} alt={alt ?? prompt.title} className="art-svg" />
+        </div>
+      ) : src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt ?? prompt.title} className="library-cover" />
       ) : (
@@ -19,7 +25,7 @@ export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
               ? "Skill · MD"
               : "프롬프트"}
       </span>
-      {!src && (
+      {(!src || isSvgCover) && (
         <span className="library-art-caption" aria-hidden="true">
           {prompt.category}
           <span>↗</span>
