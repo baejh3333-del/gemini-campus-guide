@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="14" fill="#1a73e8"/>
-  <text x="32" y="44" text-anchor="middle"
-        font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
-        font-size="34" font-weight="800" fill="#ffffff" letter-spacing="-1.5">15</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="64" height="64">
+  <rect width="36" height="36" rx="8" fill="#0c1322"/>
+  <g transform="translate(1.25 2.5)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 15v7c4.8 3.5 13.2 3.5 18 0v-7" fill="#1a73e8" fill-opacity=".18" stroke="#8ab4f8"/>
+    <path d="m3 12 13-6 13 6-13 6-13-6Z" fill="#a8c7fa" stroke="#c2e7ff"/>
+    <path d="M29 12v10m-1.5 3 1.5-3 1.5 3" stroke="#8ab4f8"/>
+  </g>
 </svg>
