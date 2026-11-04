@@ -1721,17 +1721,6 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
   .art-generated-svg .art-svg {
     animation: mg-svg-float 4.6s ease-in-out infinite;
   }
-  .art-generated-svg::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    inset-inline: 23%;
-    height: 2px;
-    pointer-events: none;
-    background: linear-gradient(90deg, transparent, #67e8f999, transparent);
-    filter: drop-shadow(0 0 4px #22d3ee);
-    animation: mg-scan-sweep 5.2s ease-in-out infinite;
-  }
 }
 
 /* Continuous SVG Motion Graphics inside the 8 Bespoke Cards */
