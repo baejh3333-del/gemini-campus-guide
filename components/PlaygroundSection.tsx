@@ -3,6 +3,7 @@
 import PromptDraftAssistant from "./PromptDraftAssistant";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { CATEGORIES, type Category, type LibraryPrompt } from "@/lib/prompt-library";
+import { searchLibrary } from "@/lib/library-search";
 import {
   SEED_PLAYGROUND_PROMPTS,
   VISUAL_VARIANTS,
@@ -297,15 +298,12 @@ export function PlaygroundSection({ query }: { query: string }) {
     }
   }
 
-  const trimmedQuery = query.trim().toLowerCase();
-  const filtered = items
-    .filter((item) => {
-      const hay = `${item.title} ${item.description} ${item.category} ${item.author} ${item.body}`.toLowerCase();
-      return (
-        hay.includes(trimmedQuery) &&
-        (filterCat === "전체" || item.category === filterCat)
-      );
-    })
+  const filtered = searchLibrary(
+    items.filter((item) => filterCat === "전체" || item.category === filterCat),
+    query,
+    (item) => `${item.description} ${item.category} ${item.author} ${item.body}`,
+    false,
+  )
     .sort((a, b) =>
       sortBy === "popular"
         ? b.copies + b.likes * 2 - (a.copies + a.likes * 2)

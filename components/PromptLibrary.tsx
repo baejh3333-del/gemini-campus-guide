@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { LIBRARY_FILTERS, matchesLibraryFilters, type LibraryPrompt } from "@/lib/prompt-library";
+import { searchLibrary } from "@/lib/library-search";
 import { LibraryVisual } from "./LibraryVisual";
 import { LibraryHeader, LibraryFooter, BenefitStrip } from "./LibraryChrome";
 import { PlaygroundSection, preloadPlayground } from "./PlaygroundSection";
@@ -199,17 +200,13 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
 
   const trimmedQuery = query.trim().toLowerCase();
 
-  const result = prompts.filter((prompt) => {
-    const haystack = `${prompt.title} ${prompt.description} ${prompt.category} ${prompt.skillName ?? ""} ${prompt.source ? `${prompt.source.kind} #${prompt.source.number} ${prompt.source.number}` : ""}`.toLowerCase();
-    return (
-      haystack.includes(trimmedQuery) &&
-      (tab !== "posts" || matchesLibraryFilters(prompt, selectedCategories))
-    );
-  });
-
-  const matchedTools = TOOLS.filter((item) =>
-    `${item.title} ${item.text}`.toLowerCase().includes(trimmedQuery)
+  const result = searchLibrary(
+    tab === "posts" ? prompts.filter((prompt) => matchesLibraryFilters(prompt, selectedCategories)) : prompts,
+    trimmedQuery,
+    (prompt) => `${prompt.description} ${prompt.category} ${prompt.skillName ?? ""} ${prompt.source ? `${prompt.source.kind} #${prompt.source.number}` : ""}`,
   );
+
+  const matchedTools = searchLibrary(TOOLS, trimmedQuery, (item) => item.text);
 
   const currentSearch = new URLSearchParams();
   if (tab !== "posts") currentSearch.set("tab", tab);
@@ -237,7 +234,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
             aria-hidden="true"
           />
         </h1>
-        <p className="hero-enter hero-enter-2">발견하고, 복사하고, 내 Gemini에서 시작하세요.</p>
+        <p>발견하고, 복사하고, 내 Gemini에서 시작하세요.</p>
       </section>
 
       <div className="library-sheet" ref={sheetRef}>

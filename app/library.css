@@ -4522,7 +4522,15 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
 }
 
 /* A centered orb becomes the caret, then travels to the title. */
-.loading-orb-stage { position: fixed; inset: 0; z-index: 200; overflow: hidden; background: transparent; pointer-events: none; }
+.loading-orb-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  isolation: isolate;
+  backdrop-filter: blur(7px);
+  pointer-events: none;
+}
 .loading-orb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #a78bfa 52%, #f472b6); box-shadow: 0 0 28px #a78bfa66; animation: loading-orb-contract 1.9s cubic-bezier(.65,0,.25,1) both; }
 @keyframes loading-orb-contract {
   0%, 12% { left: 50%; top: 50%; width: 48px; height: 48px; border-radius: 50%; }
@@ -4536,14 +4544,47 @@ body:has(.loading-orb-stage) { background: #000; }
 body:has(.loading-orb-stage) .legacy-footer,
 body:has(.loading-orb-stage) .bloom,
 body:has(.loading-orb-stage) .finder-launcher { display: none; }
-.loading-orb-stage { background: #000; }
+.loading-orb-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: .9;
+  mask-image: radial-gradient(
+    ellipse clamp(150px, 31vw, 380px) clamp(120px, 25vw, 304px) at var(--light-x) var(--light-y),
+    rgb(0 0 0 / var(--light-shade)), rgb(0 0 0 / max(.5, var(--light-shade))) 50%, #000 100%
+  );
+  animation: orb-window 1.9s cubic-bezier(.65,0,.25,1) both;
+}
 /* Keep the light attached to the object that emits it. */
 .loading-orb::before {
   content: "";
   position: absolute;
-  inset: -105px;
-  background: radial-gradient(ellipse, #ad95ff50, #38bdf822 32%, transparent 68%);
-  pointer-events: none;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: clamp(300px, 62vw, 760px);
+  aspect-ratio: 1.25;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #ad95ff45, #38bdf81c 35%, transparent 70%);
+  animation: orb-light 1.9s ease both;
+}
+/* Move the opening with the caret and blend back into the page reveal. */
+@property --light-x { syntax: "<length-percentage>"; inherits: false; initial-value: 50%; }
+@property --light-y { syntax: "<length-percentage>"; inherits: false; initial-value: 50%; }
+@property --light-shade { syntax: "<number>"; inherits: false; initial-value: 1; }
+@keyframes orb-window {
+  0%, 58% { --light-x: 50%; --light-y: 50%; }
+  0% { --light-shade: 1; opacity: 1; }
+  36%, 78% { --light-shade: .28; }
+  36%, 100% { opacity: .9; }
+  100% { --light-x: var(--orb-target-x, 50%); --light-y: var(--orb-target-y, 50%); }
+}
+@keyframes orb-light {
+  0% { opacity: .25; }
+  36% { opacity: .85; }
+  100% { opacity: 0; }
 }
 .hero-typing-title .typing-text { position: relative; isolation: isolate; }
 .hero-typing-title .typing-text::before {
@@ -4559,13 +4600,23 @@ body:has(.loading-orb-stage) .finder-launcher { display: none; }
 :is(.is-powering-on, .is-typing) .hero-aurora-stage { visibility: hidden; }
 .is-typing > .library-header,
 .is-typing > .library-sheet,
-.is-typing > .library-intro > p { opacity: .22; }
+.is-typing > .library-intro > p {
+  animation: library-light-warmup 1.15s ease-out both;
+}
 .is-lit > .library-header,
 .is-lit > .library-sheet,
 .is-lit > .library-intro > p { animation: library-light-reveal 1.35s ease-out both; }
-@keyframes library-light-reveal { from { opacity: .22; } to { opacity: 1; } }
+@keyframes library-light-warmup {
+  from { opacity: .1; filter: blur(7px); }
+  to { opacity: .36; filter: blur(3px); }
+}
+@keyframes library-light-reveal {
+  from { opacity: .36; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); }
+}
 @media (prefers-reduced-motion: reduce) {
   .loading-orb { animation: none; width: 18px; height: 18px; }
+  .loading-orb-stage::before, .loading-orb::before { animation: none; }
   .is-lit > .library-header, .is-lit > .library-sheet, .is-lit > .library-intro > p { animation: none; }
 }
 
