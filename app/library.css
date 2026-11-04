@@ -4549,29 +4549,43 @@ html:has(dialog.capsule-win[open]){overflow:hidden}
   100% { left: var(--orb-target-x, 50%); top: var(--orb-target-y, 50%); width: 4px; height: 34px; border-radius: 999px; }
 }
 .is-powering-on .hero-typing-title { visibility: hidden; }
-.is-powering-on > .library-header,
-.is-powering-on > .library-intro > :not(.hero-typing-title),
-.is-powering-on > .library-sheet { animation: interface-power-on 1.9s ease-out both !important; }
-@keyframes interface-power-on {
-  0%, 55% { opacity: 0; filter: brightness(.15); }
-  76% { opacity: .45; filter: brightness(.5); }
-  100% { opacity: 1; filter: brightness(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .loading-orb { animation: none; width: 18px; height: 18px; }
-  .is-powering-on > .library-header, .is-powering-on > .library-intro > :not(.hero-typing-title), .is-powering-on > .library-sheet { animation: none !important; }
-}
-
 /* Loading is a complete screen even before the library markup is streamed. */
 body:has(.loading-orb-stage) { background: #000; }
 body:has(.loading-orb-stage) .legacy-footer,
 body:has(.loading-orb-stage) .bloom,
 body:has(.loading-orb-stage) .finder-launcher { display: none; }
 .loading-orb-stage { background: #000; }
-.is-powering-on .loading-orb-stage { animation: loading-backdrop-release 1.9s linear both; }
-@keyframes loading-backdrop-release {
-  0%, 55% { background-color: #000; }
-  85%, 100% { background-color: transparent; }
+/* Keep the light attached to the object that emits it. */
+.loading-orb::before {
+  content: "";
+  position: absolute;
+  inset: -105px;
+  background: radial-gradient(ellipse, #ad95ff50, #38bdf822 32%, transparent 68%);
+  pointer-events: none;
 }
-@media (prefers-reduced-motion: reduce) { .is-powering-on .loading-orb-stage { animation: none; } }
+.hero-typing-title .typing-text { position: relative; isolation: isolate; }
+.hero-typing-title .typing-text::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -78px -88px;
+  background: radial-gradient(ellipse, #ad95ff48, #38bdf822 40%, transparent 72%);
+  pointer-events: none;
+}
+:is(.is-powering-on, .is-typing) > .library-intro::before,
+:is(.is-powering-on, .is-typing) > .library-intro::after,
+:is(.is-powering-on, .is-typing) .hero-aurora-stage { visibility: hidden; }
+.is-typing > .library-header,
+.is-typing > .library-sheet,
+.is-typing > .library-intro > p { opacity: .22; }
+.is-lit > .library-header,
+.is-lit > .library-sheet,
+.is-lit > .library-intro > p { animation: library-light-reveal .65s ease-out both; }
+@keyframes library-light-reveal { from { opacity: .22; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .loading-orb { animation: none; width: 18px; height: 18px; }
+  .is-lit > .library-header, .is-lit > .library-sheet, .is-lit > .library-intro > p { animation: none; }
+}
+
+body:has(.library-page.is-typing) .finder-launcher { visibility: hidden; }
 

@@ -217,7 +217,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const returnTo = currentSearch.toString() ? `/?${currentSearch.toString()}` : "/";
 
   return (
-    <main className={`library-page ${typingIndex === 0 ? "is-powering-on" : ""}`}>
+    <main className={`library-page ${typingIndex === 0 ? "is-powering-on" : currentTyping.dot ? "is-lit" : "is-typing"}`}>
       {typingIndex === 0 && <LoadingOrb />}
       <LibraryHeader onHomeClick={resetAll} />
       <section className="library-intro">
