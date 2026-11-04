@@ -2,6 +2,7 @@
 
 import PromptDraftAssistant from "./PromptDraftAssistant";
 import { Fragment, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CATEGORIES, type Category, type LibraryPrompt } from "@/lib/prompt-library";
 import { searchLibrary } from "@/lib/library-search";
 import {
@@ -494,7 +495,7 @@ export function PlaygroundSection({ query }: { query: string }) {
       )}
 
       {/* Interactive Playground Runner Modal */}
-      {activeItem && (
+      {activeItem && createPortal(
         <div
           className="playground-runner-backdrop"
           onClick={() => setActiveItem(null)}
@@ -602,7 +603,8 @@ export function PlaygroundSection({ query }: { query: string }) {
               </a>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
 
       {/* Section Heading */}

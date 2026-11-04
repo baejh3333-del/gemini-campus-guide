@@ -72,10 +72,21 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
       return;
     }
     if (typingIndex >= HERO_TYPING_STEPS.length - 1) return;
+    const skipIntro = () => setTypingIndex(HERO_TYPING_STEPS.length - 1);
+    const blockClick = (event: MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    window.addEventListener("click", blockClick, true);
+    window.addEventListener("dblclick", skipIntro);
     const timer = window.setTimeout(() => {
       setTypingIndex((prev) => Math.min(prev + 1, HERO_TYPING_STEPS.length - 1));
     }, HERO_TYPING_STEPS[typingIndex].wait);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("click", blockClick, true);
+      window.removeEventListener("dblclick", skipIntro);
+    };
   }, [typingIndex]);
 
   useEffect(() => {
