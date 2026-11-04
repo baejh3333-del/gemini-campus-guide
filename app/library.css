@@ -4562,7 +4562,7 @@ body:has(.loading-orb-stage) .finder-launcher { display: none; }
 .is-typing > .library-intro > p { opacity: .22; }
 .is-lit > .library-header,
 .is-lit > .library-sheet,
-.is-lit > .library-intro > p { animation: library-light-reveal .845s ease-out both; }
+.is-lit > .library-intro > p { animation: library-light-reveal 1.35s ease-out both; }
 @keyframes library-light-reveal { from { opacity: .22; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
   .loading-orb { animation: none; width: 18px; height: 18px; }
