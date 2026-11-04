@@ -245,6 +245,15 @@ export default function CustomCursor() {
     let stretchDecayTimer: ReturnType<typeof setTimeout> | null = null;
     let lastTime = performance.now();
     let rafId = 0;
+    let activeUntil = 0;
+
+    const wakeCursor = () => {
+      activeUntil = performance.now() + 1500;
+      if (isVisible && !rafId) {
+        lastTime = performance.now();
+        rafId = requestAnimationFrame(animate);
+      }
+    };
 
     const currentPoints: ShapePoints = ARROW_POINTS.map(
       ([x, y]) => [x, y] as Point
@@ -266,14 +275,17 @@ export default function CustomCursor() {
         wrapper.style.opacity = "1";
       }
       updateInteractiveState(e.target);
+      wakeCursor();
     };
 
     const onMouseOver = (e: MouseEvent) => {
       updateInteractiveState(e.target);
+      wakeCursor();
     };
 
     const onWheel = (e: WheelEvent) => {
       const wasScrolling = isScrolling;
+      wakeCursor();
       isScrolling = true;
 
       // 휠 속도에 비례한 역동적 스트레치 + 방향성 모멘텀
@@ -308,15 +320,19 @@ export default function CustomCursor() {
 
     const onMouseDown = () => {
       isPressed = true;
+      wakeCursor();
     };
 
     const onMouseUp = () => {
       isPressed = false;
+      wakeCursor();
     };
 
     const onMouseLeave = () => {
       isVisible = false;
       wrapper.style.opacity = "0";
+      cancelAnimationFrame(rafId);
+      rafId = 0;
     };
 
     const animate = (now: number) => {
@@ -415,7 +431,7 @@ export default function CustomCursor() {
         }
       }
 
-      rafId = requestAnimationFrame(animate);
+      rafId = isVisible && now < activeUntil ? requestAnimationFrame(animate) : 0;
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
@@ -424,8 +440,6 @@ export default function CustomCursor() {
     window.addEventListener("mousedown", onMouseDown, { passive: true });
     window.addEventListener("mouseup", onMouseUp, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
-
-    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

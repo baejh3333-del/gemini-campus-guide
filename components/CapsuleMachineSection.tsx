@@ -65,6 +65,7 @@ export function CapsuleMachineSection() {
     active: false,
   });
   const mixingRef = useRef(false);
+  const wakePhysicsRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     mixingRef.current = machineState === "mixing";
@@ -89,10 +90,13 @@ export function CapsuleMachineSection() {
 
     let rafId = 0;
     let tick = 0;
+    let visible = false;
+    let activeUntil = 0;
     const SUBSTEPS = 4;
     const GRAVITY = 0.9; // 30% lighter than 1.28 (1.28 * 0.7 = 0.896)
 
-    const stepPhysics = () => {
+    const stepPhysics = (now: number) => {
+      rafId = 0;
       const bodies = bodiesRef.current;
       const isMixing = mixingRef.current;
       const ptr = pointerRef.current;
@@ -246,11 +250,35 @@ export function CapsuleMachineSection() {
         el.style.transform = `translate3d(${(b.x - b.r).toFixed(1)}px, ${(b.y - b.r * 1.25).toFixed(1)}px, 0) rotate(${b.angle.toFixed(1)}deg)`;
       }
 
-      rafId = window.requestAnimationFrame(stepPhysics);
+      if (isMixing || now < activeUntil) {
+        rafId = window.requestAnimationFrame(stepPhysics);
+      }
     };
 
-    rafId = window.requestAnimationFrame(stepPhysics);
-    return () => window.cancelAnimationFrame(rafId);
+    const wakePhysics = () => {
+      activeUntil = performance.now() + 2000;
+      if (visible && !rafId) rafId = window.requestAnimationFrame(stepPhysics);
+    };
+
+    wakePhysicsRef.current = wakePhysics;
+    const dome = domeRef.current;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) {
+        wakePhysics();
+      } else {
+        window.cancelAnimationFrame(rafId);
+        rafId = 0;
+        pointerRef.current.active = false;
+      }
+    });
+    if (dome) observer.observe(dome);
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(rafId);
+      wakePhysicsRef.current = null;
+    };
   }, []);
 
   function handleDomePointerMove(e: React.PointerEvent<HTMLDivElement>) {
@@ -266,13 +294,16 @@ export function CapsuleMachineSection() {
       vy: prev.active ? y - prev.y : 0,
       active: true,
     };
+    wakePhysicsRef.current?.();
   }
 
   function handleDomePointerLeave() {
     pointerRef.current.active = false;
+    wakePhysicsRef.current?.();
   }
 
   function shakeDome() {
+    wakePhysicsRef.current?.();
     for (const b of bodiesRef.current) {
       b.vy -= 7.2 + Math.random() * 5.2;
       b.vx += (Math.random() - 0.5) * 9.8;
