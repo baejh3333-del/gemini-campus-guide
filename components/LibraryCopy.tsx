@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { SkillGuideModal } from "./SkillGuideModal";
 
+const COPY_SUCCESS_MESSAGE = "복사했어요. 원하는 곳에 붙여넣으세요.";
+
 export function LibraryCopy({
   body,
   kind,
@@ -21,7 +23,7 @@ export function LibraryCopy({
       setMessage(
         openedGemini
           ? "프롬프트를 자동 복사하고 Gemini를 열었어요! 열린 창에서 붙여넣기(Ctrl+V)만 누르세요."
-          : "복사했어요. 원하는 곳에 붙여넣으세요."
+          : COPY_SUCCESS_MESSAGE
       );
       setDone(true);
       setTimeout(() => setDone(false), 3600);
@@ -83,7 +85,19 @@ export function LibraryCopy({
           </a>
         </div>
       )}
-      <p role="status">{message}</p>
+      <div className="library-copy-feedback">
+        <p role="status">{message}</p>
+        {kind === "skill" && message === COPY_SUCCESS_MESSAGE && (
+          <a
+            className="open-gemini-btn"
+            href="https://gemini.google.com/app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Gemini 바로가기 <span aria-hidden="true">↗</span>
+          </a>
+        )}
+      </div>
 
       <SkillGuideModal
         open={guideOpen}
