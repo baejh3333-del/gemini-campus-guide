@@ -4552,7 +4552,7 @@ body:has(.loading-orb-stage) .finder-launcher { display: none; }
   opacity: .9;
   mask-image: radial-gradient(
     ellipse clamp(150px, 31vw, 380px) clamp(120px, 25vw, 304px) at var(--light-x) var(--light-y),
-    rgb(0 0 0 / var(--light-shade)), rgb(0 0 0 / max(.5, var(--light-shade))) 50%, #000 100%
+    rgb(0 0 0 / var(--light-shade)), rgb(0 0 0 / max(.75, var(--light-shade))) 50%, #000 100%
   );
   animation: orb-window 1.9s cubic-bezier(.65,0,.25,1) both;
 }
@@ -4577,13 +4577,13 @@ body:has(.loading-orb-stage) .finder-launcher { display: none; }
 @keyframes orb-window {
   0%, 58% { --light-x: 50%; --light-y: 50%; }
   0% { --light-shade: 1; opacity: 1; }
-  36%, 78% { --light-shade: .28; }
+  36%, 78% { --light-shade: .64; }
   36%, 100% { opacity: .9; }
   100% { --light-x: var(--orb-target-x, 50%); --light-y: var(--orb-target-y, 50%); }
 }
 @keyframes orb-light {
-  0% { opacity: .25; }
-  36% { opacity: .85; }
+  0% { opacity: .125; }
+  36% { opacity: .425; }
   100% { opacity: 0; }
 }
 .hero-typing-title .typing-text { position: relative; isolation: isolate; }
