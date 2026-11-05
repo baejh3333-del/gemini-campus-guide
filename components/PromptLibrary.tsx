@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { LIBRARY_FILTERS, matchesLibraryFilters, type LibraryPrompt } from "@/lib/prompt-library";
@@ -58,6 +58,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [period, setPeriod] = useState("오늘");
   const [typingIndex, setTypingIndex] = useState(0);
+  const [replayingTyping, setReplayingTyping] = useState(false);
   const [guideModalPrompt, setGuideModalPrompt] = useState<LibraryPrompt | null>(null);
   const [guideBannerOpen, setGuideBannerOpen] = useState(false);
 
@@ -67,23 +68,28 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const introInitialized = useRef(false);
 
+  const replayTyping = useCallback(() => {
+    setReplayingTyping(true);
+    setTypingIndex(1);
+  }, []);
+
   useLayoutEffect(() => {
     if (!introInitialized.current) {
       introInitialized.current = true;
       const introKey = "prompt-library-intro-seen";
       if (window.sessionStorage.getItem(introKey)) {
-        setTypingIndex(1);
+        replayTyping();
       } else {
         window.sessionStorage.setItem(introKey, "true");
       }
     }
 
     const replayTypingOnRestore = (event: PageTransitionEvent) => {
-      if (event.persisted) setTypingIndex(1);
+      if (event.persisted) replayTyping();
     };
     window.addEventListener("pageshow", replayTypingOnRestore);
     return () => window.removeEventListener("pageshow", replayTypingOnRestore);
-  }, []);
+  }, [replayTyping]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -209,7 +215,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     setTab("posts");
     setQuery("");
     setCategory("");
-    setTypingIndex(1);
+    replayTyping();
     window.history.replaceState(null, "", "/");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -227,6 +233,9 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   }
 
   const currentTyping = HERO_TYPING_STEPS[typingIndex];
+  const introClass = replayingTyping
+    ? ""
+    : typingIndex === 0 ? "is-powering-on" : currentTyping.dot ? "is-lit" : "is-typing";
 
   const trimmedQuery = query.trim().toLowerCase();
 
@@ -245,7 +254,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   const returnTo = currentSearch.toString() ? `/?${currentSearch.toString()}` : "/";
 
   return (
-    <main className={`library-page ${typingIndex === 0 ? "is-powering-on" : currentTyping.dot ? "is-lit" : "is-typing"}`}>
+    <main className={`library-page ${introClass}`}>
       {typingIndex === 0 && <LoadingOrb />}
       <LibraryHeader onHomeClick={resetAll} />
       <section className="library-intro">
