@@ -224,7 +224,7 @@ export const LIBRARY_PROMPTS: LibraryPrompt[] = [
     category: "릴스·카드뉴스",
     kind: "prompt",
     source: { kind: "카드뉴스", number: 5, url: "https://www.canva.com/design/DAHaAFXjFII/HCgcdHC9hyNn6uZyicbb2w/edit" },
-    thumbnail: { variant: "pills", src: "/kakao-chat-tone.png" },
+    thumbnail: { variant: "pills", src: "/instagram-feed-first-impression.png" },
     copyCount: null,
     steps: [
       "카카오톡에서 대화를 내보내거나 분석할 부분을 복사하고, 내 메시지를 [나]로 표시하세요.",
@@ -262,7 +262,7 @@ export const LIBRARY_PROMPTS: LibraryPrompt[] = [
     category: "릴스·카드뉴스",
     kind: "prompt",
     source: { kind: "카드뉴스", number: 6, url: "https://www.canva.com/design/DAHaB-s40Bw/Ufp7ek-kqthSkAFkkKe1Dw/edit" },
-    thumbnail: { variant: "wave", src: "/instagram-feed-first-impression.png" },
+    thumbnail: { variant: "wave", src: "/kakao-chat-tone.png" },
     copyCount: null,
     steps: [
       "최근 게시물이 보이는 인스타그램 프로필 그리드를 캡처하고, 계정명 등 가리고 싶은 정보는 가리세요.",
