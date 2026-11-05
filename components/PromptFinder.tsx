@@ -51,7 +51,7 @@ export default function PromptFinder() {
     <button ref={launcher} className="finder-launcher" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open} aria-controls="prompt-finder">✦ 프롬프트 찾기</button>
     <dialog ref={dialog} id="prompt-finder" className="finder-dialog" aria-labelledby="finder-title" onCancel={close} onClick={e => { if(e.target === e.currentTarget) close(); }}>
       <div className="finder-shell">
-        <header className="finder-header"><div><h2 id="finder-title">✦ 프롬프트 찾기 도우미</h2><p>저장소 전용 · OpenAI</p></div><button onClick={close} aria-label="대화창 닫기">✕</button></header>
+        <header className="finder-header"><div><h2 id="finder-title">✦ 프롬프트 찾기 도우미</h2><p>저장소 전용</p></div><button onClick={close} aria-label="대화창 닫기">✕</button></header>
         <div className="finder-messages" role="log" aria-live="polite" aria-relevant="additions">
           {messages.map((m,i) => <div key={i} className={`finder-message is-${m.role}`}><span className="finder-speaker">{m.role === "user" ? "나" : "도우미"}</span><p>{m.text}</p>{m.results?.map(p => <Link key={p.id} href={`/prompts/${encodeURIComponent(p.id)}`} onClick={close} className="finder-result"><strong>{p.title} ↗</strong><span>{p.description}</span></Link>)}</div>)}{busy && <p role="status">맞는 프롬프트를 찾고 있어요…</p>}<div ref={end} />
         </div>
