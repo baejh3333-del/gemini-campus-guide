@@ -217,6 +217,49 @@ const GITHUB_POPULAR_SKILLS: LibraryPrompt[] = [
 ];
 
 export const LIBRARY_PROMPTS: LibraryPrompt[] = [
+  {
+    id: "kakao-chat-tone",
+    title: "내가 보낸 카톡으로 말투 돌아보기",
+    description: "내 답장에서 반복되는 표현과 상대가 다르게 받아들일 수 있는 순간을 찾아보세요.",
+    category: "릴스·카드뉴스",
+    kind: "prompt",
+    source: { kind: "카드뉴스", number: 5, url: "https://www.canva.com/design/DAHaAFXjFII/HCgcdHC9hyNn6uZyicbb2w/edit" },
+    thumbnail: { variant: "pills", src: "/kakao-chat-tone.png" },
+    copyCount: null,
+    steps: [
+      "카카오톡에서 대화를 내보내거나 분석할 부분을 복사하고, 내 메시지를 [나]로 표시하세요.",
+      "이름, 연락처, 민감한 내용은 지운 뒤 프롬프트와 함께 Gemini에 넣으세요.",
+    ],
+    body: `첨부하거나 아래에 붙여넣은 카카오톡 대화에서 [나]가 보낸 메시지의 말투를 분석해 줘. 상대 메시지는 맥락을 이해하는 데만 사용해 줘.
+
+1. 실제 표현을 근거로 내가 자주 쓰는 말투와 그 말투의 장점을 정리해 줘.
+2. 의견이 다를 때, 부탁할 때, 짧게 답할 때처럼 자료에 있는 상황별로 내 답장이 어떻게 들릴 수 있는지 설명해 줘. 내 표현을 짧게 인용하고, 서로 다른 해석이 가능하면 함께 적어 줘.
+3. 오해가 생길 수 있는 답장은 ‘원래 답장 → 어떻게 들릴 수 있는지 → 내 뜻을 살린 대안’ 순서로 최대 3개 보여 줘.
+
+대화에서 확인할 수 있는 내용만 근거로 쓰고 성격, 의도, 상대의 감정은 단정하지 마. 맥락이 부족하면 그 점을 알려 줘.`,
+  },
+  {
+    id: "instagram-feed-first-impression",
+    title: "인스타 피드로 내 첫인상 알아보기",
+    description: "최근 게시물의 색감과 소재가 모여 어떤 분위기와 취향을 보여 주는지 살펴보세요.",
+    category: "릴스·카드뉴스",
+    kind: "prompt",
+    source: { kind: "카드뉴스", number: 6, url: "https://www.canva.com/design/DAHaB-s40Bw/Ufp7ek-kqthSkAFkkKe1Dw/edit" },
+    thumbnail: { variant: "wave", src: "/instagram-feed-first-impression.png" },
+    copyCount: null,
+    steps: [
+      "최근 게시물이 보이는 인스타그램 프로필 그리드를 캡처하고, 계정명 등 가리고 싶은 정보는 가리세요.",
+      "이미지와 아래 프롬프트를 Gemini에 넣으세요. 보여 주고 싶은 분위기가 있다면 함께 적으세요.",
+    ],
+    body: `내가 첨부한 인스타그램 피드 캡처를 처음 보는 사람의 시선으로 분석해 줘.
+
+1. 피드 전체에서 느껴지는 첫인상을 한 문장과 키워드 3개로 정리해 줘.
+2. 반복되는 소재, 색감, 밝기, 구도와 게시물 배치가 그 인상에 어떤 영향을 주는지 화면 속 예시로 설명해 줘.
+3. 내 취향이나 시선이 잘 드러나는 부분과 분위기가 달라 보이는 부분을 짚어 줘. 내가 원하는 분위기를 알려 줬다면 현재 피드에서 그 분위기가 얼마나 드러나는지도 설명해 줘.
+4. 지금의 개성을 살리면서 다음 게시물에 적용해 볼 촬영이나 배치 아이디어를 3개 제안해 줘.
+
+화면에 보이는 단서와 그로부터 받은 인상을 구분해 줘. 사진만으로 실제 성격이나 생활을 단정하지 말고, 캡처에서 확인할 수 없는 정보는 추측하지 마.`,
+  },
   ...["report", "exam", "presentation", "team", "cover"].map((id): LibraryPrompt => {
     const preset = BUILDER_PRESETS.find((item) => item.id === id)!;
     const item = presets[id];
