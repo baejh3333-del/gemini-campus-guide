@@ -1,5 +1,3 @@
-import { LoadingOrb } from "@/components/LoadingOrb";
-
 export default function Loading() {
-  return <LoadingOrb />;
+  return <span className="sr-only" role="status">프롬프트 준비 중</span>;
 }

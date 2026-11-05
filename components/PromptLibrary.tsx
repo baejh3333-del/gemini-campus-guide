@@ -65,6 +65,25 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
 
   const navRef = useRef<HTMLElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const introInitialized = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!introInitialized.current) {
+      introInitialized.current = true;
+      const introKey = "prompt-library-intro-seen";
+      if (window.sessionStorage.getItem(introKey)) {
+        setTypingIndex(1);
+      } else {
+        window.sessionStorage.setItem(introKey, "true");
+      }
+    }
+
+    const replayTypingOnRestore = (event: PageTransitionEvent) => {
+      if (event.persisted) setTypingIndex(1);
+    };
+    window.addEventListener("pageshow", replayTypingOnRestore);
+    return () => window.removeEventListener("pageshow", replayTypingOnRestore);
+  }, []);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -190,7 +209,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     setTab("posts");
     setQuery("");
     setCategory("");
-    setTypingIndex(0);
+    setTypingIndex(1);
     window.history.replaceState(null, "", "/");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
