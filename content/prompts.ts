@@ -4,6 +4,7 @@ import type { LibraryPrompt } from "@/lib/prompt-library";
 import rawSkills from "./github-skills-raw.json";
 import { STUDY_LIFE_SKILLS } from "./study-life-skills";
 import { BEHAVIOR_PSYCHOLOGY_PROMPT } from "./behavior-psychology-prompt";
+import { CAMPUS_PROMPTS } from "./campus-prompts";
 
 const presets: Record<
   string,
@@ -212,6 +213,7 @@ const GITHUB_POPULAR_SKILLS: LibraryPrompt[] = [
 ];
 
 export const LIBRARY_PROMPTS: LibraryPrompt[] = [
+  ...CAMPUS_PROMPTS,
   {
     id: "behavior-psychology-detective",
     title: "행동심리학으로 나를 추리하는 AI",
