@@ -3,6 +3,7 @@ import { buildPrompt } from "@/lib/prompt";
 import type { LibraryPrompt } from "@/lib/prompt-library";
 import rawSkills from "./github-skills-raw.json";
 import { STUDY_LIFE_SKILLS } from "./study-life-skills";
+import { BEHAVIOR_PSYCHOLOGY_PROMPT } from "./behavior-psychology-prompt";
 
 const presets: Record<
   string,
@@ -187,7 +188,7 @@ const GITHUB_POPULAR_SKILLS: LibraryPrompt[] = [
     kind: "skill",
     skillName: "webapp-testing",
     repoUrl: "https://github.com/anthropics/skills/tree/main/skills/webapp-testing",
-    thumbnail: { variant: "portal" },
+    thumbnail: { variant: "portal", src: "/behavior-psychology-detective.png", alt: "흑백 인물 이미지에 행동심리학으로 나를 추리하는 AI라고 적힌 썸네일" },
     copyCount: null,
     steps: [
       "공식 원본 SKILL.md 파일(3,861자)을 Gemini [스킬]에 업로드하거나 본문을 복사해 대화창에 붙여넣으세요.",
@@ -217,6 +218,21 @@ const GITHUB_POPULAR_SKILLS: LibraryPrompt[] = [
 ];
 
 export const LIBRARY_PROMPTS: LibraryPrompt[] = [
+  {
+    id: "behavior-psychology-detective",
+    title: "행동심리학으로 나를 추리하는 AI",
+    description: "왜 나는 꼭 그 순간에 미룰까? 다섯 가지 질문에 답하고, 내 선택과 습관에 반복되는 패턴을 단서와 함께 발견해 보세요.",
+    category: "일상·자기관리",
+    kind: "prompt",
+    thumbnail: { variant: "portal", src: "/behavior-psychology-detective.png", alt: "흑백 인물 이미지에 행동심리학으로 나를 추리하는 AI라고 적힌 썸네일" },
+    copyCount: null,
+    steps: [
+      "아래 프롬프트를 복사해 Gemini나 ChatGPT의 새 대화창에 붙여넣으세요. 별도 자료는 없어도 돼요.",
+      "AI가 한 번에 하나씩 묻는 질문 5개에 최근의 실제 행동으로 답하세요. 상황 → 내가 한 행동 → 바로 뒤의 결과 순서면 충분해요. 이름이나 연락처는 적지 않아도 돼요.",
+      "추리 결과에서 맞는 부분과 다른 부분을 알려 주세요. 수정한 해석을 바탕으로 일주일 동안 시도할 작은 행동 실험을 골라 보세요.",
+    ],
+    body: BEHAVIOR_PSYCHOLOGY_PROMPT,
+  },
   {
     id: "kakao-chat-tone",
     title: "내가 보낸 카톡으로 말투 돌아보기",

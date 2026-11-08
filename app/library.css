@@ -41,7 +41,7 @@ body:has(.library-page) .bloom, body:has(.library-page) .legacy-footer { display
 .library-card:hover .library-art, .library-card:focus-visible .library-art { border-color: #8ab4f842; box-shadow: 0 8px 30px -18px #4285f455; }
 .library-card:hover h3 { color: #a8c7fa; }
 .library-cover { width: 100%; height: 100%; object-fit: cover; }
-.library-cover:is([src="/kakao-chat-tone.png"], [src="/instagram-feed-first-impression.png"]) { object-fit: contain; }
+.library-cover:is([src="/kakao-chat-tone.png"], [src="/instagram-feed-first-impression.png"], [src="/behavior-psychology-detective.png"]) { object-fit: contain; }
 .library-art-badge { position: absolute; left: 15px; top: 15px; padding: 5px 10px; border-radius: 20px; background: #10121675; color: #e0e5ed; font-size: 10px; backdrop-filter: blur(10px); border: 1px solid #ffffff08; }
 .library-art-caption { position: absolute; bottom: 17px; left: 19px; right: 19px; display: flex; justify-content: space-between; font-size: 11px; color: #c2d8f8; letter-spacing: .03em; }
 .library-art-caption > span { font-size: 19px; line-height: 15px; }
