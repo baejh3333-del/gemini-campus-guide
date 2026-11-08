@@ -16,6 +16,7 @@ export type LibraryPrompt = {
   id: string;
   title: string;
   description: string;
+  outcomes?: string[];
   body: string;
   steps: string[];
   category: Category;

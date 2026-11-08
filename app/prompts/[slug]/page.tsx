@@ -37,6 +37,7 @@ export default async function PromptDetail({
 }) {
   const prompt = await getPrompt((await params).slug);
   if (!prompt) notFound();
+  const hasOverview = Boolean(prompt.outcomes?.length) && prompt.kind !== "skill";
   const from = (await searchParams).from;
   const returnTo = from === "/" || (typeof from === "string" && from.startsWith("/?")) ? from : "/";
   return (
@@ -63,15 +64,26 @@ export default async function PromptDetail({
             {prompt.skillNote && <p>{prompt.skillNote}</p>}
           </section>
           <section className="detail-section">
-            <h2>이렇게 쓰세요</h2>
-            <ol className="library-steps">
-              {prompt.steps.map((step, index) => (
-                <li key={step}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <p>{step}</p>
-                </li>
-              ))}
-            </ol>
+            {hasOverview ? (
+              <>
+                <h2>이런 걸 알 수 있어요</h2>
+                <ul className="prompt-outcomes">
+                  {prompt.outcomes?.map((outcome) => <li key={outcome}>{outcome}</li>)}
+                </ul>
+              </>
+            ) : (
+              <>
+                <h2>이렇게 쓰세요</h2>
+                <ol className="library-steps">
+                  {prompt.steps.map((step, index) => (
+                    <li key={step}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <p>{step}</p>
+                    </li>
+                  ))}
+                </ol>
+              </>
+            )}
           </section>
           <section className="detail-section library-prompt-section">
             <div className="library-section-heading">
@@ -79,12 +91,22 @@ export default async function PromptDetail({
               <span>
                 {prompt.kind === "skill"
                   ? `SKILL.md 전문 (${prompt.body.length.toLocaleString("ko-KR")}자)`
-                  : prompt.copyCount === null
-                    ? "파란 표시 [항목]을 내 상황에 맞게 바꿔보세요"
-                    : `${prompt.copyCount.toLocaleString("ko-KR")}회 복사`}
+                  : hasOverview
+                    ? "복사해 AI 대화창에 붙여넣으면 시작돼요"
+                    : prompt.copyCount === null
+                      ? "파란 표시 [항목]을 내 상황에 맞게 바꿔보세요"
+                      : `${prompt.copyCount.toLocaleString("ko-KR")}회 복사`}
               </span>
             </div>
-            {prompt.kind !== "skill" && (
+            {hasOverview ? (
+              <details className="skill-raw-details prompt-full-details">
+                <summary>
+                  <span>상세보기 · 프롬프트 전문</span>
+                  <span className="details-toggle-hint"><span className="prompt-show-label">펼치기</span><span className="prompt-hide-label">접기</span> ▾</span>
+                </summary>
+                <pre className="library-prompt-text">{renderHighlightedBody(prompt.body)}</pre>
+              </details>
+            ) : prompt.kind !== "skill" && (
               <pre className="library-prompt-text">{renderHighlightedBody(prompt.body)}</pre>
             )}
             <LibraryCopy body={prompt.body} kind={prompt.kind} skillName={prompt.skillName} />

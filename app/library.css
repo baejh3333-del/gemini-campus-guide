@@ -3163,6 +3163,15 @@ button.hero-cue:focus-visible { outline: 2px solid #c2e7ff; outline-offset: 3px;
 }
 
 /* Detail Page Skill Action Bar */
+.prompt-outcomes { margin: 0; padding-left: 20px; color: inherit; line-height: 1.9; }
+.prompt-outcomes li + li { margin-top: 8px; }
+.prompt-full-details { margin-bottom: 20px; }
+.prompt-full-details .library-prompt-text { max-height: none; padding: 20px; }
+.prompt-full-details .prompt-hide-label,
+.prompt-full-details[open] .prompt-show-label { display: none; }
+.prompt-full-details[open] .prompt-hide-label { display: inline; }
+.prompt-full-details summary:focus-visible { outline: 2px solid #38bdf8; outline-offset: -3px; }
+
 .skill-action-bar {
   margin-bottom: 14px;
   padding: 16px 20px;

@@ -221,7 +221,13 @@ export const LIBRARY_PROMPTS: LibraryPrompt[] = [
   {
     id: "behavior-psychology-detective",
     title: "행동심리학으로 나를 추리하는 AI",
-    description: "왜 나는 꼭 그 순간에 미룰까? 다섯 가지 질문에 답하고, 내 선택과 습관에 반복되는 패턴을 단서와 함께 발견해 보세요.",
+    description: "최근 행동에 관한 질문 5개로, 내 선택과 습관에 반복되는 패턴을 추리해 주는 AI예요.",
+    outcomes: [
+      "내가 일을 미루거나 쉽게 시작하는 상황과 계기",
+      "선택을 망설일 때 중요하게 보는 기준",
+      "부탁이나 의견 차이에 반응하는 방식과 예외",
+      "패턴을 뒷받침하는 단서와 일주일 동안 확인해 볼 작은 행동 실험",
+    ],
     category: "일상·자기관리",
     kind: "prompt",
     thumbnail: { variant: "portal", src: "/behavior-psychology-detective.png", alt: "흑백 인물 이미지에 행동심리학으로 나를 추리하는 AI라고 적힌 썸네일" },
