@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SignupLink } from "./SignupLink";
 import {
   FUNNY_CAPSULES,
   RARITY_WEIGHTS,
   type CapsuleItem,
   type CapsuleRarity,
 } from "@/content/funny-capsules";
-
-const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "https://goo.gle/kangwonchuncheon";
 
 const CAPSULE_ORBS = [
   { id: 1, a: "#38bdf8", b: "#818cf8" },
@@ -600,14 +599,12 @@ export function CapsuleMachineSection() {
                 </a>
               </div>
 
-              <a
-                href={SIGNUP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <SignupLink
+                source="capsule_result"
                 className="library-student-subscribe"
               >
                 대학생 Google AI Pro 1년 무료 혜택 받기 <span>→</span>
-              </a>
+              </SignupLink>
             </div>
           ) : (
             <div className="capsule-standby-card">

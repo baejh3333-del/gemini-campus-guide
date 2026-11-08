@@ -61,10 +61,25 @@ npm run check
 | KPI | 이벤트 |
 |---|---|
 | 방문 2,500회 | `page_view` |
-| **사인업 760회** | `signup_click`, `signup_confirmed` |
+| **가입 링크 클릭 / 가입 완료 자기 응답** | `signup_click` / `signup_confirmed` (Google 가입 완료를 검증하지 않음) |
 | 프롬프트 학습 30% | `step_complete { step: "prompt" }` |
 | 완주 | `quiz_pass`, `entry_submit` |
 | 이탈 분석 | `step_start` (스텝별 드롭오프) |
+
+### 무료 가입 링크 클릭 통계 (Google Analytics 4)
+
+Vercel 유료 맞춤 이벤트를 사용하지 않습니다. GA4 웹 데이터 스트림의 측정 ID(`G-...`)를
+Vercel 프로젝트 환경변수 `NEXT_PUBLIC_GA_ID`에 넣고 다시 배포하면 수집을 시작합니다.
+설정하지 않았거나 예시 ID인 경우 Google Analytics를 로드하지 않습니다.
+
+- 모든 가입 링크는 `signup_click` 이벤트를 전송합니다. `source`는 `header`(상단),
+  `capsule_result`(캡슐 결과), `prompt_detail`(프롬프트 상세), `learn_benefit`(학습 혜택)입니다.
+- GA4 실시간 보고서에서 클릭 후 `signup_click` 수신을 확인합니다. 일반 이벤트 보고서에서
+  `signup_click`의 이벤트 수(총 클릭 횟수)와 총 사용자 수(브라우저 식별 기준)를 확인합니다.
+- 버튼별 분석은 GA4 관리 → 맞춤 정의에서 이벤트 범위 맞춤 측정기준 `source`를 등록하고
+  이벤트 매개변수도 `source`로 설정합니다. 수집한 페이지 경로는 `page_path`입니다.
+- 차단 도구·쿠키 삭제·여러 기기 사용에 따라 누락이나 중복이 생길 수 있습니다.
+  과거 클릭은 복원되지 않으며 클릭 수가 실제 Google 가입 완료 수를 의미하지 않습니다.
 
 ---
 

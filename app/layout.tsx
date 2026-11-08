@@ -45,7 +45,10 @@ export const viewport: Viewport = {
   themeColor: "#0b0b0c",
 };
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const GA_ID = /^G-[A-Z0-9]+$/.test(process.env.NEXT_PUBLIC_GA_ID || "") &&
+  !/^G-X+$/.test(process.env.NEXT_PUBLIC_GA_ID || "")
+  ? process.env.NEXT_PUBLIC_GA_ID
+  : undefined;
 
 export default async function RootLayout({
   children,
@@ -54,19 +57,21 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="ko" className={pretendard.variable} suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.getItem("site-theme")==="light"?"light":"dark"}catch{}` }} /></head>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{document.documentElement.dataset.theme=localStorage.getItem("site-theme")==="light"?"light":"dark"}catch{}` }} />
+        {GA_ID ? (
+          <script id="ga-init" dangerouslySetInnerHTML={{ __html:
+            `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('js',new Date());gtag('config','${GA_ID}');`,
+          }} />
+        ) : null}
+      </head>
       <body>
         {GA_ID ? (
-          <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
               strategy="afterInteractive"
             />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());gtag('config','${GA_ID}');`}
-            </Script>
-          </>
         ) : null}
 
         {/* 화면 아래에서 피어오르는 배경. 콘텐츠보다 뒤에 깔린다. */}

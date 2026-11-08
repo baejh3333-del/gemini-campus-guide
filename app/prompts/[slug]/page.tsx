@@ -3,9 +3,7 @@ import { notFound } from "next/navigation";
 import { getPrompt, listPrompts } from "@/lib/prompt-library";
 import { LibraryHeader, LibraryFooter } from "@/components/LibraryChrome";
 import { LibraryCopy } from "@/components/LibraryCopy";
-
-// Same student-benefit signup link the course steps use.
-const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "https://goo.gle/kangwonchuncheon";
+import { SignupLink } from "@/components/SignupLink";
 
 export async function generateStaticParams() {
   return (await listPrompts()).map((prompt) => ({ slug: prompt.id }));
@@ -129,15 +127,13 @@ export default async function PromptDetail({
                 {prompt.source.kind} #{prompt.source.number} 원본 보기 ↗
               </a>
             )}
-            <a
-              href={SIGNUP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <SignupLink
+              source="prompt_detail"
               className="library-student-subscribe"
             >
               <span>학생 Gemini 무료로 구독하기</span>
               <span aria-hidden="true">↗</span>
-            </a>
+            </SignupLink>
           </section>
         </article>
         <LibraryFooter />

@@ -31,7 +31,10 @@ export type EventName =
 export function track(name: EventName, params: Params = {}): void {
   if (typeof window === "undefined") return;
   try {
-    window.gtag?.("event", name, params);
+    window.gtag?.("event", name, {
+      ...params,
+      ...(name === "signup_click" ? { page_path: window.location.pathname } : {}),
+    });
   } catch {
     // 계측 실패가 학습을 막아서는 안 된다.
   }

@@ -94,7 +94,10 @@ export function OpenButton({
       target="_blank"
       rel="noopener noreferrer"
       className={className}
-      onClick={() => track(event, step ? { step } : {})}
+      onClick={() => track(event, {
+        ...(step ? { step } : {}),
+        ...(event === "signup_click" ? { source: "learn_benefit" } : {}),
+      })}
     >
       {label} ↗
     </a>

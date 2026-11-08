@@ -1,7 +1,6 @@
 import ThemeToggle from "./ThemeToggle";
 import Link from "next/link";
-
-const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || "https://goo.gle/kangwonchuncheon";
+import { SignupLink } from "./SignupLink";
 
 export function LibraryHeader({ back, onHomeClick }: { back?: string; onHomeClick?: () => void }) {
   return (
@@ -24,14 +23,12 @@ export function LibraryHeader({ back, onHomeClick }: { back?: string; onHomeClic
       {back ? (
         <Link href={back} className="library-header-note">← 목록으로</Link>
       ) : (
-        <a
-          href={SIGNUP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+        <SignupLink
+          source="header"
           className="library-header-note"
         >
           Gemini 학생 혜택 가입 ↗
-        </a>
+        </SignupLink>
       )}
       <ThemeToggle />
       </div>
