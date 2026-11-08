@@ -35,7 +35,7 @@ export default async function PromptDetail({
 }) {
   const prompt = await getPrompt((await params).slug);
   if (!prompt) notFound();
-  const hasOverview = Boolean(prompt.outcomes?.length) && prompt.kind !== "skill";
+  const hasOverview = !prompt.repoUrl?.startsWith("https://github.com/") && Boolean(prompt.outcomes?.length);
   const from = (await searchParams).from;
   const returnTo = from === "/" || (typeof from === "string" && from.startsWith("/?")) ? from : "/";
   return (
@@ -64,7 +64,7 @@ export default async function PromptDetail({
           <section className="detail-section">
             {hasOverview ? (
               <>
-                <h2>이런 걸 알 수 있어요</h2>
+                <h2>이런 도움을 받을 수 있어요</h2>
                 <ul className="prompt-outcomes">
                   {prompt.outcomes?.map((outcome) => <li key={outcome}>{outcome}</li>)}
                 </ul>
@@ -97,9 +97,9 @@ export default async function PromptDetail({
               </span>
             </div>
             {hasOverview ? (
-              <details className="skill-raw-details prompt-full-details">
+              <details id="prompt-full-text" className="skill-raw-details prompt-full-details">
                 <summary>
-                  <span>상세보기 · 프롬프트 전문</span>
+                  <span>자세히보기 · 프롬프트 전문</span>
                   <span className="details-toggle-hint"><span className="prompt-show-label">펼치기</span><span className="prompt-hide-label">접기</span> ▾</span>
                 </summary>
                 <pre className="library-prompt-text">{renderHighlightedBody(prompt.body)}</pre>
@@ -107,7 +107,12 @@ export default async function PromptDetail({
             ) : prompt.kind !== "skill" && (
               <pre className="library-prompt-text">{renderHighlightedBody(prompt.body)}</pre>
             )}
-            <LibraryCopy body={prompt.body} kind={prompt.kind} skillName={prompt.skillName} />
+            <LibraryCopy
+              body={prompt.body}
+              kind={prompt.kind}
+              skillName={prompt.skillName}
+              fullTextId={hasOverview ? "prompt-full-text" : undefined}
+            />
             {prompt.kind === "skill" && (
               <details className="skill-raw-details">
                 <summary>

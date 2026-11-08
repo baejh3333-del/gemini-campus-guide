@@ -8,10 +8,12 @@ export function LibraryCopy({
   body,
   kind,
   skillName,
+  fullTextId,
 }: {
   body: string;
   kind?: "prompt" | "gem" | "skill";
   skillName?: string;
+  fullTextId?: string;
 }) {
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
@@ -28,7 +30,13 @@ export function LibraryCopy({
       setDone(true);
       setTimeout(() => setDone(false), 3600);
     } catch {
-      setMessage("자동 복사가 되지 않았어요. 위 본문을 길게 누르거나 선택해 복사해 주세요.");
+      const fullText = fullTextId ? document.getElementById(fullTextId) : null;
+      if (fullText instanceof HTMLDetailsElement) {
+        fullText.open = true;
+        setMessage("자동 복사가 되지 않아 전문을 펼쳤어요. 본문을 길게 누르거나 선택해 복사해 주세요.");
+      } else {
+        setMessage("자동 복사가 되지 않았어요. 위 본문을 길게 누르거나 선택해 복사해 주세요.");
+      }
     }
   }
 

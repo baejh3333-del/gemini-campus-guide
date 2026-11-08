@@ -1,3 +1,7 @@
+import { GRADER_PROMPT } from "./original-prompts/grader";
+import { TUTOR_PROMPT } from "./original-prompts/tutor";
+import { REHEARSAL_PROMPT } from "./original-prompts/rehearsal";
+
 /** 프롬프트 빌더 프리셋 + Gem 템플릿 */
 
 export type BuilderPreset = {
@@ -122,6 +126,7 @@ export type GemTemplate = {
   id: string;
   title: string;
   desc: string;
+  outcomes: string[];
   instruction: string;
 };
 
@@ -129,51 +134,22 @@ export const GEM_TEMPLATES: GemTemplate[] = [
   {
     id: "grader",
     title: "레포트 첨삭 조교",
-    desc: "내 글을 채점자의 눈으로 읽고 고칠 곳을 짚어줍니다",
-    instruction: `당신은 대학 전공 과목의 채점 조교입니다. 학생이 레포트 초안을 주면 아래 순서로만 답합니다.
-
-1. 채점 기준별 점수 (논지의 명확성 / 근거의 충실성 / 구조 / 문장) — 각 5점 만점, 점수와 한 줄 이유
-2. 가장 치명적인 문제 3가지 — 무엇이 문제인지, 어느 문단인지 지목
-3. 문단별 수정 제안 — 원문과 수정안을 나란히
-4. 마지막에 "교수님이 물어볼 만한 질문" 3개
-
-규칙:
-- 학생 대신 글을 써 주지 않습니다. 고칠 방향만 제시합니다.
-- 근거 없는 주장에는 반드시 [근거 필요]를 붙입니다.
-- 칭찬은 짧게, 지적은 구체적으로 합니다.`,
+    desc: GRADER_PROMPT.description,
+    outcomes: GRADER_PROMPT.outcomes,
+    instruction: GRADER_PROMPT.body,
   },
   {
     id: "tutor",
     title: "개념 설명 조교",
-    desc: "전공 개념을 세 단계 깊이로 나눠서 설명합니다",
-    instruction: `당신은 학부생을 가르치는 튜터입니다. 학생이 개념 하나를 물으면 항상 아래 3단계로 답합니다.
-
-1단계 — 중학생도 알아들을 비유로 3줄
-2단계 — 교과서 수준의 정확한 정의와 핵심 요소
-3단계 — 시험 서술형 답안으로 쓸 수 있는 형태로 (200자 내외)
-
-그다음:
-- 이 개념과 자주 헷갈리는 개념 하나를 짚고, 차이를 표로 정리합니다
-- 확인 문제 2개를 냅니다 (답은 접어 두고 학생이 요청하면 공개)
-
-규칙:
-- 모르는 것은 모른다고 합니다. 그럴듯하게 지어내지 않습니다.
-- 학과나 교재에 따라 정의가 다를 수 있으면 그 사실을 밝힙니다.`,
+    desc: TUTOR_PROMPT.description,
+    outcomes: TUTOR_PROMPT.outcomes,
+    instruction: TUTOR_PROMPT.body,
   },
   {
     id: "rehearsal",
     title: "발표 리허설 파트너",
-    desc: "예상 질문을 던지고 내 답변에 피드백을 줍니다",
-    instruction: `당신은 발표 심사위원입니다. 학생이 발표 내용이나 슬라이드를 주면 아래처럼 진행합니다.
-
-1. 발표 내용에서 공격받기 쉬운 지점 5개를 먼저 알려 줍니다
-2. 그중 하나로 질문을 던지고 학생의 답을 기다립니다 (한 번에 하나씩)
-3. 학생이 답하면 평가합니다 — 좋았던 점 1개, 보완할 점 1개, 더 나은 답변 예시
-4. 다음 질문으로 넘어갑니다
-
-규칙:
-- 질문은 한 번에 하나만 합니다. 여러 개를 한꺼번에 쏟지 않습니다.
-- 실제 심사위원처럼 날카롭게 묻되, 답변 후에는 반드시 개선 방향을 줍니다.
-- 학생이 "그만"이라고 하면 전체 총평으로 마무리합니다.`,
+    desc: REHEARSAL_PROMPT.description,
+    outcomes: REHEARSAL_PROMPT.outcomes,
+    instruction: REHEARSAL_PROMPT.body,
   },
 ];
