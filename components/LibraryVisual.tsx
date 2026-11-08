@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { LibraryPrompt } from "@/lib/prompt-library";
 
 export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
@@ -10,6 +11,15 @@ export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={src} alt={alt ?? prompt.title} className="art-svg" />
         </div>
+      ) : src?.startsWith("/prompt-thumbnails/") ? (
+        <Image
+          src={src}
+          alt={alt ?? prompt.title}
+          width={1080}
+          height={1350}
+          sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 360px"
+          className="library-cover library-cover-contained"
+        />
       ) : src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt ?? prompt.title} className="library-cover" />
