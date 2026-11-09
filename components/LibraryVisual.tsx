@@ -2,8 +2,9 @@ import Image from "next/image";
 import type { LibraryPrompt } from "@/lib/prompt-library";
 
 export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
-  const { variant, src, alt } = prompt.thumbnail;
+  const { variant, src, alt, placeholder } = prompt.thumbnail;
   const isSvgCover = src?.startsWith("data:image/svg+xml;base64,");
+  const showPlaceholder = !src && Boolean(placeholder);
   return (
     <div className={`library-art art-${variant}`}>
       {isSvgCover ? (
@@ -23,6 +24,11 @@ export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
       ) : src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt ?? prompt.title} className="library-cover" />
+      ) : showPlaceholder ? (
+        <div className="library-placeholder">
+          <strong>썸네일 자리</strong>
+          <span>{placeholder}</span>
+        </div>
       ) : (
         <VisualMotif variant={variant} />
       )}
@@ -35,7 +41,7 @@ export function LibraryVisual({ prompt }: { prompt: LibraryPrompt }) {
               ? "Skill · MD"
               : "프롬프트"}
       </span>
-      {(!src || isSvgCover) && (
+      {(!src || isSvgCover) && !showPlaceholder && (
         <span className="library-art-caption" aria-hidden="true">
           {prompt.category}
           <span>↗</span>

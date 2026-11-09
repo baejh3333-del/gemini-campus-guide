@@ -79,3 +79,11 @@ GitHub 스킬의 기존 다운로드·복사·사용법·본문 펼치기는 변
 - [iCalendar RFC 5545](https://www.rfc-editor.org/rfc/rfc5545): 일정 파일의 구조와 날짜·시간 표현.
 - [대한상공회의소 컴퓨터활용능력 관련자료](https://license.korcham.net/co/examguide04.do?cd=0103&mm=202&pg=1): 시행 기간이 다른 출제기준을 응시일에 맞춰 선택.
 - [대한상공회의소 시험 안내](https://ml.korcham.net/co/examguide.do?cd=01&jmcd=0103): 급수와 필기·실기를 구분해 계획.
+
+## 전문가형 상담·코칭 프롬프트 14개
+
+`content/expert-prompts.ts`(메타데이터)와 `content/expert-prompt-bodies.ts`(프롬프트 전문)에 있다. 연인 갈등 분석, 심리상담, 관계 결정 코치, 진로 면담, 노동·임대차 법률 보조, 시선 불안 코치, 거절·사과 코치, 면접관 시뮬레이터, 부모님 갈등 중재, 이별 회복, 학습 설계, 협상 코치, 사회초년생 재무 점검, 진료 전 준비 도우미다.
+
+- 모든 프롬프트에 위기 신호(자해·폭력·응급) 안내 규칙이 들어 있다. 연락처(109, 1577-0199, 1366, 1388, 132, 1350, 1332)는 공개 전과 정기적으로 최신 여부를 확인한다.
+- 썸네일은 아직 없다. 이미지 자리에 `thumbnail.placeholder`로 넣을 그림을 글로 적어 두었고, 카드에서는 점선 박스 안에 "썸네일 자리" 문구로 보인다.
+- 썸네일이 준비되면 `public/prompt-thumbnails/`에 파일을 넣고, 해당 항목의 `thumbnail`에 `src`와 `alt`를 채운 뒤 `placeholder`를 지운다. `src`가 있으면 placeholder는 표시되지 않는다.

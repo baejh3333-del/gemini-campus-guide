@@ -29,6 +29,8 @@ export type LibraryPrompt = {
     variant: "orbit" | "wave" | "sphere" | "portal" | "agent" | "curves" | "pills" | "axis";
     src?: string;
     alt?: string;
+    // 썸네일이 준비되기 전, 이미지 자리에 들어갈 그림을 글로 설명한다. src가 있으면 쓰이지 않는다.
+    placeholder?: string;
   };
   copyCount: number | null;
 };
