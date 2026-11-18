@@ -11,6 +11,10 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 20;
+const LIST_CACHE_MS = 30_000;
+const LIST_TIMEOUT_MS = 4_000;
+const WRITE_TIMEOUT_MS = 12_000;
 
 const STORE_FILE = path.join(process.cwd(), ".next", "cache", "playground-store.json");
 
@@ -29,6 +33,10 @@ function getWebhookConfig() {
 }
 
 let memoryStore: PlaygroundPrompt[] | null = null;
+let nextListRefresh = 0;
+let listRefresh: Promise<boolean> | null = null;
+let hasRemoteList = false;
+let storeVersion = 0;
 
 function readLocalStore(): PlaygroundPrompt[] {
   if (memoryStore) return memoryStore;
@@ -49,6 +57,7 @@ function readLocalStore(): PlaygroundPrompt[] {
 }
 
 function writeLocalStore(items: PlaygroundPrompt[]) {
+  storeVersion += 1;
   memoryStore = items;
   try {
     fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
@@ -68,43 +77,60 @@ async function callAppsScript(payload: Record<string, unknown>) {
   const { url, secret, enabled } = getWebhookConfig();
   if (!enabled) return null;
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...payload, secret }),
-    ...(payload.action === "list"
-      ? { cache: "force-cache" as const, next: { revalidate: 30 } }
-      : { cache: "no-store" as const }),
-  });
-  if (!res.ok) {
-    throw new Error(`Apps Script HTTP ${res.status}`);
+  const started = Date.now();
+  const action = payload.action;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, secret }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(action === "list" ? LIST_TIMEOUT_MS : WRITE_TIMEOUT_MS),
+    });
+    const data = await res.json() as {
+      ok?: boolean;
+      error?: string;
+      prompts?: PlaygroundPrompt[];
+      prompt?: PlaygroundPrompt;
+    };
+    console.info("playground.webhook", {
+      action, durationMs: Date.now() - started, status: res.status, ok: res.ok && data.ok === true,
+    });
+    return res.ok ? data : null;
+  } catch (error) {
+    console.warn("playground.webhook", {
+      action, durationMs: Date.now() - started, error: error instanceof Error ? error.name : "unknown",
+    });
+    return null;
   }
-  return (await res.json()) as {
-    ok?: boolean;
-    error?: string;
-    prompts?: PlaygroundPrompt[];
-    prompt?: PlaygroundPrompt;
-  };
+}
+
+async function refreshList() {
+  const version = storeVersion;
+  const data = await callAppsScript({ action: "list" });
+  if (!data?.ok || !Array.isArray(data.prompts) || version !== storeVersion) {
+    hasRemoteList = false;
+    nextListRefresh = Date.now() + 5_000;
+    return false;
+  }
+  writeLocalStore(mergeWithSeeds(data.prompts));
+  hasRemoteList = true;
+  nextListRefresh = Date.now() + LIST_CACHE_MS;
+  return true;
 }
 
 export async function GET() {
   const { enabled } = getWebhookConfig();
-  if (enabled) {
-    try {
-      const data = await callAppsScript({ action: "list" });
-      if (data?.ok && Array.isArray(data.prompts)) {
-        const merged = mergeWithSeeds(data.prompts);
-        writeLocalStore(merged);
-        return NextResponse.json({ prompts: merged, storage: "google-sheets" });
-      }
-    } catch {
-      // Fall back to local cache if Apps Script temporarily fails
-    }
+  let fresh = enabled && hasRemoteList && Date.now() < nextListRefresh;
+  if (enabled && (listRefresh || Date.now() >= nextListRefresh)) {
+    listRefresh ??= refreshList().finally(() => { listRefresh = null; });
+    fresh = await listRefresh;
   }
-  const items = readLocalStore();
   return NextResponse.json({
-    prompts: items,
-    storage: enabled ? "fallback-cache" : "local-memory",
+    prompts: readLocalStore(),
+    storage: fresh ? "google-sheets" : enabled ? "fallback-cache" : "local-memory",
+  }, {
+    headers: { "Cache-Control": fresh ? "public, max-age=0, s-maxage=10" : "no-store" },
   });
 }
 
@@ -132,7 +158,8 @@ export async function POST(req: Request) {
         const seed = SEED_PLAYGROUND_PROMPTS.find((s) => s.id === id);
         const remote = await callAppsScript({ action, id, seed });
         if (remote?.ok && remote.prompt) {
-          const next = items.map((item) => (item.id === id ? remote.prompt! : item));
+          const saved = remote.prompt;
+          const next = readLocalStore().map((item) => (item.id === id ? saved : item));
           writeLocalStore(next);
           return NextResponse.json({ ok: true, prompt: remote.prompt, storage: "google-sheets" });
         }
@@ -141,10 +168,12 @@ export async function POST(req: Request) {
       }
     }
 
-    if (action === "copy") target.copies += 1;
-    if (action === "like") target.likes += 1;
-    writeLocalStore(items);
-    return NextResponse.json({ ok: true, prompt: target });
+    const current = readLocalStore();
+    const latest = current.find((item) => item.id === id);
+    if (!latest) return NextResponse.json({ error: "프롬프트를 찾을 수 없습니다." }, { status: 404 });
+    const updated = { ...latest, copies: latest.copies + Number(action === "copy"), likes: latest.likes + Number(action === "like") };
+    writeLocalStore(current.map((item) => item.id === id ? updated : item));
+    return NextResponse.json({ ok: true, prompt: updated });
   }
 
   if (action === "delete") {
@@ -156,7 +185,7 @@ export async function POST(req: Request) {
         // Ignore remote error and still clean local cache
       }
     }
-    const next = items.filter((item) => item.id !== id);
+    const next = readLocalStore().filter((item) => item.id !== id);
     writeLocalStore(next);
     return NextResponse.json({ ok: true });
   }
@@ -184,7 +213,9 @@ export async function POST(req: Request) {
   }
 
   const created: PlaygroundPrompt = {
-    id: `user-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    id: typeof body.requestId === "string" && /^[a-f0-9-]{36}$/.test(body.requestId)
+      ? `user-${body.requestId}`
+      : `user-${crypto.randomUUID()}`,
     title,
     description: description || `${author}님이 공유한 ${category} 프롬프트입니다.`,
     body: promptBody,
@@ -200,18 +231,20 @@ export async function POST(req: Request) {
   };
 
   if (enabled) {
-    try {
-      const remote = await callAppsScript({ action: "create", prompt: created });
-      if (remote?.ok && remote.prompt) {
-        const next = [remote.prompt, ...items];
-        writeLocalStore(next);
-        return NextResponse.json({ ok: true, prompt: remote.prompt, storage: "google-sheets" });
-      }
-    } catch {
-      // Fall back to local memory if webhook fails
+    const remote = await callAppsScript({ action: "create", prompt: created });
+    if (!remote?.ok || !remote.prompt) {
+      return NextResponse.json(
+        { error: "공유 저장을 확인하지 못했어요. 잠시 뒤 다시 등록해 주세요." },
+        { status: 503 },
+      );
     }
+    const saved = remote.prompt;
+    writeLocalStore([saved, ...readLocalStore().filter((item) => item.id !== saved.id)]);
+    return NextResponse.json({ ok: true, prompt: saved, storage: "google-sheets" });
   }
 
+  const existing = items.find((item) => item.id === created.id);
+  if (existing) return NextResponse.json({ ok: true, prompt: existing, storage: "local-memory" });
   const next = [created, ...items];
   writeLocalStore(next);
   return NextResponse.json({ ok: true, prompt: created, storage: "local-memory" });
