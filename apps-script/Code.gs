@@ -42,6 +42,12 @@ function doPost(e) {
     }
 
     var action = String(body.action || "list");
+    if (action === "list") {
+      var existingSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+      if (existingSheet && existingSheet.getLastRow() > 0) {
+        return json({ ok: true, prompts: readAllPrompts(existingSheet) });
+      }
+    }
     var lock = LockService.getScriptLock();
     lock.waitLock(10000);
 
@@ -67,6 +73,11 @@ function doPost(e) {
           return json({ ok: false, error: "invalid fields" });
         }
 
+        var existingRow = findRowById(sheet, id);
+        if (existingRow > 1) {
+          return json({ ok: true, prompt: rowToPrompt(sheet.getRange(existingRow, 1, 1, 11).getValues()[0]) });
+        }
+
         sheet.appendRow([
           cell(id, 80),
           cell(createdAt, 20),
@@ -80,6 +91,7 @@ function doPost(e) {
           1,
           cell(p.artwork || "", 44000),
         ]);
+        SpreadsheetApp.flush();
 
         return json({
           ok: true,

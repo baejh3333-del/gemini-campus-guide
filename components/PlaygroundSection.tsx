@@ -77,6 +77,8 @@ export function PlaygroundSection({ query }: { query: string }) {
   const selectedArtwork = artwork[artworkMode];
   const [artBusy, setArtBusy] = useState(false);
   const artPending = useRef(false);
+  const createAttempt = useRef<{ payload: string; id: string } | null>(null);
+  const createPending = useRef(false);
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -166,6 +168,7 @@ export function PlaygroundSection({ query }: { query: string }) {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    if (createPending.current) return;
     setFormError("");
     if (title.trim().length < 2) {
       setFormError("제목을 2자 이상 입력해 주세요.");
@@ -181,30 +184,36 @@ export function PlaygroundSection({ query }: { query: string }) {
       return;
     }
 
+    const fields = {
+      action: "create",
+      title,
+      description,
+      author: author.trim() || "익명 학우",
+      category,
+      variant,
+      artwork: selectedArtwork,
+      body,
+    };
+    const payload = JSON.stringify(fields);
+    if (createAttempt.current?.payload !== payload) {
+      createAttempt.current = { payload, id: crypto.randomUUID() };
+    }
+    createPending.current = true;
     setSubmitting(true);
     try {
       const res = await fetch("/api/playground", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "create",
-          title,
-          description,
-          author: author.trim() || "익명 학우",
-          category,
-          variant,
-          artwork: selectedArtwork,
-          body,
-        }),
+        body: JSON.stringify({ ...fields, requestId: createAttempt.current.id }),
       });
       const data = (await res.json()) as { ok?: boolean; prompt?: PlaygroundPrompt; error?: string };
       if (!res.ok || !data.prompt) {
         setFormError(data.error || "등록 중 오류가 발생했습니다.");
-        setSubmitting(false);
         return;
       }
 
       const created = data.prompt;
+      createAttempt.current = null;
       setItems((prev) => [created, ...prev]);
 
       // Save to localStorage for persistence
@@ -231,6 +240,7 @@ export function PlaygroundSection({ query }: { query: string }) {
     } catch {
       setFormError("네트워크 오류가 발생했습니다.");
     } finally {
+      createPending.current = false;
       setSubmitting(false);
     }
   }
