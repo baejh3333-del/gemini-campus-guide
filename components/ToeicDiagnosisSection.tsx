@@ -25,6 +25,24 @@ import { SignupLink } from "./SignupLink";
 
 type Phase = "intro" | "quiz" | "analyzing" | "result";
 
+type AiDrillPhase = "ready" | "loading" | "active" | "locked";
+
+interface AiDrillQuestion {
+  part: string;
+  skillName: string;
+  prompt: string;
+  options: { label: "A" | "B" | "C" | "D"; text: string }[];
+  correctIndex: number;
+  explanation: string;
+  collocationTip: string;
+}
+
+interface AiDrillData {
+  focusSummary: string;
+  questions: AiDrillQuestion[];
+}
+
+const AI_DRILL_STORAGE_KEY = "gsa-toeic-ai-drill-used-v1";
 const PART_GROUPS = ["Part 5", "Part 6", "Part 7"] as const;
 
 function formatShortDate(timestamp: number): string {
@@ -81,6 +99,11 @@ export function ToeicDiagnosisSection() {
   const [history, setHistory] = useState<ToeicHistoryEntry[]>([]);
   const [savingCard, setSavingCard] = useState<ShareCardFormat | null>(null);
   const [savedCard, setSavedCard] = useState<ShareCardFormat | null>(null);
+  const [drillPhase, setDrillPhase] = useState<AiDrillPhase>("ready");
+  const [drillData, setDrillData] = useState<AiDrillData | null>(null);
+  const [drillAnswers, setDrillAnswers] = useState<(number | null)[]>([]);
+  const [drillError, setDrillError] = useState<string | null>(null);
+  const [drillCopiedNote, setDrillCopiedNote] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
   const questionTimesMsRef = useRef<number[]>(Array(TOEIC_QUESTIONS.length).fill(0));
@@ -90,6 +113,13 @@ export function ToeicDiagnosisSection() {
 
   useEffect(() => {
     setHistory(loadToeicHistory());
+    try {
+      if (window.localStorage.getItem(AI_DRILL_STORAGE_KEY) === "1") {
+        setDrillPhase("locked");
+      }
+    } catch {
+      // ignore storage errors
+    }
     return () => {
       if (savedCardTimerRef.current !== null) {
         window.clearTimeout(savedCardTimerRef.current);
@@ -300,6 +330,15 @@ export function ToeicDiagnosisSection() {
     setCurrentIndex(0);
     setElapsedSec(0);
     setSavedCard(null);
+    setDrillData(null);
+    setDrillAnswers([]);
+    setDrillError(null);
+    setDrillCopiedNote(false);
+    try {
+      setDrillPhase(window.localStorage.getItem(AI_DRILL_STORAGE_KEY) === "1" ? "locked" : "ready");
+    } catch {
+      setDrillPhase("ready");
+    }
     scrollToSectionTop();
   }, [scrollToSectionTop]);
 
@@ -321,6 +360,120 @@ export function ToeicDiagnosisSection() {
   const latestHistory = history[0] ?? null;
   const previousHistory = history.length >= 2 ? history[1] : null;
   const recentHistory = history.slice(0, 5);
+
+  const weakSkillList = diagnosis
+    ? Array.from(
+        new Set([
+          ...diagnosis.details.filter((d) => !d.isCorrect).map((d) => d.question.skillName),
+          ...diagnosis.details.filter((d) => d.isGuessed).map((d) => d.question.skillName),
+        ]),
+      )
+    : [];
+  const weakSummaryLabel =
+    weakSkillList.length > 0 ? weakSkillList.slice(0, 2).join(" · ") : "900+ 실전 변별력";
+  const targetGap = diagnosis ? selectedTarget - diagnosis.finalScore : 0;
+
+  const handleGenerateAiDrill = useCallback(async () => {
+    if (!diagnosis || drillPhase === "loading") return;
+    setDrillPhase("loading");
+    setDrillError(null);
+
+    const wrongTopics = diagnosis.details
+      .filter((d) => !d.isCorrect)
+      .map((d) => `${d.question.part} · ${d.question.skillName}`);
+    const guessedTopics = diagnosis.details
+      .filter((d) => d.isGuessed)
+      .map((d) => `${d.question.part} · ${d.question.skillName}`);
+
+    try {
+      const res = await fetch("/api/toeic-drill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          finalScore: diagnosis.finalScore,
+          targetScore: selectedTarget,
+          weakSkills: weakSkillList.length > 0 ? weakSkillList : ["900+ 실전 변별력"],
+          wrongTopics,
+          guessedTopics,
+          ddayLabel: activeDday?.label,
+        }),
+      });
+
+      const data = (await res.json().catch(() => null)) as
+        | {
+            ok?: boolean;
+            code?: string;
+            error?: string;
+            focusSummary?: string;
+            questions?: AiDrillQuestion[];
+          }
+        | null;
+
+      if (res.status === 429 && data?.code === "TRIAL_USED") {
+        try {
+          window.localStorage.setItem(AI_DRILL_STORAGE_KEY, "1");
+        } catch {
+          // ignore
+        }
+        setDrillPhase("locked");
+        return;
+      }
+
+      if (!res.ok || !data?.ok || !Array.isArray(data.questions) || data.questions.length === 0) {
+        setDrillError(
+          data?.error ??
+            "AI 문제 생성 중 일시적인 오류가 발생했어요. 아래 버튼으로 Gemini에서 바로 이어서 풀어보세요!",
+        );
+        setDrillPhase("ready");
+        return;
+      }
+
+      try {
+        window.localStorage.setItem(AI_DRILL_STORAGE_KEY, "1");
+      } catch {
+        // ignore
+      }
+      setDrillData({
+        focusSummary: data.focusSummary ?? `${weakSummaryLabel} 집중 변형 3문항`,
+        questions: data.questions,
+      });
+      setDrillAnswers(Array(data.questions.length).fill(null));
+      setDrillPhase("active");
+    } catch {
+      setDrillError(
+        "네트워크 오류로 AI 문제를 불러오지 못했어요. 아래 버튼으로 Gemini에서 바로 이어서 풀어보세요!",
+      );
+      setDrillPhase("ready");
+    }
+  }, [diagnosis, drillPhase, selectedTarget, weakSkillList, activeDday, weakSummaryLabel]);
+
+  const handleSelectDrillOption = useCallback((qIdx: number, optIdx: number) => {
+    setDrillAnswers((prev) => {
+      if (prev[qIdx] !== null) return prev;
+      const next = [...prev];
+      next[qIdx] = optIdx;
+      return next;
+    });
+  }, []);
+
+  const handleCopyAndOpenGemini = useCallback(() => {
+    if (!tutorPromptText) return;
+    void navigator.clipboard
+      ?.writeText(tutorPromptText)
+      .then(() => setDrillCopiedNote(true))
+      .catch(() => {});
+  }, [tutorPromptText]);
+
+  const drillAnsweredCount = drillAnswers.filter((a) => a !== null).length;
+  const drillAllAnswered =
+    drillData !== null && drillData.questions.length > 0 && drillAnsweredCount === drillData.questions.length;
+  const drillCorrectCount =
+    drillData !== null
+      ? drillData.questions.reduce(
+          (acc, q, idx) => acc + (drillAnswers[idx] === q.correctIndex ? 1 : 0),
+          0,
+        )
+      : 0;
 
   const partSummary = diagnosis
     ? PART_GROUPS.map((part) => {
@@ -1081,6 +1234,209 @@ export function ToeicDiagnosisSection() {
             </div>
           </div>
 
+          {/* 4-6b. 1-Time Free AI Weakness 3-Question Mini-Drill */}
+          <div className="toeic-card toeic-drill-card">
+            <span className="toeic-drill-badge">AI 1회 무료 체험 · 약점 즉석 훈련</span>
+
+            {(drillPhase === "ready" || drillPhase === "loading") && (
+              <>
+                <h2 className="toeic-section-title">
+                  방금 흔들린 [{weakSummaryLabel}] AI 맞춤 변형 3문제 바로 풀기
+                </h2>
+                <p className="toeic-section-sub">
+                  내 진단 결과를 바탕으로 AI가 즉석에서 새 토익 3문제를 출제해 드립니다. (웹 1회 무료 체험 · 이후 Gemini에서 무제한)
+                </p>
+
+                {drillPhase === "loading" ? (
+                  <div className="toeic-drill-loading" role="status" aria-live="polite">
+                    <span className="toeic-drill-spinner" aria-hidden="true" />
+                    <span>AI가 내 약점 맞춤 3문제를 출제하고 있어요...</span>
+                  </div>
+                ) : (
+                  <div className="toeic-drill-cta-row">
+                    <button
+                      type="button"
+                      className="toeic-btn-primary"
+                      onClick={handleGenerateAiDrill}
+                    >
+                      AI 맞춤 3문제 생성하기
+                    </button>
+                  </div>
+                )}
+
+                {drillError && (
+                  <div className="toeic-drill-error" role="alert">
+                    <span>{drillError}</span>
+                    <div>
+                      <a
+                        className="toeic-drill-gemini-btn"
+                        href={
+                          tutorPromptText.length > 2000
+                            ? "https://gemini.google.com/app"
+                            : `https://gemini.google.com/app?q=${encodeURIComponent(tutorPromptText)}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={handleCopyAndOpenGemini}
+                      >
+                        약점 프롬프트 복사 후 Gemini에서 바로 풀기 <span aria-hidden="true">↗</span>
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {drillPhase === "active" && drillData && (
+              <>
+                <h2 className="toeic-section-title">
+                  내 약점 맞춤 AI 변형 3문제
+                </h2>
+                <div className="toeic-drill-focus">{drillData.focusSummary}</div>
+
+                <div className="toeic-drill-list">
+                  {drillData.questions.map((q, qIdx) => {
+                    const picked = drillAnswers[qIdx];
+                    const isAnswered = picked !== null;
+                    const isCorrect = picked === q.correctIndex;
+
+                    return (
+                      <div key={qIdx} className="toeic-drill-item">
+                        <div className="toeic-drill-item-head">
+                          <span>
+                            문항 {qIdx + 1} / {drillData.questions.length} · {q.part} · {q.skillName}
+                          </span>
+                          {isAnswered && (
+                            <span
+                              className={`toeic-ox-badge ${
+                                isCorrect ? "toeic-ox-badge--o" : "toeic-ox-badge--x"
+                              }`}
+                            >
+                              {isCorrect ? "O" : "X"}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="toeic-drill-prompt">{q.prompt}</p>
+
+                        <div className="toeic-drill-options">
+                          {q.options.map((opt, optIdx) => {
+                            let stateClass = "";
+                            if (isAnswered) {
+                              if (optIdx === q.correctIndex) {
+                                stateClass = " toeic-drill-opt--correct";
+                              } else if (optIdx === picked) {
+                                stateClass = " toeic-drill-opt--wrong";
+                              }
+                            }
+                            return (
+                              <button
+                                key={opt.label}
+                                type="button"
+                                disabled={isAnswered}
+                                className={`toeic-drill-opt${stateClass}`}
+                                onClick={() => handleSelectDrillOption(qIdx, optIdx)}
+                              >
+                                <span className="toeic-drill-opt-label">{opt.label}</span>
+                                <span>{opt.text}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {isAnswered && (
+                          <div className="toeic-drill-feedback">
+                            <div className="toeic-review-exp">
+                              <strong>3초 풀이 근거: </strong>
+                              {q.explanation}
+                            </div>
+                            <div className="toeic-review-tip">
+                              <strong>필수 표현 팁: </strong>
+                              {q.collocationTip}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {drillAllAnswered && (
+                  <>
+                    <div className="toeic-drill-score-banner">
+                      3문제 중 {drillCorrectCount}개 정답!
+                    </div>
+                    <div className="toeic-drill-convert">
+                      <h3>방금 푼 {weakSummaryLabel} 약점, Gemini에서 무제한으로 이어가세요!</h3>
+                      <p>
+                        대학생 Gemini 무료 구독을 켜두면 이 약점 맞춤 문제 무제한 출제는 물론, 실제 토익 문제집 사진 오답분석까지 무료로 쓸 수 있어요.
+                      </p>
+                      <div className="toeic-drill-convert-actions">
+                        <SignupLink source="toeic_diagnosis" className="toeic-drill-signup-btn">
+                          <span>학생 Gemini 무료 구독하기 (대학생 무료)</span>
+                          <span aria-hidden="true">↗</span>
+                        </SignupLink>
+                        <a
+                          className="toeic-drill-gemini-btn"
+                          href={
+                            tutorPromptText.length > 2000
+                              ? "https://gemini.google.com/app"
+                              : `https://gemini.google.com/app?q=${encodeURIComponent(tutorPromptText)}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={handleCopyAndOpenGemini}
+                        >
+                          <span>약점 프롬프트 복사 후 Gemini에서 이어풀기</span>
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                      </div>
+                      {drillCopiedNote && (
+                        <p className="toeic-drill-copied-note" role="status">
+                          프롬프트를 자동 복사했어요! 열린 Gemini 창에 붙여넣기(Ctrl+V)만 하세요.
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+
+            {drillPhase === "locked" && (
+              <div className="toeic-drill-convert" style={{ marginTop: 0 }}>
+                <h3>웹 무료 AI 체험(1회)을 완료했어요!</h3>
+                <p>
+                  대학생 Gemini 무료 구독을 켜두면 이 약점 맞춤 문제 무제한 출제는 물론, 실제 토익 문제집 사진 오답분석까지 무료로 쓸 수 있어요.
+                </p>
+                <div className="toeic-drill-convert-actions">
+                  <SignupLink source="toeic_diagnosis" className="toeic-drill-signup-btn">
+                    <span>학생 Gemini 무료 구독하기 (대학생 무료)</span>
+                    <span aria-hidden="true">↗</span>
+                  </SignupLink>
+                  <a
+                    className="toeic-drill-gemini-btn"
+                    href={
+                      tutorPromptText.length > 2000
+                        ? "https://gemini.google.com/app"
+                        : `https://gemini.google.com/app?q=${encodeURIComponent(tutorPromptText)}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={handleCopyAndOpenGemini}
+                  >
+                    <span>약점 프롬프트 복사 후 Gemini에서 이어풀기</span>
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+                {drillCopiedNote && (
+                  <p className="toeic-drill-copied-note" role="status">
+                    프롬프트를 자동 복사했어요! 열린 Gemini 창에 붙여넣기(Ctrl+V)만 하세요.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* 4-7. 바로 쓰는 프롬프트 (Site-consistent Prompt + Gemini CTA Card) */}
           <section className="detail-section library-prompt-section toeic-prompt-section">
             <div className="library-section-heading">
@@ -1102,7 +1458,11 @@ export function ToeicDiagnosisSection() {
             <LibraryCopy body={tutorPromptText} fullTextId="toeic-prompt-full-text" />
 
             <SignupLink source="toeic_diagnosis" className="library-student-subscribe">
-              <span>학생 Gemini 무료로 구독하기</span>
+              <span>
+                {targetGap > 0
+                  ? `목표 ${activePlan.label}까지 +${targetGap}점 · 학생 Gemini 무료로 ${weakSummaryLabel} 무제한 훈련하기`
+                  : `현재 ${diagnosis.finalScore}점 · 학생 Gemini 무료로 950+ 실전 함정 완벽 방어하기`}
+              </span>
               <span aria-hidden="true">↗</span>
             </SignupLink>
           </section>
