@@ -849,25 +849,82 @@ export function buildDiagnosisCopyText(
   targetScore: TargetScoreKey
 ): string {
   const plan = TOEIC_TARGET_PLANS[targetScore];
+  const wrongDetails = d.details.filter((item) => !item.isCorrect);
+  const slowCorrectDetails = d.details.filter(
+    (item) => item.isCorrect && item.isSlow
+  );
+  const allCorrect = wrongDetails.length === 0;
+
+  const correctSkills = d.details
+    .filter((item) => item.isCorrect)
+    .map((item) => `${item.question.part} ${item.question.skillName}`);
+  const wrongSkills = wrongDetails.map(
+    (item) => `${item.question.part} ${item.question.skillName}`
+  );
+  const slowSkills = slowCorrectDetails.map(
+    (item) => `${item.question.part} ${item.question.skillName}`
+  );
+
+  const itemBreakdown = d.details.map((item, idx) => {
+    const q = item.question;
+    const status = item.isCorrect ? "O 정답" : "X 오답";
+    const slowTag = item.isSlow ? ", 시간 초과 주의" : "";
+    const base = `- Q${idx + 1} [${q.part} · ${q.skillName}] ${status} (${item.timeSpent}초${slowTag})`;
+    if (item.isCorrect) {
+      return base;
+    }
+    const userOpt =
+      item.userAnswer !== null ? q.options[item.userAnswer] : undefined;
+    const correctOpt = q.options[q.correctIndex];
+    const userLabel = userOpt ? `(${userOpt.label}) ${userOpt.text}` : "미선택";
+    const correctLabel = correctOpt
+      ? `(${correctOpt.label}) ${correctOpt.text}`
+      : "";
+    return `${base}\n  · 내 선택: ${userLabel} / 정답: ${correctLabel}\n  · 핵심 약점 포인트: ${q.studyTip}`;
+  });
+
+  const priorityDrillRule = allCorrect
+    ? slowSkills.length > 0
+      ? `1. 5문제를 모두 맞혔으므로 900+ 고난도 변별력·패러프레이징·타임어택 훈련으로 진행하되, 풀이 시간이 길었던 영역(${slowSkills.join(", ")})의 속도 단축을 우선 공략할 것.`
+      : `1. 5문제를 모두 정확히 맞혔으므로 900+ 고난도 변별력(어휘 뉘앙스·함정 보기 소거), Part 7 패러프레이징, 실전 타임어택 훈련 중심으로 진행할 것.`
+    : `1. 틀린 영역(${wrongSkills.join(", ")})${
+        slowSkills.length > 0
+          ? `과 시간이 오래 걸린 영역(${slowSkills.join(", ")})`
+          : ""
+      }부터 우선순위를 정해 집중 공략할 것.`;
 
   const lines = [
-    "[5문제로 알아보는 내 토익점수 진단 결과]",
-    `▶ 예상 토익 점수: ${d.finalScore}점 (${d.tierTitle})`,
-    `▶ 정답 수: ${d.correctCount}/${TOEIC_QUESTIONS.length} | 소요 시간: ${formatDurationKorean(d.totalTime)} (${d.speedLabel})`,
-    `🔥 한 줄 팩폭: ${d.roastComment}`,
+    "[역할]",
+    "너는 나의 1:1 토익 전문 튜터다. 한국어로 간결하고 명확하게 코칭하며, 실전 RC 풀이 속도 단축과 출제자의 오답 함정 분석에 특화되어 있다.",
     "",
-    "[왜 이 점수가 나왔을까?]",
+    "[내 토익 진단 프로필]",
+    `- 예상 점수: ${d.finalScore}점 (${d.tierTitle})`,
+    `- 목표 점수: ${plan.label} (하루 권장 학습량: ${plan.dailyHours})`,
+    `- 정답 수: ${d.correctCount}/${TOEIC_QUESTIONS.length} | 총 소요 시간: ${formatDurationKorean(d.totalTime)} (풀이 속도: ${d.speedLabel})`,
+    `- 맞힌 영역: ${correctSkills.length > 0 ? correctSkills.join(", ") : "없음"}`,
+    `- 틀린 영역: ${wrongSkills.length > 0 ? wrongSkills.join(", ") : "없음"}`,
+    "",
+    "▶ 문항별 정오표 및 소요 시간",
+    ...itemBreakdown,
+    "",
+    "▶ 핵심 원인 분석",
     ...d.reasons.map((r) => `- ${r}`),
     "",
-    `[설정 목표 점수: ${plan.label} (${plan.dailyHours})]`,
-    `- 핵심 전략: ${plan.headline}`,
-    `- 추천 RC 시간 배분(75분): Part 5 ${plan.rcTime.p5}분 / Part 6 ${plan.rcTime.p6}분 / Part 7 ${plan.rcTime.p7}분`,
-    "",
-    "[집중 공략 파트]",
+    `▶ 목표(${plan.label}) 우선 집중 파트 & RC 시간 배분 (총 75분)`,
+    `- 추천 RC 시간 배분: Part 5 ${plan.rcTime.p5}분 / Part 6 ${plan.rcTime.p6}분 / Part 7 ${plan.rcTime.p7}분`,
     ...plan.focusParts.map((fp) => `- [${fp.priority}] ${fp.part}: ${fp.desc}`),
     "",
-    "[추천 공부법]",
-    ...plan.methods.map((m, i) => `${i + 1}. ${m.title}: ${m.desc}`),
+    "[맞춤 교육 진행 규칙]",
+    priorityDrillRule,
+    "2. 한 번에 1문제씩 실전 토익 변형 문제(A~D 4지선다)를 출제하고, 정답과 해설을 먼저 공개하지 말고 반드시 내 답변을 기다릴 것.",
+    "3. 내가 답하면 아래 3단 구성으로 피드백한 뒤 바로 다음 문제를 출제할 것:",
+    "   ① 정답 여부 및 핵심 3초 풀이 근거",
+    "   ② 내가 고른 오답 함정 분석 (맞혔다면 가장 매력적인 오답 함정 짚기)",
+    "   ③ 실전에 바로 쓰는 필수 콜로케이션·패러프레이징 정리",
+    "4. 5문제마다 미니 리포트(정답률·개선된 점·남은 약점·다음 5문제 훈련 계획)를 제공할 것.",
+    "",
+    "[시작 지시]",
+    "불필요한 인사나 서론 없이 지금 바로 내 핵심 약점 2줄 요약과 함께 **1번 맞춤 훈련 문제**부터 출제해 줘.",
   ];
 
   return lines.join("\n");

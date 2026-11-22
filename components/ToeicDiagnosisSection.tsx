@@ -14,6 +14,8 @@ import {
   type TargetScoreKey,
   type DiagnosisResult,
 } from "@/content/toeic-diagnosis";
+import { LibraryCopy } from "./LibraryCopy";
+import { SignupLink } from "./SignupLink";
 
 type Phase = "intro" | "quiz" | "analyzing" | "result";
 
@@ -65,35 +67,14 @@ export function ToeicDiagnosisSection() {
   const [displayScore, setDisplayScore] = useState(400);
   const [selectedTarget, setSelectedTarget] = useState<TargetScoreKey>(800);
   const [openReviews, setOpenReviews] = useState<boolean[]>([]);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const sectionRef = useRef<HTMLElement>(null);
   const questionTimesMsRef = useRef<number[]>(Array(TOEIC_QUESTIONS.length).fill(0));
   const questionStartRef = useRef<number>(0);
   const quizStartRef = useRef<number>(0);
-  const toastTimerRef = useRef<number | null>(null);
 
   const scrollToSectionTop = useCallback(() => {
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
-  const showToast = useCallback((message: string) => {
-    setToastMessage(message);
-    if (toastTimerRef.current !== null) {
-      window.clearTimeout(toastTimerRef.current);
-    }
-    toastTimerRef.current = window.setTimeout(() => {
-      setToastMessage(null);
-      toastTimerRef.current = null;
-    }, 2600);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimerRef.current !== null) {
-        window.clearTimeout(toastTimerRef.current);
-      }
-    };
   }, []);
 
   // Live elapsed timer during quiz
@@ -228,33 +209,6 @@ export function ToeicDiagnosisSection() {
     setOpenReviews((prev) => prev.map(() => !allReviewsOpen));
   }, [allReviewsOpen]);
 
-  const handleCopyResult = useCallback(async () => {
-    if (!diagnosis) return;
-    const text = buildDiagnosisCopyText(diagnosis, selectedTarget);
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        throw new Error("Clipboard API unavailable");
-      }
-      showToast("진단 결과와 맞춤 공부법이 복사되었습니다.");
-    } catch {
-      try {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-        showToast("진단 결과와 맞춤 공부법이 복사되었습니다.");
-      } catch {
-        showToast("복사에 실패했습니다. 다시 시도해 주세요.");
-      }
-    }
-  }, [diagnosis, selectedTarget, showToast]);
-
   const handleRetry = useCallback(() => {
     setPhase("intro");
     setDiagnosis(null);
@@ -270,6 +224,7 @@ export function ToeicDiagnosisSection() {
 
   const activePlan = diagnosis ? TOEIC_TARGET_PLANS[selectedTarget] : null;
   const goalGap = diagnosis ? getGoalGapSummary(diagnosis.finalScore, selectedTarget) : null;
+  const tutorPromptText = diagnosis ? buildDiagnosisCopyText(diagnosis, selectedTarget) : "";
   const gaugePercent = diagnosis
     ? Math.max(4, Math.min(100, ((diagnosis.finalScore - 400) / (990 - 400)) * 100))
     : 0;
@@ -823,16 +778,35 @@ export function ToeicDiagnosisSection() {
             </div>
           </div>
 
-          {/* 4-7. Bottom Actions */}
-          <div className="toeic-bottom-actions">
-            <button type="button" className="toeic-btn-primary" onClick={handleCopyResult}>
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              <span>진단 결과 &amp; 맞춤 공부법 복사하기</span>
-            </button>
+          {/* 4-7. 바로 쓰는 프롬프트 (Site-consistent Prompt + Gemini CTA Card) */}
+          <section className="detail-section library-prompt-section toeic-prompt-section">
+            <div className="library-section-heading">
+              <h2>바로 쓰는 프롬프트</h2>
+              <span>복사해 AI 대화창에 붙여넣으면 시작돼요</span>
+            </div>
 
-            <button type="button" className="toeic-btn-secondary" onClick={handleRetry}>
+            <details id="toeic-prompt-full-text" className="skill-raw-details prompt-full-details">
+              <summary>
+                <span>자세히보기 · 프롬프트 전문</span>
+                <span className="details-toggle-hint">
+                  <span className="prompt-show-label">펼치기 ▾</span>
+                  <span className="prompt-hide-label">접기 ▴</span>
+                </span>
+              </summary>
+              <pre className="library-prompt-text">{tutorPromptText}</pre>
+            </details>
+
+            <LibraryCopy body={tutorPromptText} fullTextId="toeic-prompt-full-text" />
+
+            <SignupLink source="toeic_diagnosis" className="library-student-subscribe">
+              <span>학생 Gemini 무료로 구독하기</span>
+              <span aria-hidden="true">↗</span>
+            </SignupLink>
+          </section>
+
+          {/* 4-8. Retry Action */}
+          <div className="toeic-retry-wrap">
+            <button type="button" className="toeic-btn-secondary toeic-retry-btn" onClick={handleRetry}>
               <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -845,14 +819,6 @@ export function ToeicDiagnosisSection() {
           </p>
         </div>
       )}
-
-      {/* Toast Notification */}
-      <div className={`toeic-toast${toastMessage ? " toeic-toast--show" : ""}`} role="status" aria-live="polite">
-        <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-        <span>{toastMessage ?? ""}</span>
-      </div>
     </section>
   );
 }

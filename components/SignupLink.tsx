@@ -4,7 +4,7 @@ import type { ComponentProps } from "react";
 import { track } from "@/lib/analytics";
 
 type SignupLinkProps = Omit<ComponentProps<"a">, "href" | "onClick"> & {
-  source: "header" | "capsule_result" | "prompt_detail";
+  source: "header" | "capsule_result" | "prompt_detail" | "toeic_diagnosis";
 };
 
 export function SignupLink({ source, children, ...props }: SignupLinkProps) {
