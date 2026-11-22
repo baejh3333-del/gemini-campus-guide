@@ -1455,14 +1455,14 @@ export function ToeicDiagnosisSection() {
               <pre className="library-prompt-text">{tutorPromptText}</pre>
             </details>
 
-            <LibraryCopy body={tutorPromptText} fullTextId="toeic-prompt-full-text" />
+            <LibraryCopy
+              body={tutorPromptText}
+              fullTextId="toeic-prompt-full-text"
+              openGeminiLabel="Gemini에서 바로 학습하기"
+            />
 
             <SignupLink source="toeic_diagnosis" className="library-student-subscribe">
-              <span>
-                {targetGap > 0
-                  ? `목표 ${activePlan.label}까지 +${targetGap}점 · 학생 Gemini 무료로 ${weakSummaryLabel} 무제한 훈련하기`
-                  : `현재 ${diagnosis.finalScore}점 · 학생 Gemini 무료로 950+ 실전 함정 완벽 방어하기`}
-              </span>
+              <span>무료로 Gemini 구독 후 무제한 훈련하기</span>
               <span aria-hidden="true">↗</span>
             </SignupLink>
           </section>

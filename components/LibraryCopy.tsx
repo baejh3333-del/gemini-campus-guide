@@ -12,12 +12,14 @@ export function LibraryCopy({
   skillName,
   fullTextId,
   promptId,
+  openGeminiLabel = "자동 복사 후 Gemini 열기",
 }: {
   body: string;
   kind?: "prompt" | "gem" | "skill";
   skillName?: string;
   fullTextId?: string;
   promptId?: string;
+  openGeminiLabel?: string;
 }) {
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
@@ -109,7 +111,7 @@ export function LibraryCopy({
             rel="noopener noreferrer"
             onClick={() => copy(true)}
           >
-            자동 복사 후 Gemini 열기 <span aria-hidden="true">↗</span>
+            {openGeminiLabel} <span aria-hidden="true">↗</span>
           </a>
         </div>
       )}
