@@ -37,8 +37,8 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
     skillKey: "basicGrammar",
     skillName: "기초 품사",
     difficultyLabel: "난이도 ★☆☆",
-    targetLevel: "600점대 검증",
-    weight: 14,
+    targetLevel: "550점대 검증",
+    weight: 6,
     targetSec: 15,
     instruction: "빈칸에 들어갈 가장 알맞은 어휘 형태를 고르세요.",
     passage: null,
@@ -59,11 +59,36 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
   {
     id: 2,
     part: "Part 5",
+    skillKey: "tenseVoice",
+    skillName: "시제·태",
+    difficultyLabel: "난이도 ★☆☆",
+    targetLevel: "600점대 검증",
+    weight: 7,
+    targetSec: 16,
+    instruction: "주어와 동사의 관계를 고려해 빈칸에 알맞은 동사 형태를 고르세요.",
+    passage: null,
+    prompt:
+      "All quarterly budget proposals must ------- by the finance director before Friday afternoon.",
+    options: [
+      { label: "A", text: "approve" },
+      { label: "B", text: "approving" },
+      { label: "C", text: "be approved" },
+      { label: "D", text: "have approved" },
+    ],
+    correctIndex: 2,
+    explanation:
+      "주어 All quarterly budget proposals(분기별 예산안)는 승인하는 주체가 아니라 승인받는 대상이며, 뒤에 행위자 by the finance director가 이어집니다. 조동사 must 뒤에는 동사원형이 와야 하므로 수동태 (C) be approved가 정답입니다.",
+    studyTip:
+      "조동사(must/should/will) 뒤에 목적어가 없고 'by + 행위자'가 보이면 1초 만에 'be + p.p.' 수동태를 떠올리세요.",
+  },
+  {
+    id: 3,
+    part: "Part 5",
     skillKey: "coreVocab",
     skillName: "핵심 어휘",
     difficultyLabel: "난이도 ★★☆",
-    targetLevel: "700점대 검증",
-    weight: 17,
+    targetLevel: "650점대 검증",
+    weight: 8,
     targetSec: 18,
     instruction: "문맥상 빈칸에 가장 자연스럽게 어울리는 동사를 고르세요.",
     passage: null,
@@ -82,14 +107,14 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
       '단어를 뜻 하나만 외우지 말고 "동사 + 자주 쓰이는 목적어(콜로케이션)" 세트로 암기하세요.',
   },
   {
-    id: 3,
+    id: 4,
     part: "Part 5",
-    skillKey: "advGrammar",
-    skillName: "구조 문법",
+    skillKey: "prepConj",
+    skillName: "전치사/접속사",
     difficultyLabel: "난이도 ★★★",
-    targetLevel: "800점대 검증",
-    weight: 21,
-    targetSec: 22,
+    targetLevel: "750점대 검증",
+    weight: 9,
+    targetSec: 20,
     instruction: "문장 구조와 의미를 모두 고려해 빈칸에 알맞은 표현을 고르세요.",
     passage: null,
     prompt:
@@ -104,17 +129,67 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
     explanation:
       "빈칸 뒤에 동사가 없는 명사구(the unexpected delay in raw material shipments)가 왔고, 뒤 절과 역접(지연에도 불구하고 마감 준수) 관계이므로 양보의 전치사 (B) Despite가 정답입니다. Although/Even though는 접속사라 뒤에 주어+동사가 필요하며, However는 접속부사입니다.",
     studyTip:
-      "전치사(Despite, During, Because of)와 접속사(Although, While, Because) 구분은 800점 돌파의 필수 관문입니다.",
+      "전치사(Despite, During, Because of)와 접속사(Although, While, Because) 구분은 750~800점 돌파의 필수 관문입니다.",
   },
   {
-    id: 4,
-    part: "Part 6",
-    skillKey: "contextLogic",
-    skillName: "문맥 논리",
+    id: 5,
+    part: "Part 5",
+    skillKey: "participleClause",
+    skillName: "분사·수식 구조",
+    difficultyLabel: "난이도 ★★★",
+    targetLevel: "800점대 검증",
+    weight: 10,
+    targetSec: 22,
+    instruction: "문장 전체의 동사 유무를 파악해 빈칸에 알맞은 형태를 고르세요.",
+    passage: null,
+    prompt:
+      "The logistics team is reviewing the inventory schedule ------- by the regional warehouse manager yesterday.",
+    options: [
+      { label: "A", text: "submit" },
+      { label: "B", text: "submitting" },
+      { label: "C", text: "submitted" },
+      { label: "D", text: "submission" },
+    ],
+    correctIndex: 2,
+    explanation:
+      "문장에 이미 본동사 is reviewing이 있으므로 빈칸은 앞의 명사구 the inventory schedule을 뒤에서 수식하는 분사 자리입니다. 일정표가 '제출된' 수동 관계이고 뒤에 목적어 없이 by the regional warehouse manager가 이어지므로 과거분사 (C) submitted가 정답입니다.",
+    studyTip:
+      "명사 뒤 분사 자리(후치 수식)는 뒤에 목적어가 있으면 현재분사(-ing), 목적어 없이 전치사구가 오면 과거분사(p.p.)로 빠르게 판별하세요.",
+  },
+  {
+    id: 6,
+    part: "Part 5",
+    skillKey: "advVocab",
+    skillName: "고난도 유의어",
     difficultyLabel: "난이도 ★★★★",
     targetLevel: "850점대 검증",
-    weight: 23,
-    targetSec: 30,
+    weight: 11,
+    targetSec: 22,
+    instruction: "철자가 비슷한 어휘 중 문맥에 가장 정확한 형용사를 고르세요.",
+    passage: null,
+    prompt:
+      "Customers who register for the annual conference before May 10 will receive a ------- tote bag at the check-in desk.",
+    options: [
+      { label: "A", text: "complimentary" },
+      { label: "B", text: "complementary" },
+      { label: "C", text: "compliant" },
+      { label: "D", text: "comparable" },
+    ],
+    correctIndex: 0,
+    explanation:
+      '사전 등록 고객에게 무료로 제공되는 토트백을 의미하므로 "무료의"라는 뜻의 (A) complimentary가 정답입니다. (B) complementary는 "상호 보완적인", (C) compliant는 "규정을 준수하는", (D) comparable은 "필적하는"이라는 뜻의 단골 혼동 어휘입니다.',
+    studyTip:
+      "850+ 고득점에서는 철자가 비슷한 혼동 어휘(complimentary vs complementary, assure vs ensure)를 한 쌍씩 정리해 두어야 함정을 피합니다.",
+  },
+  {
+    id: 7,
+    part: "Part 6",
+    skillKey: "contextLogic",
+    skillName: "문맥 연결어",
+    difficultyLabel: "난이도 ★★★★",
+    targetLevel: "800점대 검증",
+    weight: 11,
+    targetSec: 28,
     instruction:
       "아래 사내 공지사항의 흐름에 맞게 빈칸에 들어갈 가장 적절한 연결어를 고르세요.",
     passage: {
@@ -137,14 +212,57 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
       "Part 6은 빈칸 문장만 보지 말고 바로 앞 문장과의 논리 관계(인과·역접·추가·예시)를 먼저 파악해야 오답을 줄입니다.",
   },
   {
-    id: 5,
+    id: 8,
+    part: "Part 6",
+    skillKey: "sentenceInsert",
+    skillName: "문장 삽입",
+    difficultyLabel: "난이도 ★★★★",
+    targetLevel: "850점대 검증",
+    weight: 12,
+    targetSec: 32,
+    instruction:
+      "사내 메모의 앞뒤 문맥과 지칭어 흐름을 고려해 빈칸에 들어갈 가장 적절한 문장을 고르세요.",
+    passage: {
+      header: "MEMO · CLOUD STORAGE MIGRATION",
+      paragraphs: [
+        "To: All Marketing Staff",
+        "Beginning next Monday, our department will transition from local file servers to the new CloudVault platform. -------. During the weekend migration window, shared folders will remain read-only so no edits are lost.",
+      ],
+    },
+    prompt: "Which sentence best fits the blank in the memo?",
+    options: [
+      {
+        label: "A",
+        text: "The new cafeteria menu will also be posted on the company intranet.",
+      },
+      {
+        label: "B",
+        text: "This upgrade will allow remote team members to collaborate on large design files in real time.",
+      },
+      {
+        label: "C",
+        text: "However, the marketing budget for the third quarter has already been finalized.",
+      },
+      {
+        label: "D",
+        text: "Please return your old office keys to the security desk before leaving today.",
+      },
+    ],
+    correctIndex: 1,
+    explanation:
+      '앞 문장의 "로컬 서버에서 신규 CloudVault 플랫폼으로의 전환"을 지칭어 "This upgrade"로 받아 장점을 설명하고, 이어지는 주말 이전 작업 안내와 자연스럽게 연결되는 (B)가 정답입니다. 나머지 보기는 메모의 주제(클라우드 이전)와 무관합니다.',
+    studyTip:
+      "Part 6 문장 삽입 문제는 지시어(This/These/Such)와 관사(the)가 앞 문장의 어떤 명사를 가리키는지 연결하면 정확도가 크게 올라갑니다.",
+  },
+  {
+    id: 9,
     part: "Part 7",
-    skillKey: "readingComp",
-    skillName: "실전 독해",
-    difficultyLabel: "난이도 ★★★★★",
-    targetLevel: "900점+ 검증",
-    weight: 25,
-    targetSec: 45,
+    skillKey: "readingParaphrase",
+    skillName: "패러프레이징 독해",
+    difficultyLabel: "난이도 ★★★★",
+    targetLevel: "850점대 검증",
+    weight: 12,
+    targetSec: 42,
     instruction: "이메일을 읽고 개정된 정책에 대한 내용으로 알맞은 것을 고르세요.",
     passage: {
       header: "E-MAIL · REVISED TRAVEL REIMBURSEMENT POLICY",
@@ -171,6 +289,49 @@ export const TOEIC_QUESTIONS: ToeicQuestion[] = [
       '본문의 "digital copies uploaded via the ExpenseHub app within five business days of returning(복귀 후 5영업일 이내 앱으로 디지털 사본 업로드)"을 "출장 후 신속하게(promptly) 업로드해야 한다"로 바꿔 표현한 (C)가 정답입니다. (A) 숙박·항공만 사전 승인 필요, (B) 30달러 미만 식비는 종이 영수증 불필요, (D) 이메일 제출 언급 없음.',
     studyTip:
       "Part 7 고득점의 핵심은 지문의 표현을 보기의 동의어 표현으로 바꿔 쓰는 패러프레이징(Paraphrasing) 감각을 기르는 것입니다.",
+  },
+  {
+    id: 10,
+    part: "Part 7",
+    skillKey: "readingInference",
+    skillName: "조건·예외 추론",
+    difficultyLabel: "난이도 ★★★★★",
+    targetLevel: "900점+ 검증",
+    weight: 14,
+    targetSec: 48,
+    instruction:
+      "안내문의 조건과 예외 조항을 정확히 파악해 추론할 수 있는 내용을 고르세요.",
+    passage: {
+      header: "NOTICE · ANNUAL SOFTWARE LICENSE RENEWAL",
+      paragraphs: [
+        "Valued Enterprise Client: Your organization's ProSuite license is scheduled to expire on June 30. Clients who renew for a two-year term by June 15 will automatically receive a 15 percent discount and complimentary priority phone support. Please note that the 15 percent discount cannot be combined with nonprofit or academic pricing tiers. Accounts not renewed by June 30 will enter a seven-day grace period with limited export functions before access is suspended.",
+      ],
+    },
+    prompt:
+      "What can be inferred about a university renewing its ProSuite license on June 10?",
+    options: [
+      {
+        label: "A",
+        text: "Its access to export functions will be immediately suspended on June 15.",
+      },
+      {
+        label: "B",
+        text: "It is ineligible to stack the 15 percent renewal discount on top of its academic rate.",
+      },
+      {
+        label: "C",
+        text: "It must pay an additional fee to receive priority phone support.",
+      },
+      {
+        label: "D",
+        text: "It can renew for only one year to qualify for the 15 percent reduction.",
+      },
+    ],
+    correctIndex: 1,
+    explanation:
+      '질문의 university(대학)는 본문의 academic pricing tiers(교육기관 요금제)에 해당합니다. 본문에서 "15% 할인은 비영리·교육기관 요금제와 중복 적용 불가(cannot be combined)"라고 명시했으므로, 교육 요금제에 15% 갱신 할인을 중복 적용할 수 없다는 (B)가 정답입니다. (A) 미갱신 시 6월 30일 이후 유예기간, (C) 2년 갱신 시 무료 제공, (D) 2년 약정 조건.',
+    studyTip:
+      '900+ Part 7 추론 문항은 "Please note / cannot be combined / except" 같은 단서·예외 조항을 질문의 구체적 사례(university → academic)와 연결하는 것이 승부처입니다.',
   },
 ];
 
@@ -542,16 +703,65 @@ export const TOEIC_TARGET_PLANS: Record<TargetScoreKey, TargetPlan> = {
   },
 };
 
+export type DdayOption = "2w" | "4w" | "8w" | "12w" | "none";
+
+export const DDAY_OPTIONS: {
+  id: DdayOption;
+  label: string;
+  sub: string;
+  planHint: string;
+}[] = [
+  {
+    id: "2w",
+    label: "2주 이내",
+    sub: "D-14",
+    planHint:
+      "단기 벼락치기 모드: 취약 파트 오답 공식 집중 정리 + 매일 실전 타이머 모의고사로 감각을 끌어올리세요.",
+  },
+  {
+    id: "4w",
+    label: "4주",
+    sub: "D-28",
+    planHint:
+      "1개월 집중 모드: 1~2주차 약점 개념·어휘 보완 → 3~4주차 75분 RC 타임어택 완성 루틴이 가장 효율적입니다.",
+  },
+  {
+    id: "8w",
+    label: "2개월",
+    sub: "D-56",
+    planHint:
+      "정석 8주 모드: 어휘·문법 뼈대를 탄탄히 다진 뒤 Part 6·7 패러프레이징과 LC 쉐도잉을 균형 있게 병행하세요.",
+  },
+  {
+    id: "12w",
+    label: "3개월+",
+    sub: "D-84",
+    planHint:
+      "장기 고득점 모드: 기초 어휘 3회독부터 고난도 추론·삼중 지문까지 단계별로 확실하게 정복하세요.",
+  },
+  {
+    id: "none",
+    label: "시험일 미정",
+    sub: "자율 페이스",
+    planHint:
+      "부담 없는 루틴 모드: 하루 30~60분 핵심 콜로케이션 어휘와 Part 5·7 데일리 세트로 실전 감각을 유지하세요.",
+  },
+];
+
 export interface QuestionDetail {
   question: ToeicQuestion;
   userAnswer: number | null;
   isCorrect: boolean;
   timeSpent: number;
   isSlow: boolean;
+  isGuessed: boolean;
+  isSkipped: boolean;
 }
 
 export interface DiagnosisResult {
   correctCount: number;
+  guessedCorrectCount: number;
+  skippedCount: number;
   totalTime: number;
   speedLabel: string;
   finalScore: number;
@@ -561,6 +771,72 @@ export interface DiagnosisResult {
   details: QuestionDetail[];
   defaultTarget: TargetScoreKey;
   weakParts: string[];
+}
+
+export interface ToeicHistoryEntry {
+  id: string;
+  timestamp: number;
+  finalScore: number;
+  correctCount: number;
+  totalQuestions: number;
+  totalTime: number;
+  speedLabel: string;
+  tierTitle: string;
+}
+
+const TOEIC_HISTORY_STORAGE_KEY = "gsa-toeic-history-v1";
+const TOEIC_HISTORY_MAX_ITEMS = 10;
+
+export function loadToeicHistory(): ToeicHistoryEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(TOEIC_HISTORY_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (item): item is ToeicHistoryEntry =>
+          typeof item === "object" &&
+          item !== null &&
+          typeof (item as ToeicHistoryEntry).id === "string" &&
+          typeof (item as ToeicHistoryEntry).timestamp === "number" &&
+          typeof (item as ToeicHistoryEntry).finalScore === "number" &&
+          typeof (item as ToeicHistoryEntry).correctCount === "number" &&
+          typeof (item as ToeicHistoryEntry).totalQuestions === "number" &&
+          typeof (item as ToeicHistoryEntry).totalTime === "number" &&
+          typeof (item as ToeicHistoryEntry).speedLabel === "string" &&
+          typeof (item as ToeicHistoryEntry).tierTitle === "string"
+      )
+      .slice(0, TOEIC_HISTORY_MAX_ITEMS);
+  } catch {
+    return [];
+  }
+}
+
+export function saveToeicHistory(d: DiagnosisResult): ToeicHistoryEntry[] {
+  if (typeof window === "undefined") return [];
+  const entry: ToeicHistoryEntry = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    timestamp: Date.now(),
+    finalScore: d.finalScore,
+    correctCount: d.correctCount,
+    totalQuestions: d.details.length,
+    totalTime: d.totalTime,
+    speedLabel: d.speedLabel,
+    tierTitle: d.tierTitle,
+  };
+  const existing = loadToeicHistory();
+  const next = [entry, ...existing].slice(0, TOEIC_HISTORY_MAX_ITEMS);
+  try {
+    window.localStorage.setItem(
+      TOEIC_HISTORY_STORAGE_KEY,
+      JSON.stringify(next)
+    );
+  } catch {
+    // Ignore storage quota or private-mode errors
+  }
+  return next;
 }
 
 export function formatSecondsToMMSS(totalSec: number): string {
@@ -580,78 +856,98 @@ export function formatDurationKorean(totalSec: number): string {
 
 export function calculateToeicDiagnosis(
   answers: (number | null)[],
-  questionTimes: number[]
+  questionTimes: number[],
+  guessedFlags?: boolean[]
 ): DiagnosisResult {
   let correctCount = 0;
+  let guessedCorrectCount = 0;
+  let skippedCount = 0;
   let weightedPoints = 0;
   let totalTime = 0;
 
   const details: QuestionDetail[] = TOEIC_QUESTIONS.map((q, idx) => {
     const userAnswer = answers[idx] ?? null;
-    const isCorrect = userAnswer === q.correctIndex;
+    const isSkipped = userAnswer === -1;
+    const isCorrect = !isSkipped && userAnswer === q.correctIndex;
+    const isGuessed = !isSkipped && Boolean(guessedFlags?.[idx]);
     const timeSpent = Math.max(1, Math.round(questionTimes[idx] ?? 0));
     totalTime += timeSpent;
-    if (isCorrect) {
+
+    if (isSkipped) {
+      skippedCount += 1;
+    } else if (isCorrect) {
       correctCount += 1;
-      weightedPoints += q.weight;
+      if (isGuessed) {
+        guessedCorrectCount += 1;
+        weightedPoints += q.weight * 0.5;
+      } else {
+        weightedPoints += q.weight;
+      }
     }
+
     return {
       question: q,
       userAnswer,
       isCorrect,
       timeSpent,
       isSlow: timeSpent > q.targetSec * 1.45,
+      isGuessed,
+      isSkipped,
     };
   });
 
-  // 기본 점수 매핑 (0점 -> 445점, 100점 -> 945점)
-  let rawScore = 445 + weightedPoints * 5.0;
+  // 기본 점수 매핑 (10문항 가중치 합 100 기준: 0점 -> 415점, 100점 -> 960점)
+  let rawScore = 415 + weightedPoints * 5.45;
 
-  // 풀이 속도 보정 (정확도가 뒷받침될 때 빠른 풀이 가산, 매우 느릴 때 감산)
-  let speedLabel = "적정";
+  // 풀이 속도 보정 (10문항 기준: <=180s 매우 빠름, <=300s 안정적, <=420s 다소 느림, >420s 시간 부족 주의)
+  let speedLabel = "안정적";
   let speedFeedback =
     "전반적인 풀이 속도가 실전 권장 페이스를 잘 유지하고 있습니다.";
 
-  if (totalTime <= 90) {
+  if (totalTime <= 180) {
     speedLabel = "매우 빠름";
-    if (correctCount >= 4) {
-      rawScore += 30;
+    if (correctCount >= 8) {
+      rawScore += 25;
       speedFeedback =
-        "문제당 평균 풀이 속도가 매우 빠르고 정확해, 실전 Part 7에서도 시간 여유를 확보할 수 있는 강점이 있습니다.";
-    } else if (correctCount <= 2) {
-      speedFeedback =
-        "풀이 속도는 매우 빠르지만 오답이 발생했습니다. 보기를 끝까지 확인하지 않고 성급하게 고르는 습관을 점검해 보세요.";
-    } else {
+        "10문항을 3분 이내에 높은 정확도로 해결해, 실전 Part 7 후반부에서도 충분한 시간 여유를 확보할 수 있는 강점이 있습니다.";
+    } else if (correctCount >= 5) {
       rawScore += 10;
       speedFeedback =
-        "전반적으로 빠른 풀이 리듬을 갖고 있어, 취약한 문법·독해 개념만 보완하면 점수가 가파르게 오를 잠재력이 큽니다.";
+        "전반적으로 빠른 풀이 리듬을 갖고 있어, 틀린 문법·독해 포인트만 보완하면 점수가 가파르게 오를 잠재력이 큽니다.";
+    } else {
+      speedFeedback =
+        "풀이 속도는 매우 빠르지만 오답이 많았습니다. 보기를 끝까지 확인하지 않고 성급하게 고르는 습관을 점검해 보세요.";
     }
-  } else if (totalTime <= 150) {
+  } else if (totalTime <= 300) {
     speedLabel = "안정적";
-    if (correctCount >= 4) rawScore += 15;
+    if (correctCount >= 8) {
+      rawScore += 15;
+    } else if (correctCount >= 5) {
+      rawScore += 5;
+    }
     speedFeedback =
-      "적절한 시간 안에 안정적으로 문제를 해결했습니다. 실전에서는 Part 5를 조금 더 단축하면 고득점에 유리합니다.";
-  } else if (totalTime <= 210) {
+      "권장 시간 안에 안정적으로 10문항을 해결했습니다. 실전에서는 Part 5를 15초 내외로 더 단축하면 고득점에 유리합니다.";
+  } else if (totalTime <= 420) {
     speedLabel = "다소 느림";
-    if (correctCount >= 2) rawScore -= 15;
+    if (correctCount >= 3) rawScore -= 15;
     speedFeedback =
-      "문제당 고민 시간이 다소 길어지는 경향이 있습니다. 실전 시험 후반부(Part 7)에서 시간 부족으로 찍는 문항이 생길 가능성이 있어 감점 요인으로 반영되었습니다.";
+      "문제당 고민 시간이 다소 길어지는 경향이 있습니다. 실전 시험 후반부(Part 7)에서 시간 부족으로 찍는 문항이 생길 수 있어 감점 요인으로 반영되었습니다.";
   } else {
     speedLabel = "시간 부족 주의";
     if (correctCount >= 1) rawScore -= 25;
     speedFeedback =
-      "풀이 시간이 권장 기준보다 크게 초과되었습니다. 실전 RC(75분 100문항)에서 시간 압박을 받을 가능성이 높아 속도 훈련이 반드시 필요합니다.";
+      "풀이 시간이 권장 기준(5분)을 크게 초과했습니다. 실전 RC(75분 100문항)에서 시간 압박을 받을 가능성이 높아 타임어택 훈련이 필수입니다.";
   }
 
-  // 0문제 정답 시 하한선 보정
+  // 0문제 정답 시 하한선 보정 (410~430 구간)
   if (correctCount === 0) {
-    rawScore = 440;
+    rawScore = 420;
   }
 
-  // 토익 점수 단위(5점 단위)로 반올림 및 420~990 범위 제한
+  // 토익 점수 단위(5점 단위)로 반올림 및 400~990 범위 제한
   const finalScore = Math.min(
     990,
-    Math.max(420, Math.round(rawScore / 5) * 5)
+    Math.max(400, Math.round(rawScore / 5) * 5)
   );
 
   // 점수대별 등급 타이틀
@@ -663,74 +959,106 @@ export function calculateToeicDiagnosis(
   else if (finalScore >= 550) tierTitle = "기초 다지기형 (550~600대)";
   else tierTitle = "입문 출발형 (500 이하)";
 
-  // 점수 산출 원인(왜 이 점수가 나왔는지) 맞춤 분석 문장 생성
-  const reasons: string[] = [];
-  const q1Ok = details[0]?.isCorrect ?? false;
-  const q2Ok = details[1]?.isCorrect ?? false;
-  const q3Ok = details[2]?.isCorrect ?? false;
-  const q4Ok = details[3]?.isCorrect ?? false;
-  const q5Ok = details[4]?.isCorrect ?? false;
+  // 파트별 정답률 집계 (Part 5: Q1~Q6, Part 6: Q7~Q8, Part 7: Q9~Q10)
+  const p5Details = details.filter((d) => d.question.part === "Part 5");
+  const p6Details = details.filter((d) => d.question.part === "Part 6");
+  const p7Details = details.filter((d) => d.question.part === "Part 7");
 
-  // 1) 패턴 기반 핵심 진단
-  if (correctCount === 5) {
+  const p5Correct = p5Details.filter((d) => d.isCorrect).length;
+  const p6Correct = p6Details.filter((d) => d.isCorrect).length;
+  const p7Correct = p7Details.filter((d) => d.isCorrect).length;
+
+  const basicP5Wrong = details.slice(0, 3).filter((d) => !d.isCorrect);
+  const advP5Wrong = details.slice(3, 6).filter((d) => !d.isCorrect);
+  const p6Wrong = p6Details.filter((d) => !d.isCorrect);
+  const p7Wrong = p7Details.filter((d) => !d.isCorrect);
+
+  // 점수 산출 원인 맞춤 분석 (UI 가독성을 위해 핵심 4~5개 인사이트로 압축)
+  const reasons: string[] = [];
+
+  // 1) 파트별 패턴 기반 핵심 진단
+  if (correctCount === TOEIC_QUESTIONS.length && guessedCorrectCount === 0) {
     reasons.push(
-      "기초 품사부터 고난도 전치사/접속사 구분, Part 6 논리 연결, Part 7 패러프레이징 독해까지 전 영역에서 빈틈없는 정확도를 보여주었습니다."
+      "Part 5(6/6)·Part 6(2/2)·Part 7(2/2) 전 영역에서 기초 문법부터 고난도 유의어, 문장 삽입, 조건·예외 추론까지 빈틈없는 정확도를 보여주었습니다."
+    );
+  } else if (correctCount === TOEIC_QUESTIONS.length) {
+    reasons.push(
+      `10문항 모두 정답을 고르셨으나, 그중 ${guessedCorrectCount}문항은 확신 없이 찍어 맞힌 항목으로 실전 안정성을 위해 추가 정리가 필요합니다.`
     );
   } else if (correctCount === 0) {
     reasons.push(
-      "5개 핵심 유형 모두에서 오답이 발생해, 아직 토익 빈출 문법 구조와 비즈니스 어휘 패턴에 익숙하지 않은 상태로 진단되었습니다."
+      "Part 5~7 10개 핵심 유형 모두에서 오답이 발생해, 아직 토익 빈출 문법 공식과 비즈니스 어휘·독해 패턴에 익숙하지 않은 입문 단계로 진단되었습니다."
     );
-  } else if ((!q1Ok || !q2Ok) && (q4Ok || q5Ok)) {
+  } else if (p5Correct <= 3 && p6Correct + p7Correct >= 3) {
     reasons.push(
-      '독해 감각(Part 6·7)은 좋은 편이지만, 상대적으로 배점이 쉽고 빠르게 맞아야 할 기초 품사·필수 어휘(Part 5)에서 점수를 아쉽게 잃고 있는 전형적인 "감으로 푸는 유형"입니다.'
+      `Part 6·7 독해 감각(${p6Correct + p7Correct}/4)은 뛰어난 편이지만, 빠르고 정확하게 점수를 챙겨야 할 Part 5(${p5Correct}/6)에서 손실이 큰 전형적인 "감으로 푸는 유형"입니다.`
     );
-  } else if (q1Ok && q2Ok && q3Ok && (!q4Ok || !q5Ok)) {
+  } else if (p5Correct >= 5 && p6Correct + p7Correct <= 2) {
     reasons.push(
-      "Part 5 문법과 핵심 어휘 기본기는 매우 탄탄합니다! 다만 지문이 길어지는 Part 6·7의 문맥 추론과 패러프레이징에서 점수가 막혀 850+ 진입이 지연되는 패턴입니다."
+      `Part 5 문법·어휘 기본기(${p5Correct}/6)는 매우 탄탄합니다! 다만 지문이 길어지는 Part 6(${p6Correct}/2)·Part 7(${p7Correct}/2)의 문맥 논리와 패러프레이징에서 막혀 850+ 진입이 지연되는 패턴입니다.`
     );
-  } else if (q1Ok && q2Ok && !q3Ok) {
+  } else if (p5Correct >= 4 && p6Correct === 2 && p7Correct === 0) {
     reasons.push(
-      "600~700점대 기초 품사와 기본 어휘력은 갖추고 있으나, 800점 변별력 문항인 전치사·접속사 구조 구분(Q3)에서 흔들려 중급대에 머무르는 흐름입니다."
+      `Part 5(${p5Correct}/6)와 Part 6(2/2)은 안정적이지만, 고배점 구간인 Part 7(0/2) 패러프레이징·예외 추론에서 감점이 집중되어 현재 점수로 산출되었습니다.`
     );
   } else {
-    const correctNames = details
-      .filter((d) => d.isCorrect)
-      .map((d) => d.question.skillName)
-      .join(", ");
-    const wrongNames = details
-      .filter((d) => !d.isCorrect)
-      .map((d) => d.question.skillName)
-      .join(", ");
     reasons.push(
-      `[${correctNames}] 영역은 정확하게 해결했으나, [${wrongNames}] 영역의 오답이 난이도 가중치에 반영되어 현재 점수로 산출되었습니다.`
+      `파트별 정답률은 Part 5(${p5Correct}/6), Part 6(${p6Correct}/2), Part 7(${p7Correct}/2)이며, 문항별 난이도 가중치가 합산되어 현재 예상 점수가 산출되었습니다.`
     );
   }
 
-  // 2) 세부 취약 포인트 짚어주기
-  if (!q1Ok) {
+  // 1-b) 찍어서 맞힌 문항 / 스킵 문항 거품 제거 안내
+  if (guessedCorrectCount > 0) {
     reasons.push(
-      "Q1(기초 품사) 오답: 문장 성분(주어·동사·목적어·수식어)을 빠르게 구분하는 Part 5 공식형 문제를 보강하면 단기간에 50~80점 이상 끌어올릴 수 있습니다."
+      `찍어서 맞힌 ${guessedCorrectCount}문항은 실력 거품을 빼기 위해 가중치 50%만 반영했으며, 해당 파트도 취약 영역으로 포함했습니다.`
     );
   }
-  if (!q2Ok) {
+  if (skippedCount > 0) {
     reasons.push(
-      'Q2(핵심 어휘) 오답: "extend operating hours" 같은 토익 빈출 비즈니스 동사-목적어 짝꿍 표현(콜로케이션) 암기가 부족한 상태입니다.'
+      `모르겠음으로 건너뛴 ${skippedCount}문항은 확실한 보완이 필요한 핵심 취약 유형으로 우선 정리 대상에 포함했습니다.`
     );
   }
-  if (!q3Ok) {
-    reasons.push(
-      'Q3(전치사/접속사) 오답: 의미만 해석하고 빈칸 뒤에 "절(주어+동사)"이 오는지 "명사구"가 오는지 확인하는 문장 구조 분석 습관이 필요합니다.'
+
+  // 2) 핵심 취약 영역 짚어주기 (최대 2~3개)
+  const weaknessInsights: string[] = [];
+
+  if (basicP5Wrong.length > 0) {
+    const labels = basicP5Wrong
+      .map((d) => `Q${d.question.id}(${d.question.skillName})`)
+      .join(", ");
+    weaknessInsights.push(
+      `Part 5 기초 영역 오답 [${labels}]: 품사 자리·수동태·빈출 동사 콜로케이션 같은 공식형 문제를 보강하면 단기간에 50~100점 이상 빠르게 올릴 수 있습니다.`
     );
   }
-  if (!q4Ok) {
-    reasons.push(
-      "Q4(Part 6 문맥 논리) 오답: 빈칸 문장만 보지 않고 앞뒤 문장의 인과·역접 관계를 연결하는 접속부사 훈련이 필요합니다."
+  if (advP5Wrong.length > 0) {
+    const labels = advP5Wrong
+      .map((d) => `Q${d.question.id}(${d.question.skillName})`)
+      .join(", ");
+    weaknessInsights.push(
+      `Part 5 중상급 변별력 오답 [${labels}]: 전치사/접속사 구분, 분사 후치 수식, 혼동 유의어(complimentary 등)는 750~850점대 도약의 핵심 관문입니다.`
     );
   }
-  if (!q5Ok) {
-    reasons.push(
-      'Q5(Part 7 패러프레이징) 오답: 지문의 "within five business days"가 보기의 "promptly"로 바뀌는 동의어 치환(Paraphrasing)에 익숙해져야 고득점에 도달합니다.'
+  if (p6Wrong.length > 0) {
+    const labels = p6Wrong
+      .map((d) => `Q${d.question.id}(${d.question.skillName})`)
+      .join(", ");
+    weaknessInsights.push(
+      `Part 6 문맥 논리 오답 [${labels}]: 빈칸 문장만 보지 말고 앞뒤 문장의 인과관계와 지칭어(This upgrade 등) 흐름을 연결하는 훈련이 필요합니다.`
     );
+  }
+  if (p7Wrong.length > 0) {
+    const labels = p7Wrong
+      .map((d) => `Q${d.question.id}(${d.question.skillName})`)
+      .join(", ");
+    weaknessInsights.push(
+      `Part 7 실전 독해 오답 [${labels}]: 지문 표현의 동의어 치환(within 5 days ↔ promptly)과 예외·단서 조항(cannot be combined)을 놓치지 않는 정독 습관이 중요합니다.`
+    );
+  }
+
+  const maxWeaknessCount =
+    guessedCorrectCount > 0 || skippedCount > 0 ? 2 : 3;
+  for (const insight of weaknessInsights.slice(0, maxWeaknessCount)) {
+    reasons.push(insight);
   }
 
   // 3) 풀이 속도 영향 추가
@@ -738,27 +1066,32 @@ export function calculateToeicDiagnosis(
     `시간 관리 분석 (${formatDurationKorean(totalTime)} 소요): ${speedFeedback}`
   );
 
-  // 4) 점수대 및 풀이 패턴 기반 인터넷 커뮤니티 감성 한 줄 팩폭 멘트 생성
+  // 4) 점수대 및 풀이 패턴 기반 인터넷 커뮤니티 감성 한 줄 팩폭 멘트 생성 (원본 12개 문구 그대로)
+  const q4Ok = details[3]?.isCorrect ?? false;
   let roastComment = "";
-  if (correctCount === 5 && totalTime <= 90) {
+  if (
+    correctCount === TOEIC_QUESTIONS.length &&
+    guessedCorrectCount === 0 &&
+    totalTime <= 180
+  ) {
     roastComment =
       "응시료 아깝게 시험장 왜 감? YBM 기부천사 그만하고 지금 당장 900+ 찍고 토익판 탈출하셈 ㄹㅇㅋㅋ";
-  } else if (correctCount === 5) {
+  } else if (correctCount === TOEIC_QUESTIONS.length) {
     roastComment =
       "실력은 이미 토익 고인물인데 속도가 거북이네;; 시험장 가서 마지막에 마킹 밀릴 각이니까 타임어택만 좀 빡세게 하셈.";
   } else if (correctCount === 0) {
     roastComment =
       "찍신도 오늘 휴가 갔네 ㅋㅋ 이대로 가면 5만원 내고 2시간 동안 영어 ASMR 듣다 나옴. 오늘부터 단어장 펴라 제발.";
-  } else if ((!q1Ok || !q2Ok) && (q4Ok || q5Ok)) {
+  } else if (basicP5Wrong.length > 0 && p6Correct + p7Correct >= 3) {
     roastComment =
       "독해 감 하나로 버티는 야생형 인간이네 ㅋㅋ Part 5에서 주는 점수 다 발로 차고 있음. 기초 문법만 3일 봐도 점수 떡상할 듯.";
-  } else if (q1Ok && q2Ok && q3Ok && !q4Ok && !q5Ok) {
+  } else if (p5Correct >= 5 && p6Correct + p7Correct <= 1) {
     roastComment =
       "Part 5 여포 납셨네 ㅋㅋ 문법은 씹어 먹으면서 지문만 길어지면 갑자기 난독증 오는 거 실화냐? 이제 Part 7 정면승부 가자.";
-  } else if (correctCount >= 3 && totalTime > 180) {
+  } else if (correctCount >= 6 && totalTime > 360) {
     roastComment =
       "정답률은 나쁘지 않은데 이 속도면 실전 Part 7 막판 20문제는 무조건 B로 한 줄 기둥 세워야 됨;; 지금 당장 스톱워치 켜라.";
-  } else if (q1Ok && q2Ok && !q3Ok && finalScore < 800) {
+  } else if (basicP5Wrong.length === 0 && !q4Ok && finalScore < 800) {
     roastComment =
       '전형적인 "공부는 했는데 700대에서 평생 갇히는" 지박령 루트임. Despite랑 Although 구분 못 하면 800은 영원히 남의 점수다.';
   } else if (finalScore >= 840) {
@@ -789,13 +1122,19 @@ export function calculateToeicDiagnosis(
   }
   if (finalScore >= 900) defaultTarget = 950;
 
-  // 방금 틀린 파트 집합 추출 (집중 파트 카드 강조용)
+  // 방금 틀렸거나 찍어서 맞힌 파트 집합 추출 (집중 파트 카드 강조용)
   const weakParts = Array.from(
-    new Set(details.filter((d) => !d.isCorrect).map((d) => d.question.part))
+    new Set(
+      details
+        .filter((d) => !d.isCorrect || (d.isCorrect && d.isGuessed))
+        .map((d) => d.question.part)
+    )
   );
 
   return {
     correctCount,
+    guessedCorrectCount,
+    skippedCount,
     totalTime,
     speedLabel,
     finalScore,
@@ -846,19 +1185,55 @@ export function getGoalGapSummary(
 
 export function buildDiagnosisCopyText(
   d: DiagnosisResult,
-  targetScore: TargetScoreKey
+  targetScore: TargetScoreKey,
+  dday: DdayOption = "none"
 ): string {
   const plan = TOEIC_TARGET_PLANS[targetScore];
+  const ddayMeta =
+    DDAY_OPTIONS.find((opt) => opt.id === dday) ?? DDAY_OPTIONS[DDAY_OPTIONS.length - 1];
+
   const wrongDetails = d.details.filter((item) => !item.isCorrect);
-  const slowCorrectDetails = d.details.filter(
-    (item) => item.isCorrect && item.isSlow
+  const guessedCorrectDetails = d.details.filter(
+    (item) => item.isCorrect && item.isGuessed
   );
-  const allCorrect = wrongDetails.length === 0;
+  const skippedDetails = d.details.filter((item) => item.isSkipped);
+  const slowCorrectDetails = d.details.filter(
+    (item) => item.isCorrect && !item.isGuessed && item.isSlow
+  );
+  const solidAllCorrect =
+    wrongDetails.length === 0 && guessedCorrectDetails.length === 0;
+
+  const p5Total = d.details.filter((i) => i.question.part === "Part 5").length;
+  const p5Correct = d.details.filter(
+    (i) => i.question.part === "Part 5" && i.isCorrect
+  ).length;
+  const p6Total = d.details.filter((i) => i.question.part === "Part 6").length;
+  const p6Correct = d.details.filter(
+    (i) => i.question.part === "Part 6" && i.isCorrect
+  ).length;
+  const p7Total = d.details.filter((i) => i.question.part === "Part 7").length;
+  const p7Correct = d.details.filter(
+    (i) => i.question.part === "Part 7" && i.isCorrect
+  ).length;
 
   const correctSkills = d.details
     .filter((item) => item.isCorrect)
-    .map((item) => `${item.question.part} ${item.question.skillName}`);
+    .map(
+      (item) =>
+        `${item.question.part} ${item.question.skillName}${
+          item.isGuessed ? "(운으로 맞힘)" : ""
+        }`
+    );
   const wrongSkills = wrongDetails.map(
+    (item) =>
+      `${item.question.part} ${item.question.skillName}${
+        item.isSkipped ? "(스킵)" : ""
+      }`
+  );
+  const guessedCorrectSkills = guessedCorrectDetails.map(
+    (item) => `${item.question.part} ${item.question.skillName}`
+  );
+  const skippedSkills = skippedDetails.map(
     (item) => `${item.question.part} ${item.question.skillName}`
   );
   const slowSkills = slowCorrectDetails.map(
@@ -867,44 +1242,81 @@ export function buildDiagnosisCopyText(
 
   const itemBreakdown = d.details.map((item, idx) => {
     const q = item.question;
-    const status = item.isCorrect ? "O 정답" : "X 오답";
+    const status = item.isSkipped
+      ? "SKIP 모르겠음 스킵"
+      : item.isCorrect
+        ? item.isGuessed
+          ? "△ 운으로 맞힌 취약 유형"
+          : "O 정답"
+        : "X 오답";
     const slowTag = item.isSlow ? ", 시간 초과 주의" : "";
     const base = `- Q${idx + 1} [${q.part} · ${q.skillName}] ${status} (${item.timeSpent}초${slowTag})`;
-    if (item.isCorrect) {
+
+    if (item.isCorrect && !item.isGuessed) {
       return base;
     }
-    const userOpt =
-      item.userAnswer !== null ? q.options[item.userAnswer] : undefined;
+
     const correctOpt = q.options[q.correctIndex];
-    const userLabel = userOpt ? `(${userOpt.label}) ${userOpt.text}` : "미선택";
     const correctLabel = correctOpt
       ? `(${correctOpt.label}) ${correctOpt.text}`
       : "";
+
+    if (item.isCorrect && item.isGuessed) {
+      return `${base}\n  · 정답: ${correctLabel} (확신 없이 찍어 맞힘 — 개념 재점검 필요)\n  · 핵심 약점 포인트: ${q.studyTip}`;
+    }
+
+    const userOpt =
+      !item.isSkipped && item.userAnswer !== null
+        ? q.options[item.userAnswer]
+        : undefined;
+    const userLabel = item.isSkipped
+      ? "모르겠음 (건너뛰기)"
+      : userOpt
+        ? `(${userOpt.label}) ${userOpt.text}`
+        : "미선택";
     return `${base}\n  · 내 선택: ${userLabel} / 정답: ${correctLabel}\n  · 핵심 약점 포인트: ${q.studyTip}`;
   });
 
-  const priorityDrillRule = allCorrect
+  const priorityTargets: string[] = [];
+  if (wrongSkills.length > 0) {
+    priorityTargets.push(`틀린·스킵 영역(${wrongSkills.join(", ")})`);
+  }
+  if (guessedCorrectSkills.length > 0) {
+    priorityTargets.push(
+      `운으로 맞힌 취약 유형(${guessedCorrectSkills.join(", ")})`
+    );
+  }
+  if (slowSkills.length > 0) {
+    priorityTargets.push(`시간이 오래 걸린 영역(${slowSkills.join(", ")})`);
+  }
+
+  const priorityDrillRule = solidAllCorrect
     ? slowSkills.length > 0
-      ? `1. 5문제를 모두 맞혔으므로 900+ 고난도 변별력·패러프레이징·타임어택 훈련으로 진행하되, 풀이 시간이 길었던 영역(${slowSkills.join(", ")})의 속도 단축을 우선 공략할 것.`
-      : `1. 5문제를 모두 정확히 맞혔으므로 900+ 고난도 변별력(어휘 뉘앙스·함정 보기 소거), Part 7 패러프레이징, 실전 타임어택 훈련 중심으로 진행할 것.`
-    : `1. 틀린 영역(${wrongSkills.join(", ")})${
-        slowSkills.length > 0
-          ? `과 시간이 오래 걸린 영역(${slowSkills.join(", ")})`
-          : ""
-      }부터 우선순위를 정해 집중 공략할 것.`;
+      ? `1. 10문항 정밀 진단을 확신 있게 모두 맞혔으므로 900+ 고난도 변별력·패러프레이징·타임어택 훈련으로 진행하되, 풀이 시간이 길었던 영역(${slowSkills.join(", ")})의 속도 단축을 우선 공략할 것.`
+      : `1. 10문항 정밀 진단을 모두 정확히 맞혔으므로 900+ 고난도 변별력(혼동 유의어·함정 보기 소거), Part 7 예외·추론 패러프레이징, 실전 타임어택 훈련 중심으로 진행할 것.`
+    : `1. ${priorityTargets.join(" → ")} 순서로 우선순위를 정해 집중 공략할 것.`;
 
   const lines = [
     "[역할]",
     "너는 나의 1:1 토익 전문 튜터다. 한국어로 간결하고 명확하게 코칭하며, 실전 RC 풀이 속도 단축과 출제자의 오답 함정 분석에 특화되어 있다.",
     "",
-    "[내 토익 진단 프로필]",
+    "[내 토익 10문항 정밀 진단 프로필]",
     `- 예상 점수: ${d.finalScore}점 (${d.tierTitle})`,
     `- 목표 점수: ${plan.label} (하루 권장 학습량: ${plan.dailyHours})`,
-    `- 정답 수: ${d.correctCount}/${TOEIC_QUESTIONS.length} | 총 소요 시간: ${formatDurationKorean(d.totalTime)} (풀이 속도: ${d.speedLabel})`,
+    `- 시험 예정일 (D-Day): ${ddayMeta.label} (${ddayMeta.sub})`,
+    `- D-Day 페이스 전략: ${ddayMeta.planHint}`,
+    `- 정답 수: ${d.correctCount}/${TOEIC_QUESTIONS.length} (운으로 맞힘: ${d.guessedCorrectCount}문항 / 모르겠음 스킵: ${d.skippedCount}문항) | 총 소요 시간: ${formatDurationKorean(d.totalTime)} (풀이 속도: ${d.speedLabel})`,
+    `- 파트별 정확도: Part 5 (${p5Correct}/${p5Total}) · Part 6 (${p6Correct}/${p6Total}) · Part 7 (${p7Correct}/${p7Total})`,
     `- 맞힌 영역: ${correctSkills.length > 0 ? correctSkills.join(", ") : "없음"}`,
     `- 틀린 영역: ${wrongSkills.length > 0 ? wrongSkills.join(", ") : "없음"}`,
+    ...(guessedCorrectSkills.length > 0
+      ? [`- 운으로 맞힌 취약 유형(가중치 50% 반영): ${guessedCorrectSkills.join(", ")}`]
+      : []),
+    ...(skippedSkills.length > 0
+      ? [`- 모르겠음 스킵 유형: ${skippedSkills.join(", ")}`]
+      : []),
     "",
-    "▶ 문항별 정오표 및 소요 시간",
+    "▶ 10문항 정오표 및 소요 시간",
     ...itemBreakdown,
     "",
     "▶ 핵심 원인 분석",
@@ -916,15 +1328,16 @@ export function buildDiagnosisCopyText(
     "",
     "[맞춤 교육 진행 규칙]",
     priorityDrillRule,
-    "2. 한 번에 1문제씩 실전 토익 변형 문제(A~D 4지선다)를 출제하고, 정답과 해설을 먼저 공개하지 말고 반드시 내 답변을 기다릴 것.",
-    "3. 내가 답하면 아래 3단 구성으로 피드백한 뒤 바로 다음 문제를 출제할 것:",
+    `2. 남은 시험 기간(${ddayMeta.label} · ${ddayMeta.sub})에 맞는 긴박감과 학습 강도로 커리큘럼 페이스를 조절할 것.`,
+    "3. 한 번에 1문제씩 실전 토익 변형 문제(A~D 4지선다)를 출제하고, 정답과 해설을 먼저 공개하지 말고 반드시 내 답변을 기다릴 것.",
+    "4. 내가 답하면 아래 3단 구성으로 피드백한 뒤 바로 다음 문제를 출제할 것:",
     "   ① 정답 여부 및 핵심 3초 풀이 근거",
     "   ② 내가 고른 오답 함정 분석 (맞혔다면 가장 매력적인 오답 함정 짚기)",
     "   ③ 실전에 바로 쓰는 필수 콜로케이션·패러프레이징 정리",
-    "4. 5문제마다 미니 리포트(정답률·개선된 점·남은 약점·다음 5문제 훈련 계획)를 제공할 것.",
+    "5. 5문제마다 미니 리포트(정답률·개선된 점·남은 약점·다음 5문제 훈련 계획)를 제공할 것.",
     "",
     "[시작 지시]",
-    "불필요한 인사나 서론 없이 지금 바로 내 핵심 약점 2줄 요약과 함께 **1번 맞춤 훈련 문제**부터 출제해 줘.",
+    "불필요한 인사나 서론 없이 지금 바로 내 핵심 약점(오답·스킵·운으로 맞힌 유형 포함) 2줄 요약과 함께 **1번 맞춤 훈련 문제**부터 출제해 줘.",
   ];
 
   return lines.join("\n");

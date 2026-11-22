@@ -6,6 +6,8 @@ import { STUDY_LIFE_SKILLS } from "./study-life-skills";
 import { BEHAVIOR_PSYCHOLOGY_PROMPT } from "./behavior-psychology-prompt";
 import { CAMPUS_PROMPTS } from "./campus-prompts";
 import { EXPERT_PROMPTS } from "./expert-prompts";
+import { PLAYGROUND_FEATURED_PROMPTS } from "./playground-featured";
+import { SEED_PLAYGROUND_PROMPTS } from "@/lib/playground";
 
 const presets: Record<
   string,
@@ -213,7 +215,23 @@ const GITHUB_POPULAR_SKILLS: LibraryPrompt[] = [
   },
 ];
 
+const MIGRATED_SEED_PLAYGROUND_PROMPTS: LibraryPrompt[] = SEED_PLAYGROUND_PROMPTS.map((item) => ({
+  id: item.id,
+  title: item.title,
+  description: item.description,
+  body: item.body,
+  steps: [
+    "아래 프롬프트를 복사하거나 Gemini 열기 버튼을 누르세요.",
+    "파란 표시 [항목]이 있다면 내 상황에 맞게 내용을 바꿔 입력해 보세요.",
+  ],
+  category: item.category,
+  kind: "prompt",
+  thumbnail: { variant: item.variant },
+  copyCount: null,
+}));
+
 export const LIBRARY_PROMPTS: LibraryPrompt[] = [
+  ...PLAYGROUND_FEATURED_PROMPTS,
   ...CAMPUS_PROMPTS,
   ...EXPERT_PROMPTS,
   {
@@ -317,4 +335,5 @@ export const LIBRARY_PROMPTS: LibraryPrompt[] = [
   })),
   ...STUDY_LIFE_SKILLS,
   ...GITHUB_POPULAR_SKILLS,
+  ...MIGRATED_SEED_PLAYGROUND_PROMPTS,
 ];

@@ -6,26 +6,33 @@ import {
   TOEIC_QUESTIONS,
   TARGET_KEYS,
   TOEIC_TARGET_PLANS,
+  DDAY_OPTIONS,
   calculateToeicDiagnosis,
   getGoalGapSummary,
   formatSecondsToMMSS,
   formatDurationKorean,
   buildDiagnosisCopyText,
+  loadToeicHistory,
+  saveToeicHistory,
   type TargetScoreKey,
   type DiagnosisResult,
+  type DdayOption,
+  type ToeicHistoryEntry,
 } from "@/content/toeic-diagnosis";
+import { downloadToeicShareCard, type ShareCardFormat } from "@/lib/toeic-share-card";
 import { LibraryCopy } from "./LibraryCopy";
 import { SignupLink } from "./SignupLink";
 
 type Phase = "intro" | "quiz" | "analyzing" | "result";
 
-const INTRO_OVERVIEW = [
-  { q: "Q1", name: "기초 품사", meta: "Part 5 · 600대" },
-  { q: "Q2", name: "핵심 어휘", meta: "Part 5 · 700대" },
-  { q: "Q3", name: "구조 문법", meta: "Part 5 · 800대" },
-  { q: "Q4", name: "문맥 논리", meta: "Part 6 · 850대" },
-  { q: "Q5", name: "실전 독해", meta: "Part 7 · 900+" },
-];
+const PART_GROUPS = ["Part 5", "Part 6", "Part 7"] as const;
+
+function formatShortDate(timestamp: number): string {
+  const d = new Date(timestamp);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${mm}/${dd}`;
+}
 
 function StudyMethodIcon({ icon }: { icon: "vocab" | "grammar" | "listening" | "time" }) {
   switch (icon) {
@@ -62,16 +69,33 @@ export function ToeicDiagnosisSection() {
   const [answers, setAnswers] = useState<(number | null)[]>(() =>
     Array(TOEIC_QUESTIONS.length).fill(null),
   );
+  const [guessedFlags, setGuessedFlags] = useState<boolean[]>(() =>
+    Array(TOEIC_QUESTIONS.length).fill(false),
+  );
   const [elapsedSec, setElapsedSec] = useState(0);
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
   const [displayScore, setDisplayScore] = useState(400);
   const [selectedTarget, setSelectedTarget] = useState<TargetScoreKey>(800);
+  const [selectedDday, setSelectedDday] = useState<DdayOption>("4w");
   const [openReviews, setOpenReviews] = useState<boolean[]>([]);
+  const [history, setHistory] = useState<ToeicHistoryEntry[]>([]);
+  const [savingCard, setSavingCard] = useState<ShareCardFormat | null>(null);
+  const [savedCard, setSavedCard] = useState<ShareCardFormat | null>(null);
 
   const sectionRef = useRef<HTMLElement>(null);
   const questionTimesMsRef = useRef<number[]>(Array(TOEIC_QUESTIONS.length).fill(0));
   const questionStartRef = useRef<number>(0);
   const quizStartRef = useRef<number>(0);
+  const savedCardTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setHistory(loadToeicHistory());
+    return () => {
+      if (savedCardTimerRef.current !== null) {
+        window.clearTimeout(savedCardTimerRef.current);
+      }
+    };
+  }, []);
 
   const scrollToSectionTop = useCallback(() => {
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -131,15 +155,35 @@ export function ToeicDiagnosisSection() {
     questionStartRef.current = now;
   }, []);
 
+  const finishQuizAndAnalyze = useCallback(
+    (finalAnswers: (number | null)[], finalGuessed: boolean[]) => {
+      const questionTimesSec = questionTimesMsRef.current.map((ms) =>
+        Math.max(1, Math.round(ms / 1000)),
+      );
+      const result = calculateToeicDiagnosis(finalAnswers, questionTimesSec, finalGuessed);
+      const updatedHistory = saveToeicHistory(result);
+      setHistory(updatedHistory);
+      setDiagnosis(result);
+      setSelectedTarget(result.defaultTarget);
+      setOpenReviews(
+        result.details.map((d) => !d.isCorrect || d.isGuessed || d.isSkipped),
+      );
+      setPhase("analyzing");
+    },
+    [],
+  );
+
   const handleStartQuiz = useCallback(() => {
     const now = Date.now();
     questionTimesMsRef.current = Array(TOEIC_QUESTIONS.length).fill(0);
     questionStartRef.current = now;
     quizStartRef.current = now;
     setAnswers(Array(TOEIC_QUESTIONS.length).fill(null));
+    setGuessedFlags(Array(TOEIC_QUESTIONS.length).fill(false));
     setCurrentIndex(0);
     setElapsedSec(0);
     setDiagnosis(null);
+    setSavedCard(null);
     setPhase("quiz");
     scrollToSectionTop();
   }, [scrollToSectionTop]);
@@ -151,6 +195,31 @@ export function ToeicDiagnosisSection() {
       return next;
     });
   }, [currentIndex]);
+
+  const handleToggleGuessed = useCallback(() => {
+    setGuessedFlags((prev) => {
+      const next = [...prev];
+      next[currentIndex] = !next[currentIndex];
+      return next;
+    });
+  }, [currentIndex]);
+
+  const handleSkip = useCallback(() => {
+    flushCurrentQuestionTime(currentIndex);
+    const nextAnswers = [...answers];
+    nextAnswers[currentIndex] = -1;
+    const nextGuessed = [...guessedFlags];
+    nextGuessed[currentIndex] = false;
+    setAnswers(nextAnswers);
+    setGuessedFlags(nextGuessed);
+
+    if (currentIndex < TOEIC_QUESTIONS.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      return;
+    }
+
+    finishQuizAndAnalyze(nextAnswers, nextGuessed);
+  }, [answers, guessedFlags, currentIndex, flushCurrentQuestionTime, finishQuizAndAnalyze]);
 
   const handlePrev = useCallback(() => {
     if (currentIndex === 0) return;
@@ -167,15 +236,29 @@ export function ToeicDiagnosisSection() {
       return;
     }
 
-    const questionTimesSec = questionTimesMsRef.current.map((ms) =>
-      Math.max(1, Math.round(ms / 1000)),
-    );
-    const result = calculateToeicDiagnosis(answers, questionTimesSec);
-    setDiagnosis(result);
-    setSelectedTarget(result.defaultTarget);
-    setOpenReviews(result.details.map((d) => !d.isCorrect));
-    setPhase("analyzing");
-  }, [answers, currentIndex, flushCurrentQuestionTime]);
+    finishQuizAndAnalyze(answers, guessedFlags);
+  }, [answers, guessedFlags, currentIndex, flushCurrentQuestionTime, finishQuizAndAnalyze]);
+
+  const handleDownloadCard = useCallback(
+    async (format: ShareCardFormat) => {
+      if (!diagnosis || savingCard) return;
+      setSavingCard(format);
+      try {
+        await downloadToeicShareCard(diagnosis, format);
+        setSavedCard(format);
+        if (savedCardTimerRef.current !== null) {
+          window.clearTimeout(savedCardTimerRef.current);
+        }
+        savedCardTimerRef.current = window.setTimeout(() => {
+          setSavedCard(null);
+          savedCardTimerRef.current = null;
+        }, 2200);
+      } finally {
+        setSavingCard(null);
+      }
+    },
+    [diagnosis, savingCard],
+  );
 
   // Keyboard shortcuts during quiz: 1~4 select option, Enter goes next
   useEffect(() => {
@@ -213,24 +296,44 @@ export function ToeicDiagnosisSection() {
     setPhase("intro");
     setDiagnosis(null);
     setAnswers(Array(TOEIC_QUESTIONS.length).fill(null));
+    setGuessedFlags(Array(TOEIC_QUESTIONS.length).fill(false));
     setCurrentIndex(0);
     setElapsedSec(0);
+    setSavedCard(null);
     scrollToSectionTop();
   }, [scrollToSectionTop]);
 
   const currentQuestion = TOEIC_QUESTIONS[currentIndex];
   const currentAnswer = answers[currentIndex];
+  const currentGuessed = guessedFlags[currentIndex] ?? false;
   const progressPercent = ((currentIndex + 1) / TOEIC_QUESTIONS.length) * 100;
 
   const activePlan = diagnosis ? TOEIC_TARGET_PLANS[selectedTarget] : null;
+  const activeDday = DDAY_OPTIONS.find((opt) => opt.id === selectedDday) ?? DDAY_OPTIONS[0];
   const goalGap = diagnosis ? getGoalGapSummary(diagnosis.finalScore, selectedTarget) : null;
-  const tutorPromptText = diagnosis ? buildDiagnosisCopyText(diagnosis, selectedTarget) : "";
+  const tutorPromptText = diagnosis
+    ? buildDiagnosisCopyText(diagnosis, selectedTarget, selectedDday)
+    : "";
   const gaugePercent = diagnosis
     ? Math.max(4, Math.min(100, ((diagnosis.finalScore - 400) / (990 - 400)) * 100))
     : 0;
 
+  const latestHistory = history[0] ?? null;
+  const previousHistory = history.length >= 2 ? history[1] : null;
+  const recentHistory = history.slice(0, 5);
+
+  const partSummary = diagnosis
+    ? PART_GROUPS.map((part) => {
+        const items = diagnosis.details.filter((d) => d.question.part === part);
+        const correct = items.filter((d) => d.isCorrect).length;
+        const total = items.length;
+        const rate = total > 0 ? Math.round((correct / total) * 100) : 0;
+        return { part, correct, total, rate };
+      }).filter((row) => row.total > 0)
+    : [];
+
   return (
-    <section ref={sectionRef} className="toeic-section" aria-label="토익 5문제 정밀 진단">
+    <section ref={sectionRef} className="toeic-section" aria-label="토익 10문제 정밀 진단">
       {/* ==================== 1. INTRO SCREEN ==================== */}
       {phase === "intro" && (
         <div className="toeic-stack">
@@ -240,17 +343,24 @@ export function ToeicDiagnosisSection() {
                 <svg fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
                 </svg>
-                소요시간 약 2분 · Part 5~7 핵심 출제 유형
+                소요시간 약 3~4분 · Part 5~7 10문항 정밀 진단
               </div>
 
+              {latestHistory && (
+                <div className="toeic-intro-history-pill">
+                  <span className="toeic-intro-history-dot" aria-hidden="true" />
+                  최근 진단 기록: {latestHistory.finalScore}점 ({formatShortDate(latestHistory.timestamp)})
+                </div>
+              )}
+
               <h2 className="toeic-hero-title">
-                단 5문제로 알아보는
+                10문제로 알아보는
                 <br />
                 <span className="toeic-hero-accent">내 예상 토익 점수</span>와 맞춤 처방
               </h2>
 
               <p className="toeic-hero-desc">
-                기초 문법부터 어휘, 논리 연결, 실전 패러프레이징 독해까지 단계별 5문항으로 현재 실력을 진단합니다.
+                기초 문법부터 어휘, 문장 구조, 문맥 논리, 실전 패러프레이징·추론 독해까지 단계별 10문항으로 현재 실력을 정밀 진단합니다.
                 정답률과 풀이 속도를 함께 분석해 <strong>점수 원인 · 목표 로드맵 · 집중 파트</strong>를 바로 정리해 드려요.
               </p>
 
@@ -292,7 +402,7 @@ export function ToeicDiagnosisSection() {
                   </svg>
                 </div>
                 <h3>집중 파트 &amp; 오답 해설</h3>
-                <p>가장 효율적으로 점수가 오르는 LC·RC 우선순위 파트와 5문항 상세 해설을 제공합니다.</p>
+                <p>가장 효율적으로 점수가 오르는 LC·RC 우선순위 파트와 10문항 상세 해설을 제공합니다.</p>
               </div>
             </div>
           </div>
@@ -300,14 +410,16 @@ export function ToeicDiagnosisSection() {
           <div className="toeic-card">
             <h3 className="toeic-overview-heading">
               <span className="toeic-overview-bar" aria-hidden="true" />
-              진단 문항 구성 (난이도 점진 상승)
+              진단 문항 구성 (10문항 · 난이도 점진 상승)
             </h3>
             <div className="toeic-overview-grid">
-              {INTRO_OVERVIEW.map((item) => (
-                <div key={item.q} className="toeic-overview-chip">
-                  <span className="toeic-overview-q">{item.q}</span>
-                  <span className="toeic-overview-name">{item.name}</span>
-                  <span className="toeic-overview-meta">{item.meta}</span>
+              {TOEIC_QUESTIONS.map((q) => (
+                <div key={q.id} className="toeic-overview-chip">
+                  <span className="toeic-overview-q">Q{q.id}</span>
+                  <span className="toeic-overview-name">{q.skillName}</span>
+                  <span className="toeic-overview-meta">
+                    {q.part} · {q.targetLevel.replace(/\s*검증$/, "")}
+                  </span>
                 </div>
               ))}
             </div>
@@ -379,6 +491,25 @@ export function ToeicDiagnosisSection() {
               })}
             </div>
 
+            <div className="toeic-quiz-helpers">
+              <button
+                type="button"
+                className="toeic-guess-toggle"
+                aria-pressed={currentGuessed}
+                onClick={handleToggleGuessed}
+              >
+                <span>{currentGuessed ? "✓ 확신 없음 · 찍음 체크됨" : "확신 없음 · 찍음 체크"}</span>
+              </button>
+
+              <button
+                type="button"
+                className="toeic-skip-btn"
+                onClick={handleSkip}
+              >
+                모르겠음 (건너뛰기) →
+              </button>
+            </div>
+
             <div className="toeic-quiz-actions">
               <button
                 type="button"
@@ -437,14 +568,16 @@ export function ToeicDiagnosisSection() {
                   <div className="toeic-score-value-row">
                     <span className="toeic-score-number">{displayScore}</span>
                     <span className="toeic-score-unit">점</span>
-                    <span className="toeic-score-range">(±35점 오차 범위)</span>
+                    <span className="toeic-score-range">(±25점 오차 범위)</span>
                   </div>
                 </div>
 
                 <div className="toeic-stats-grid">
                   <div className="toeic-stat-box">
                     <p className="toeic-stat-label">정답 수</p>
-                    <p className="toeic-stat-value">{diagnosis.correctCount}/5</p>
+                    <p className="toeic-stat-value">
+                      {diagnosis.correctCount}/{TOEIC_QUESTIONS.length}
+                    </p>
                   </div>
                   <div className="toeic-stat-box">
                     <p className="toeic-stat-label">총 시간</p>
@@ -474,6 +607,44 @@ export function ToeicDiagnosisSection() {
                 <span className="toeic-roast-tag">한 줄 팩폭</span>
                 <p className="toeic-roast-text">{diagnosis.roastComment}</p>
               </div>
+
+              <div className="toeic-share-row">
+                <button
+                  type="button"
+                  className={`toeic-share-btn${savedCard === "square" ? " toeic-share-btn--done" : ""}`}
+                  disabled={savingCard !== null}
+                  onClick={() => handleDownloadCard("square")}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                  <span>
+                    {savingCard === "square"
+                      ? "카드 생성 중..."
+                      : savedCard === "square"
+                        ? "저장 완료! (1:1)"
+                        : "에타·카톡 카드 저장 (1:1)"}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`toeic-share-btn${savedCard === "story" ? " toeic-share-btn--done" : ""}`}
+                  disabled={savingCard !== null}
+                  onClick={() => handleDownloadCard("story")}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                  <span>
+                    {savingCard === "story"
+                      ? "스토리 생성 중..."
+                      : savedCard === "story"
+                        ? "저장 완료! (9:16)"
+                        : "인스타 스토리 저장 (9:16)"}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div className="toeic-score-note">
@@ -481,15 +652,112 @@ export function ToeicDiagnosisSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>
-                RC 핵심 5문항(난이도 가중치 + 풀이 속도)을 기반으로 국내 수험생 평균 LC·RC 점수 비율을 반영해 산출한 예상 총점입니다.
+                RC 핵심 10문항(난이도 가중치 + 풀이 속도)을 기반으로 국내 수험생 평균 LC·RC 점수 비율을 반영해 산출한 예상 총점입니다.
               </span>
             </div>
           </div>
+
+          {/* 4-1b. Previous Diagnosis History & Growth Comparison */}
+          {previousHistory && latestHistory && (
+            <div className="toeic-card">
+              <div className="toeic-history-header">
+                <div>
+                  <span className="toeic-section-kicker toeic-section-kicker--emerald">GROWTH HISTORY</span>
+                  <h2 className="toeic-section-title">이전 진단 기록 &amp; 성장 비교</h2>
+                </div>
+                <div className="toeic-history-deltas">
+                  {(() => {
+                    const scoreDiff = latestHistory.finalScore - previousHistory.finalScore;
+                    const timeDiff = previousHistory.totalTime - latestHistory.totalTime;
+                    return (
+                      <>
+                        <span
+                          className={`toeic-delta-badge${
+                            scoreDiff > 0
+                              ? " toeic-delta-badge--up"
+                              : scoreDiff < 0
+                                ? " toeic-delta-badge--down"
+                                : ""
+                          }`}
+                        >
+                          {scoreDiff > 0
+                            ? `지난 진단 대비 +${scoreDiff}점 상승`
+                            : scoreDiff < 0
+                              ? `지난 진단 대비 ${scoreDiff}점`
+                              : "지난 진단과 동일 점수"}
+                        </span>
+                        {timeDiff !== 0 && (
+                          <span
+                            className={`toeic-delta-badge${
+                              timeDiff > 0 ? " toeic-delta-badge--up" : ""
+                            }`}
+                          >
+                            {timeDiff > 0
+                              ? `속도 ${timeDiff}초 단축`
+                              : `풀이 시간 +${Math.abs(timeDiff)}초`}
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              <div className="toeic-history-bars" aria-label="최근 진단 점수 기록">
+                {recentHistory.map((entry, idx) => {
+                  const pct = Math.max(8, Math.min(100, ((entry.finalScore - 400) / (990 - 400)) * 100));
+                  const isLatest = idx === 0;
+                  return (
+                    <div
+                      key={entry.id}
+                      className={`toeic-history-row${isLatest ? " toeic-history-row--latest" : ""}`}
+                    >
+                      <span className="toeic-history-date">
+                        {isLatest ? "방금" : formatShortDate(entry.timestamp)}
+                      </span>
+                      <div className="toeic-history-track">
+                        <div className="toeic-history-fill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="toeic-history-score">{entry.finalScore}점</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* 4-2. Score Diagnosis */}
           <div className="toeic-card">
             <span className="toeic-section-kicker">SCORE DIAGNOSIS</span>
             <h2 className="toeic-section-title">왜 이 점수가 나왔을까요?</h2>
+
+            {partSummary.length > 0 && (
+              <div className="toeic-part-summary" aria-label="파트별 정답률 요약">
+                {partSummary.map((row) => (
+                  <div key={row.part} className="toeic-part-pill">
+                    <div className="toeic-part-pill-top">
+                      <span className="toeic-part-pill-label">{row.part}</span>
+                      <span className="toeic-part-pill-score">
+                        {row.correct}/{row.total}
+                        <span className="toeic-part-pill-rate">({row.rate}%)</span>
+                      </span>
+                    </div>
+                    <div className="toeic-part-pill-bar">
+                      <div
+                        className={`toeic-part-pill-fill${
+                          row.rate >= 80
+                            ? " toeic-part-pill-fill--strong"
+                            : row.rate <= 50
+                              ? " toeic-part-pill-fill--weak"
+                              : ""
+                        }`}
+                        style={{ width: `${row.rate}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="toeic-skill-grid">
               {diagnosis.details.map((detail) => (
@@ -515,6 +783,8 @@ export function ToeicDiagnosisSection() {
                     {detail.timeSpent}초
                     {detail.isSlow && <span className="toeic-skill-slow"> · 느림</span>}
                   </div>
+                  {detail.isGuessed && <span className="toeic-flag-badge toeic-flag-badge--guess">찍음</span>}
+                  {detail.isSkipped && <span className="toeic-flag-badge toeic-flag-badge--skip">스킵</span>}
                 </div>
               ))}
             </div>
@@ -574,6 +844,27 @@ export function ToeicDiagnosisSection() {
                 <p className="toeic-goal-hours-val">{activePlan.dailyHours}</p>
               </div>
             </div>
+
+            <div className="toeic-dday-wrap">
+              <p className="toeic-dday-label">시험 예정일 (D-Day) — AI 튜터 프롬프트에 자동 반영</p>
+              <div className="toeic-dday-grid" role="group" aria-label="시험 예정일 선택">
+                {DDAY_OPTIONS.map((opt) => {
+                  const isActive = selectedDday === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      className={`toeic-dday-btn${isActive ? " toeic-dday-btn--active" : ""}`}
+                      onClick={() => setSelectedDday(opt.id)}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+              {activeDday && <p className="toeic-dday-hint">{activeDday.planHint}</p>}
+            </div>
           </div>
 
           {/* 4-4. Focus Parts */}
@@ -581,7 +872,7 @@ export function ToeicDiagnosisSection() {
             <span className="toeic-section-kicker toeic-section-kicker--amber">FOCUS PARTS</span>
             <h2 className="toeic-section-title">집중 공략해야 할 핵심 파트</h2>
             <p className="toeic-section-sub">
-              방금 푼 5문제의 취약점과 설정한 목표 점수를 결합해 투자 대비 점수 상승폭이 큰 파트를 우선순위대로 정리했습니다.
+              방금 푼 10문제의 취약점과 설정한 목표 점수를 결합해 투자 대비 점수 상승폭이 큰 파트를 우선순위대로 정리했습니다.
             </p>
 
             <div className="toeic-focus-grid">
@@ -671,12 +962,12 @@ export function ToeicDiagnosisSection() {
             </div>
           </div>
 
-          {/* 4-6. 5-Question Answer Review Accordion */}
+          {/* 4-6. 10-Question Answer Review Accordion */}
           <div className="toeic-card">
             <div className="toeic-review-head">
               <div>
                 <span className="toeic-section-kicker">ANSWER REVIEW</span>
-                <h2 className="toeic-section-title">5문제 상세 해설 &amp; 오답노트</h2>
+                <h2 className="toeic-section-title">10문제 상세 해설 &amp; 오답노트</h2>
               </div>
               <button type="button" className="toeic-btn-ghost" onClick={handleToggleAllReviews}>
                 {allReviewsOpen ? "전체 접기" : "전체 펼치기"}
@@ -687,7 +978,9 @@ export function ToeicDiagnosisSection() {
               {diagnosis.details.map((detail, idx) => {
                 const isOpen = openReviews[idx] ?? false;
                 const userOpt =
-                  detail.userAnswer !== null ? detail.question.options[detail.userAnswer] : null;
+                  detail.userAnswer !== null && detail.userAnswer >= 0
+                    ? detail.question.options[detail.userAnswer]
+                    : null;
                 const correctOpt = detail.question.options[detail.question.correctIndex];
 
                 return (
@@ -709,6 +1002,12 @@ export function ToeicDiagnosisSection() {
                         <span className="toeic-review-qtitle">
                           Q{detail.question.id}. {detail.question.skillName}
                         </span>
+                        {detail.isGuessed && (
+                          <span className="toeic-flag-badge toeic-flag-badge--guess">찍음</span>
+                        )}
+                        {detail.isSkipped && (
+                          <span className="toeic-flag-badge toeic-flag-badge--skip">스킵</span>
+                        )}
                         <span className="toeic-review-qmeta">
                           {detail.question.part} · {detail.question.targetLevel} · {detail.timeSpent}초
                         </span>
@@ -749,7 +1048,11 @@ export function ToeicDiagnosisSection() {
                           >
                             <span className="toeic-answer-pill-label">내가 선택한 답</span>
                             <span className="toeic-answer-pill-val">
-                              {userOpt ? `(${userOpt.label}) ${userOpt.text}` : "미응답"}
+                              {detail.isSkipped
+                                ? "모르겠음 (건너뛰기)"
+                                : userOpt
+                                  ? `(${userOpt.label}) ${userOpt.text}${detail.isGuessed ? " · 찍음" : ""}`
+                                  : "미응답"}
                             </span>
                           </div>
 
@@ -815,7 +1118,7 @@ export function ToeicDiagnosisSection() {
           </div>
 
           <p className="toeic-disclaimer">
-            본 진단은 5개 핵심 출제 영역 기반의 약식 점수 예측 및 학습 가이드이며, 실제 ETS TOEIC® 공식 성적과 차이가 있을 수 있습니다.
+            본 진단은 10개 핵심 출제 영역 기반의 약식 점수 예측 및 학습 가이드이며, 실제 ETS TOEIC® 공식 성적과 차이가 있을 수 있습니다.
           </p>
         </div>
       )}

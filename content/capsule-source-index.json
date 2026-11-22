@@ -1,0 +1,402 @@
+[
+  {
+    "act": "Text Based Adventure Game",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L63"
+  },
+  {
+    "act": "Guessing Game Master",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L225"
+  },
+  {
+    "act": "Tic-Tac-Toe Game",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L173"
+  },
+  {
+    "act": "Gomoku player",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L200"
+  },
+  {
+    "act": "Chess Player",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L147"
+  },
+  {
+    "act": "Magician",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L40"
+  },
+  {
+    "act": "Pirate",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L234"
+  },
+  {
+    "act": "New Language Creator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L175"
+  },
+  {
+    "act": "Emoji Translator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L168"
+  },
+  {
+    "act": "Ascii Artist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L103"
+  },
+  {
+    "act": "Storyteller",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L16"
+  },
+  {
+    "act": "Screenwriter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L23"
+  },
+  {
+    "act": "Novelist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L24"
+  },
+  {
+    "act": "Children's Book Creator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L239"
+  },
+  {
+    "act": "Poet",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L27"
+  },
+  {
+    "act": "Rapper",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L28"
+  },
+  {
+    "act": "Stand-up Comedian",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L18"
+  },
+  {
+    "act": "Movie Critic",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L25"
+  },
+  {
+    "act": "Literary Critic",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L210"
+  },
+  {
+    "act": "Digital Art Gallery Guide",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L98"
+  },
+  {
+    "act": "Advertiser",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L15"
+  },
+  {
+    "act": "Fancy Title Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L65"
+  },
+  {
+    "act": "Creative Branding Strategist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L241"
+  },
+  {
+    "act": "Startup Idea Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L181"
+  },
+  {
+    "act": "Restaurant Owner",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L215"
+  },
+  {
+    "act": "Salesperson",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L184"
+  },
+  {
+    "act": "Social Media Influencer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L82"
+  },
+  {
+    "act": "Social Media Manager",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L88"
+  },
+  {
+    "act": "Title Generator for written pieces",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L191"
+  },
+  {
+    "act": "Web Design Consultant",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L48"
+  },
+  {
+    "act": "Composer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L20"
+  },
+  {
+    "act": "Classical Music Composer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L96"
+  },
+  {
+    "act": "Acoustic Guitar Composer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L222"
+  },
+  {
+    "act": "Song Recommender",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L196"
+  },
+  {
+    "act": "Music Video Designer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L254"
+  },
+  {
+    "act": "Interior Decorator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L58"
+  },
+  {
+    "act": "Florist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L59"
+  },
+  {
+    "act": "Artist Advisor",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L54"
+  },
+  {
+    "act": "Personal Stylist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L127"
+  },
+  {
+    "act": "Makeup Artist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L100"
+  },
+  {
+    "act": "Tea-Taster",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L57"
+  },
+  {
+    "act": "Gnomist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L61"
+  },
+  {
+    "act": "Time Travel Guide",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L163"
+  },
+  {
+    "act": "Dream Interpreter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L164"
+  },
+  {
+    "act": "Character",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L14"
+  },
+  {
+    "act": "Spoken English Teacher and Improver",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L11"
+  },
+  {
+    "act": "English Translator and Improver",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L4"
+  },
+  {
+    "act": "English Pronunciation Helper",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L10"
+  },
+  {
+    "act": "Etymologist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L38"
+  },
+  {
+    "act": "Language Detector",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L183"
+  },
+  {
+    "act": "Synonym Finder",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L105"
+  },
+  {
+    "act": "Proofreader",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L201"
+  },
+  {
+    "act": "Biblical Translator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L129"
+  },
+  {
+    "act": "Elocutionist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L89"
+  },
+  {
+    "act": "Japanese Kanji quiz machine",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L208"
+  },
+  {
+    "act": "Philosophy Teacher",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L30"
+  },
+  {
+    "act": "Math Teacher",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L32"
+  },
+  {
+    "act": "Mathematical History Teacher",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L195"
+  },
+  {
+    "act": "Historian",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L93"
+  },
+  {
+    "act": "Educational Content Creator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L85"
+  },
+  {
+    "act": "Instructor in a School",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L68"
+  },
+  {
+    "act": "Fill in the Blank Worksheets Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L171"
+  },
+  {
+    "act": "AI Writing Tutor",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L33"
+  },
+  {
+    "act": "Socrat",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L83"
+  },
+  {
+    "act": "Socratic Method",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L84"
+  },
+  {
+    "act": "Job Interviewer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L7"
+  },
+  {
+    "act": "Recruiter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L36"
+  },
+  {
+    "act": "Career Counselor",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L41"
+  },
+  {
+    "act": "Talent Coach",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L165"
+  },
+  {
+    "act": "Public Speaking Coach",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L99"
+  },
+  {
+    "act": "Cover Letter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L197"
+  },
+  {
+    "act": "LinkedIn Ghostwriter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L235"
+  },
+  {
+    "act": "Tech-Challenged Customer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L240"
+  },
+  {
+    "act": "Debate Coach",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L22"
+  },
+  {
+    "act": "Debater",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L21"
+  },
+  {
+    "act": "Fallacy Finder",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L79"
+  },
+  {
+    "act": "Prompt Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L67"
+  },
+  {
+    "act": "Prompt Enhancer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L211"
+  },
+  {
+    "act": "Idea Clarifier GPT",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L236"
+  },
+  {
+    "act": "Book Summarizer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L242"
+  },
+  {
+    "act": "Note-Taking assistant",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L209"
+  },
+  {
+    "act": "Study planner",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L243"
+  },
+  {
+    "act": "Tech Reviewer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L73"
+  },
+  {
+    "act": "Journalist",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L97"
+  },
+  {
+    "act": "Academician",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L75"
+  },
+  {
+    "act": "Journal Reviewer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L80"
+  },
+  {
+    "act": "Statistician",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L66"
+  },
+  {
+    "act": "Scientific Data Visualizer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L90"
+  },
+  {
+    "act": "YouTube Video Analyst",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L220"
+  },
+  {
+    "act": "Wisdom Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L219"
+  },
+  {
+    "act": "Linux Terminal",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L3"
+  },
+  {
+    "act": "JavaScript Console",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L8"
+  },
+  {
+    "act": "Python Interpreter",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L104"
+  },
+  {
+    "act": "Excel Sheet",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L9"
+  },
+  {
+    "act": "SQL Terminal",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L69"
+  },
+  {
+    "act": "SVG designer",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L130"
+  },
+  {
+    "act": "Midjourney Prompt Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L148"
+  },
+  {
+    "act": "Smart Domain Name Generator",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L72"
+  },
+  {
+    "act": "Product Manager",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L192"
+  },
+  {
+    "act": "Logistician",
+    "url": "https://github.com/f/prompts.chat/blob/ba34d09010de8e0f4cf1e75a87972be30497f975/prompts.csv#L46"
+  }
+]

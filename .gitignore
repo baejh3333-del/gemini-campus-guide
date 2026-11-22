@@ -14,3 +14,6 @@ docs/launch-checklist.md
 .superpowers/
 screenshots/
 public/artworks/
+
+.vercel
+.env*

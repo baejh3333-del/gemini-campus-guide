@@ -63,6 +63,29 @@
   flex-shrink: 0;
 }
 
+.toeic-intro-history-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.11);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  margin-left: 10px;
+  margin-bottom: 18px;
+  vertical-align: middle;
+}
+
+.toeic-intro-history-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+}
+
 .toeic-hero-title {
   font-size: clamp(24px, 4vw, 34px);
   font-weight: 800;
@@ -543,6 +566,63 @@
   flex-shrink: 0;
 }
 
+/* Quiz Guess & Skip Helpers */
+.toeic-quiz-helpers {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toeic-guess-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.toeic-guess-toggle:hover {
+  border-color: rgba(251, 191, 36, 0.45);
+  color: #fef3c7;
+}
+
+.toeic-guess-toggle[aria-pressed="true"] {
+  background: rgba(251, 191, 36, 0.16);
+  border-color: rgba(251, 191, 36, 0.55);
+  color: #fde68a;
+}
+
+.toeic-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #9ca3af;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.toeic-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaed;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 .toeic-quiz-actions {
   margin-top: 24px;
   padding-top: 18px;
@@ -776,6 +856,213 @@
   color: #fef3c7;
 }
 
+/* Shareable Card Save Row */
+.toeic-share-row {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toeic-share-btn {
+  flex: 1;
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 13px;
+  border: 1px solid rgba(194, 231, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8eaed;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.14s ease;
+}
+
+.toeic-share-btn:hover:not(:disabled) {
+  background: rgba(138, 180, 248, 0.16);
+  border-color: rgba(138, 180, 248, 0.45);
+  transform: translateY(-1px);
+}
+
+.toeic-share-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.toeic-share-btn--done {
+  border-color: rgba(52, 211, 153, 0.48);
+  background: rgba(52, 211, 153, 0.14);
+  color: #a7f3d0;
+}
+
+/* History & Growth Card */
+.toeic-history-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toeic-history-deltas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toeic-delta-badge {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c2e7ff;
+  background: rgba(138, 180, 248, 0.14);
+  border: 1px solid rgba(138, 180, 248, 0.28);
+}
+
+.toeic-delta-badge--up {
+  color: #a7f3d0;
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.32);
+}
+
+.toeic-delta-badge--down {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.14);
+  border-color: rgba(248, 113, 113, 0.32);
+}
+
+.toeic-history-bars {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.toeic-history-row {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+}
+
+.toeic-history-date {
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.toeic-history-row--latest .toeic-history-date {
+  color: #c2e7ff;
+  font-weight: 700;
+}
+
+.toeic-history-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.toeic-history-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(138, 180, 248, 0.45);
+}
+
+.toeic-history-row--latest .toeic-history-fill {
+  background: linear-gradient(90deg, #8ab4f8, #34d399);
+}
+
+.toeic-history-score {
+  text-align: right;
+  font-weight: 700;
+  color: #cbd5e1;
+  font-variant-numeric: tabular-nums;
+}
+
+.toeic-history-row--latest .toeic-history-score {
+  color: #ffffff;
+}
+
+/* Flag mini-badges (찍음 / 스킵) */
+.toeic-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.toeic-flag-badge--guess {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.toeic-flag-badge--skip {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+/* D-Day Selector inside Goal Setting */
+.toeic-dday-wrap {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toeic-dday-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8eaed;
+  margin: 0 0 10px;
+}
+
+.toeic-dday-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.toeic-dday-btn {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #14161b;
+  color: #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.toeic-dday-btn:hover {
+  border-color: rgba(138, 180, 248, 0.45);
+  color: #ffffff;
+}
+
+.toeic-dday-btn--active {
+  background: rgba(138, 180, 248, 0.18);
+  border-color: #8ab4f8;
+  color: #ffffff;
+}
+
+.toeic-dday-hint {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #9ca3af;
+}
+
 .toeic-score-note {
   padding: 14px 28px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -796,12 +1083,80 @@
   margin-top: 2px;
 }
 
-/* 5 Skill Breakdown */
+/* Part 5 / 6 / 7 Accuracy Mini-Summary */
+.toeic-part-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.toeic-part-pill {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toeic-part-pill-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.toeic-part-pill-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.toeic-part-pill-score {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.toeic-part-pill-rate {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+.toeic-part-pill-bar {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.toeic-part-pill-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8ab4f8, #a78bfa);
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toeic-part-pill-fill--strong {
+  background: linear-gradient(90deg, #34d399, #6ee7b7);
+}
+
+.toeic-part-pill-fill--weak {
+  background: linear-gradient(90deg, #f87171, #fbbf24);
+}
+
+/* 10 Skill Breakdown */
 .toeic-skill-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 .toeic-skill-card {
@@ -1645,6 +2000,127 @@ html[data-theme="light"] .toeic-roast-text {
   color: #78350f;
 }
 
+html[data-theme="light"] .toeic-intro-history-pill {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #047857;
+}
+
+html[data-theme="light"] .toeic-guess-toggle,
+html[data-theme="light"] .toeic-skip-btn,
+html[data-theme="light"] .toeic-dday-btn {
+  background: #f8f9fb;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #374151;
+}
+
+html[data-theme="light"] .toeic-guess-toggle[aria-pressed="true"] {
+  background: #fef3c7;
+  border-color: #d97706;
+  color: #92400e;
+}
+
+html[data-theme="light"] .toeic-share-btn {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-share-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-share-btn--done {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #047857;
+}
+
+html[data-theme="light"] .toeic-delta-badge {
+  background: #eff6ff;
+  border-color: rgba(37, 99, 235, 0.25);
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-delta-badge--up {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #047857;
+}
+
+html[data-theme="light"] .toeic-delta-badge--down {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #b91c1c;
+}
+
+html[data-theme="light"] .toeic-history-date,
+html[data-theme="light"] .toeic-dday-hint {
+  color: #525861;
+}
+
+html[data-theme="light"] .toeic-history-row--latest .toeic-history-date {
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-history-track {
+  background: #e5e7eb;
+}
+
+html[data-theme="light"] .toeic-history-score {
+  color: #374151;
+}
+
+html[data-theme="light"] .toeic-history-row--latest .toeic-history-score,
+html[data-theme="light"] .toeic-dday-label {
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-flag-badge--guess {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+html[data-theme="light"] .toeic-flag-badge--skip {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+html[data-theme="light"] .toeic-dday-wrap {
+  border-top-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-dday-btn--active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-part-pill {
+  background: #f8f9fb;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-part-pill-label {
+  color: #3f444d;
+}
+
+html[data-theme="light"] .toeic-part-pill-score {
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-part-pill-rate {
+  color: #525861;
+}
+
+html[data-theme="light"] .toeic-part-pill-bar {
+  background: #e5e7eb;
+}
+
 html[data-theme="light"] .toeic-skill-card--correct {
   background: #ecfdf5;
   border-color: rgba(16, 185, 129, 0.3);
@@ -1762,19 +2238,28 @@ html[data-theme="light"] .toeic-review-tip {
     padding: 24px 20px 22px;
   }
 
+  .toeic-intro-history-pill {
+    margin-left: 0;
+  }
+
+  .toeic-share-row {
+    flex-direction: column;
+  }
+
   .toeic-feature-grid {
     grid-template-columns: 1fr;
     padding: 18px 20px 20px;
   }
 
   .toeic-overview-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .toeic-overview-chip {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 12px 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12px 13px;
     text-align: left;
   }
 
@@ -1794,20 +2279,38 @@ html[data-theme="light"] .toeic-review-tip {
     width: 100%;
   }
 
+  .toeic-part-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .toeic-part-pill {
+    padding: 10px 10px;
+  }
+
+  .toeic-part-pill-top {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .toeic-part-pill-rate {
+    display: none;
+  }
+
   .toeic-skill-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .toeic-skill-card {
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
     text-align: left;
-    padding: 12px 14px;
+    padding: 12px 13px;
   }
 
   .toeic-skill-top {
-    width: auto;
-    gap: 8px;
+    width: 100%;
+    gap: 6px;
   }
 
   .toeic-target-grid {

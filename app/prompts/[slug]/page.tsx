@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { getPrompt, listPrompts } from "@/lib/prompt-library";
+import { findDynamicPlaygroundPrompt } from "@/lib/playground-server";
 import { LibraryHeader, LibraryFooter } from "@/components/LibraryChrome";
 import { LibraryCopy } from "@/components/LibraryCopy";
 import { SignupLink } from "@/components/SignupLink";
@@ -9,7 +10,8 @@ export async function generateStaticParams() {
   return (await listPrompts()).map((prompt) => ({ slug: prompt.id }));
 }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const prompt = await getPrompt((await params).slug);
+  const slug = (await params).slug;
+  const prompt = (await getPrompt(slug)) ?? (await findDynamicPlaygroundPrompt(slug));
   return { title: prompt ? `${prompt.title} | GSA 프롬프트 저장소` : "프롬프트를 찾을 수 없어요" };
 }
 
@@ -33,7 +35,8 @@ export default async function PromptDetail({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ from?: string }>;
 }) {
-  const prompt = await getPrompt((await params).slug);
+  const slug = (await params).slug;
+  const prompt = (await getPrompt(slug)) ?? (await findDynamicPlaygroundPrompt(slug));
   if (!prompt) notFound();
   const hasOverview = !prompt.repoUrl?.startsWith("https://github.com/") && Boolean(prompt.outcomes?.length);
   const from = (await searchParams).from;
@@ -44,13 +47,15 @@ export default async function PromptDetail({
       <section className="library-intro detail-hero">
         <p className="library-eyebrow">
           {prompt.category} ·{" "}
-          {prompt.source
-            ? `${prompt.source.kind} #${prompt.source.number}`
-            : prompt.kind === "gem"
-              ? "Gem 템플릿"
-              : prompt.kind === "skill"
-                ? "Skill · MD"
-                : "프롬프트"}
+          {prompt.isCommunity
+            ? `이용자가 만든 프롬프트${prompt.author && prompt.author !== "익명" ? ` · ${prompt.author}` : ""}`
+            : prompt.source
+              ? `${prompt.source.kind} #${prompt.source.number}`
+              : prompt.kind === "gem"
+                ? "Gem 템플릿"
+                : prompt.kind === "skill"
+                  ? "Skill · MD"
+                  : "프롬프트"}
         </p>
         <h1>{prompt.title}</h1>
       </section>
@@ -112,6 +117,7 @@ export default async function PromptDetail({
               kind={prompt.kind}
               skillName={prompt.skillName}
               fullTextId={hasOverview ? "prompt-full-text" : undefined}
+              promptId={prompt.id}
             />
             {prompt.kind === "skill" && (
               <details className="skill-raw-details">

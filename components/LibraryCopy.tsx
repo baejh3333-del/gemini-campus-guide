@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { SkillGuideModal } from "./SkillGuideModal";
+import { recordPromptCopy } from "@/lib/ranking";
+import { track } from "@/lib/analytics";
 
 const COPY_SUCCESS_MESSAGE = "복사했어요. 원하는 곳에 붙여넣으세요.";
 
@@ -9,11 +11,13 @@ export function LibraryCopy({
   kind,
   skillName,
   fullTextId,
+  promptId,
 }: {
   body: string;
   kind?: "prompt" | "gem" | "skill";
   skillName?: string;
   fullTextId?: string;
+  promptId?: string;
 }) {
   const [message, setMessage] = useState("");
   const [done, setDone] = useState(false);
@@ -22,6 +26,14 @@ export function LibraryCopy({
   async function copy(openedGemini = false) {
     try {
       await navigator.clipboard.writeText(body);
+      if (promptId) {
+        recordPromptCopy(promptId);
+        track("prompt_copy", {
+          prompt_id: promptId,
+          kind: kind ?? "prompt",
+          opened_gemini: openedGemini,
+        });
+      }
       setMessage(
         openedGemini
           ? "프롬프트를 자동 복사하고 Gemini를 열었어요! 열린 창에서 붙여넣기(Ctrl+V)만 누르세요."
@@ -41,6 +53,14 @@ export function LibraryCopy({
   }
 
   function downloadSkillFile() {
+    if (promptId) {
+      recordPromptCopy(promptId);
+      track("prompt_copy", {
+        prompt_id: promptId,
+        kind: "skill",
+        method: "download",
+      });
+    }
     const blob = new Blob([body], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

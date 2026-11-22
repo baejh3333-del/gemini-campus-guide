@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import localFont from "next/font/local";
 import PromptFinder from "../components/PromptFinder";
 import CustomCursor from "../components/CustomCursor";
+import { InstallPromptBanner } from "../components/InstallPromptBanner";
 import "./globals.css";
 import "./library.css";
 
@@ -78,6 +79,7 @@ gtag('js',new Date());gtag('config','${GA_ID}');`,
         <div className="bloom" aria-hidden />
         <CustomCursor />
         <PromptFinder />
+        <InstallPromptBanner />
 
         <div className="site-frame relative z-[1] mx-auto min-h-dvh max-w-[560px]">
           {children}

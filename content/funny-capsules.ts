@@ -1,3 +1,5 @@
+import { RESEARCHED_CAPSULES } from "./researched-capsules";
+
 export type CapsuleRarity = "UR" | "SSR" | "SR" | "R";
 
 export const RARITY_WEIGHTS: Record<CapsuleRarity, number> = {
@@ -16,6 +18,13 @@ export type CapsuleItem = {
   body: string;
   colorA: string;
   colorB: string;
+  source?: {
+    title: string;
+    url: string;
+    originalAct: string;
+    license: string;
+    accessedAt: string;
+  };
 };
 
 export const FUNNY_CAPSULES: CapsuleItem[] = [
@@ -639,4 +648,5 @@ export const FUNNY_CAPSULES: CapsuleItem[] = [
     colorB: "#f472b6",
     body: `우리가 지금까지 나눈 대화 기록(또는 내가 요즘 제일 골몰하는 엉뚱한 고민: [내 엉뚱한 고민: 예-만약 좀비 사태가 터지면 학교 도서관과 학생회관 중 어디가 더 안전할까?])을 돌아봤을 때, 네가 AI로서 가장 어이없거나 웃겼던 순간을 꼽아 '올해의 황당한 인간상 시상식' 형태로 수상 소감과 심사평을 발표해 줘!`,
   },
+  ...RESEARCHED_CAPSULES,
 ];

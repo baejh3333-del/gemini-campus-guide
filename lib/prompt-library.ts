@@ -25,6 +25,8 @@ export type LibraryPrompt = {
   repoUrl?: string;
   skillNote?: string;
   source?: { kind: "릴스" | "카드뉴스"; number: number; url: string };
+  isCommunity?: boolean;
+  author?: string;
   thumbnail: {
     variant: "orbit" | "wave" | "sphere" | "portal" | "agent" | "curves" | "pills" | "axis";
     src?: string;
@@ -49,8 +51,15 @@ export interface PromptRepository {
   list(): Promise<LibraryPrompt[]>;
   find(id: string): Promise<LibraryPrompt | undefined>;
 }
+const hasThumbnail = (prompt: LibraryPrompt) => Boolean(prompt.thumbnail.src);
+
 const repository: PromptRepository = {
-  async list() { return LIBRARY_PROMPTS; },
+  async list() {
+    return [
+      ...LIBRARY_PROMPTS.filter(hasThumbnail),
+      ...LIBRARY_PROMPTS.filter((prompt) => !hasThumbnail(prompt)),
+    ];
+  },
   async find(id) { return LIBRARY_PROMPTS.find((prompt) => prompt.id === id); },
 };
 export const listPrompts = () => repository.list();

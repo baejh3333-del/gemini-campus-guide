@@ -548,6 +548,14 @@ export function CapsuleMachineSection() {
 
               <h3>{currentCapsule.title}</h3>
               <p className="capsule-desc">{currentCapsule.description}</p>
+              {currentCapsule.source && (
+                <p className="capsule-desc">
+                  <a href={currentCapsule.source.url} target="_blank" rel="noopener noreferrer">
+                    공개 원본 보기 · {currentCapsule.source.originalAct} ↗
+                  </a>
+                  <br />한국어 재구성 · 원본 {currentCapsule.source.license}
+                </p>
+              )}
 
               {activeVars.length > 0 && (
                 <div className="capsule-vars-box">
@@ -625,7 +633,7 @@ export function CapsuleMachineSection() {
                 <strong>나무위키 문서 생성기</strong>,{" "}
                 <strong>과거 대화 기반 팩폭(Roast Me)</strong>,{" "}
                 <strong>나만의 액션 피규어 패키지</strong>,{" "}
-                <strong>세종대왕 맥북프로 던짐 사건 실록</strong> 등 국내외 실제 인기 바이럴 프롬프트{" "}
+                <strong>텍스트 탈출 게임과 창작 역할극</strong> 등 기존 캡슐과 공개 원본을 바탕으로 재구성한 프롬프트{" "}
                 <strong>{FUNNY_CAPSULES.length}종</strong>이 들어 있습니다.
               </p>
               <button
