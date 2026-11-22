@@ -1,0 +1,1864 @@
+/* ToeicDiagnosisSection — Dark Glass Editorial Theme + Light Mode Support */
+
+.toeic-section {
+  margin-top: 28px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #e8eaed;
+  animation: mg-item-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.toeic-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Shared Glass Card */
+.toeic-card {
+  position: relative;
+  border-radius: 24px;
+  background: linear-gradient(155deg, #0d121f 0%, #090c14 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 26px 28px;
+  box-shadow: 0 18px 48px -28px rgba(0, 0, 0, 0.8);
+}
+
+.toeic-card-hero {
+  padding: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(150deg, #0c1220 0%, #080b14 100%) padding-box,
+    linear-gradient(115deg, rgba(138, 180, 248, 0.38) 0%, rgba(167, 139, 250, 0.32) 52%, rgba(194, 231, 255, 0.28) 100%) border-box;
+  border: 1px solid transparent;
+}
+
+.toeic-hero-top {
+  position: relative;
+  padding: 32px 32px 28px;
+  background:
+    radial-gradient(ellipse 75% 65% at 85% 15%, rgba(138, 180, 248, 0.16), transparent 65%),
+    radial-gradient(ellipse 65% 55% at 12% 90%, rgba(167, 139, 250, 0.14), transparent 65%);
+}
+
+.toeic-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #c2e7ff;
+  background: rgba(138, 180, 248, 0.12);
+  border: 1px solid rgba(138, 180, 248, 0.24);
+  margin-bottom: 18px;
+}
+
+.toeic-eyebrow svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.toeic-hero-title {
+  font-size: clamp(24px, 4vw, 34px);
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+
+.toeic-hero-accent {
+  background: linear-gradient(105deg, #c2e7ff 0%, #8ab4f8 48%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.toeic-hero-desc {
+  font-size: 14.5px;
+  line-height: 1.68;
+  color: #9ca3af;
+  max-width: 600px;
+  margin: 0;
+}
+
+.toeic-hero-desc strong {
+  color: #e8eaed;
+  font-weight: 600;
+}
+
+.toeic-hero-cta-wrap {
+  margin-top: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Buttons */
+.toeic-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 26px;
+  border-radius: 16px;
+  border: 1px solid rgba(194, 231, 255, 0.35);
+  background: linear-gradient(115deg, #8ab4f8 0%, #a78bfa 100%);
+  color: #090c14;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 10px 28px -10px rgba(138, 180, 248, 0.55);
+}
+
+.toeic-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px -10px rgba(138, 180, 248, 0.7);
+}
+
+.toeic-btn-primary:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.toeic-btn-primary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.toeic-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8eaed;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+}
+
+.toeic-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.toeic-btn-secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.toeic-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(138, 180, 248, 0.25);
+  background: rgba(138, 180, 248, 0.1);
+  color: #c2e7ff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.toeic-btn-ghost:hover {
+  background: rgba(138, 180, 248, 0.18);
+}
+
+/* Intro Features Grid */
+.toeic-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  padding: 22px 28px 26px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.toeic-feature-item {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.toeic-feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.toeic-feature-icon--blue {
+  background: rgba(138, 180, 248, 0.14);
+  color: #8ab4f8;
+}
+
+.toeic-feature-icon--purple {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+}
+
+.toeic-feature-icon--emerald {
+  background: rgba(52, 211, 153, 0.14);
+  color: #6ee7b7;
+}
+
+.toeic-feature-item h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin: 0 0 6px;
+}
+
+.toeic-feature-item p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Intro 5-Question Overview */
+.toeic-section-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8ab4f8;
+  margin-bottom: 6px;
+}
+
+.toeic-section-kicker--emerald {
+  color: #34d399;
+}
+
+.toeic-section-kicker--amber {
+  color: #fbbf24;
+}
+
+.toeic-section-kicker--purple {
+  color: #c4b5fd;
+}
+
+.toeic-section-title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.toeic-section-sub {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #9ca3af;
+  margin: 6px 0 0;
+}
+
+.toeic-overview-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #e8eaed;
+  margin: 0 0 14px;
+}
+
+.toeic-overview-bar {
+  width: 4px;
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8ab4f8, #a78bfa);
+}
+
+.toeic-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.toeic-overview-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: center;
+}
+
+.toeic-overview-q {
+  font-size: 12px;
+  font-weight: 800;
+  color: #8ab4f8;
+  font-variant-numeric: tabular-nums;
+}
+
+.toeic-overview-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+.toeic-overview-meta {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Quiz Screen */
+.toeic-quiz-topbar {
+  padding: 18px 22px;
+  border-radius: 20px;
+}
+
+.toeic-quiz-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.toeic-quiz-meta-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+}
+
+.toeic-quiz-counter {
+  font-weight: 800;
+  color: #c2e7ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.toeic-quiz-sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.toeic-quiz-part {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.toeic-quiz-meta-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toeic-diff-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #c4b5fd;
+  background: rgba(167, 139, 250, 0.14);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+}
+
+.toeic-timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #e8eaed;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toeic-timer-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: toeic-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes toeic-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.toeic-progress-track {
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.toeic-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #8ab4f8, #a78bfa);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Passage Box */
+.toeic-passage {
+  border-radius: 16px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 18px 20px;
+  margin-bottom: 22px;
+}
+
+.toeic-passage-header {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8ab4f8;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toeic-passage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #d1d5db;
+}
+
+.toeic-passage-body p {
+  margin: 0;
+}
+
+/* Question Text */
+.toeic-question-instruction {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin: 0 0 8px;
+}
+
+.toeic-question-prompt {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.62;
+  color: #ffffff;
+  margin: 0 0 22px;
+}
+
+/* Options */
+.toeic-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toeic-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.025);
+  color: #e8eaed;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.toeic-option:hover {
+  background: rgba(138, 180, 248, 0.07);
+  border-color: rgba(138, 180, 248, 0.35);
+}
+
+.toeic-option--selected {
+  background: rgba(138, 180, 248, 0.14);
+  border-color: #8ab4f8;
+  box-shadow: 0 0 0 1px rgba(138, 180, 248, 0.35);
+}
+
+.toeic-option-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.07);
+  color: #cbd5e1;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.toeic-option--selected .toeic-option-badge {
+  background: #8ab4f8;
+  color: #090c14;
+}
+
+.toeic-option-text {
+  flex: 1;
+  font-size: 14.5px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.toeic-option-key {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.toeic-quiz-actions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toeic-quiz-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Analyzing Screen */
+.toeic-analyzing {
+  padding: 56px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.toeic-spinner-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: rgba(138, 180, 248, 0.12);
+  border: 1px solid rgba(138, 180, 248, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toeic-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(138, 180, 248, 0.22);
+  border-top-color: #8ab4f8;
+  animation: toeic-spin 0.8s linear infinite;
+}
+
+@keyframes toeic-spin {
+  to { transform: rotate(360deg); }
+}
+
+.toeic-analyzing h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.toeic-analyzing p {
+  font-size: 13.5px;
+  color: #9ca3af;
+  margin: 0;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+/* Result Score Hero Card */
+.toeic-score-top {
+  padding: 28px 30px;
+  background:
+    radial-gradient(ellipse 70% 60% at 90% 10%, rgba(138, 180, 248, 0.18), transparent 65%),
+    radial-gradient(ellipse 60% 55% at 10% 95%, rgba(167, 139, 250, 0.16), transparent 65%);
+}
+
+.toeic-score-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.toeic-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c2e7ff;
+  background: rgba(138, 180, 248, 0.16);
+  border: 1px solid rgba(138, 180, 248, 0.32);
+}
+
+.toeic-score-cap {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.toeic-score-main-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.toeic-score-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #c2e7ff;
+  margin: 0 0 6px;
+}
+
+.toeic-score-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.toeic-score-number {
+  font-size: clamp(44px, 7vw, 60px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+.toeic-score-unit {
+  font-size: 20px;
+  font-weight: 700;
+  color: #c2e7ff;
+}
+
+.toeic-score-range {
+  font-size: 12.5px;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+.toeic-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.toeic-stat-box {
+  min-width: 82px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: center;
+}
+
+.toeic-stat-label {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.toeic-stat-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 4px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Score Gauge */
+.toeic-gauge-wrap {
+  margin-top: 24px;
+}
+
+.toeic-gauge-track {
+  width: 100%;
+  height: 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.toeic-gauge-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #fbbf24 0%, #34d399 52%, #8ab4f8 100%);
+  transition: width 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toeic-gauge-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  font-size: 11px;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Roast Banner (한 줄 팩폭) */
+.toeic-roast-banner {
+  margin-top: 22px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(251, 191, 36, 0.09);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.toeic-roast-tag {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #fbbf24;
+  color: #111827;
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+.toeic-roast-text {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #fef3c7;
+}
+
+.toeic-score-note {
+  padding: 14px 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #9ca3af;
+}
+
+.toeic-score-note svg {
+  width: 15px;
+  height: 15px;
+  color: #8ab4f8;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* 5 Skill Breakdown */
+.toeic-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.toeic-skill-card {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.toeic-skill-card--correct {
+  border-color: rgba(52, 211, 153, 0.28);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.toeic-skill-card--wrong {
+  border-color: rgba(248, 113, 113, 0.28);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+.toeic-skill-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.toeic-ox-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.toeic-ox-badge--o {
+  background: rgba(52, 211, 153, 0.2);
+  color: #6ee7b7;
+}
+
+.toeic-ox-badge--x {
+  background: rgba(248, 113, 113, 0.2);
+  color: #fca5a5;
+}
+
+.toeic-skill-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.toeic-skill-time {
+  font-size: 11px;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+}
+
+.toeic-skill-slow {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* Reasons Box */
+.toeic-reasons-box {
+  margin-top: 18px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.toeic-reasons-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin: 0 0 12px;
+}
+
+.toeic-reasons-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #8ab4f8;
+}
+
+.toeic-reasons-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toeic-reasons-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #d1d5db;
+}
+
+.toeic-reasons-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8ab4f8;
+}
+
+/* Target Score Selector */
+.toeic-target-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.toeic-target-btn {
+  position: relative;
+  padding: 15px 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #14161b;
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: center;
+}
+
+.toeic-target-btn:hover {
+  border-color: rgba(138, 180, 248, 0.4);
+  color: #ffffff;
+}
+
+.toeic-target-btn--active {
+  background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(167, 139, 250, 0.2));
+  border-color: #8ab4f8;
+  color: #ffffff;
+  box-shadow: 0 0 22px -8px rgba(138, 180, 248, 0.65);
+}
+
+.toeic-target-rec {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #34d399;
+  color: #052e16;
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.toeic-goal-banner {
+  margin-top: 18px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.toeic-goal-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.toeic-goal-gap {
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #34d399;
+  color: #052e16;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.toeic-goal-duration {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #a7f3d0;
+}
+
+.toeic-goal-headline {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.5;
+}
+
+.toeic-goal-hours-box {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.toeic-goal-hours-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6ee7b7;
+}
+
+.toeic-goal-hours-val {
+  margin: 4px 0 0;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* Focus Parts Grid */
+.toeic-focus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.toeic-focus-card {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toeic-focus-card--weak {
+  background: rgba(248, 113, 113, 0.07);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.toeic-focus-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.toeic-focus-part {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.toeic-focus-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toeic-priority-tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #c2e7ff;
+  background: rgba(138, 180, 248, 0.14);
+}
+
+.toeic-weak-tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.22);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.toeic-focus-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+/* Study Methods & RC Bar */
+.toeic-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.toeic-method-card {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.toeic-method-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(138, 180, 248, 0.14);
+  color: #8ab4f8;
+}
+
+.toeic-method-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.toeic-method-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #9ca3af;
+}
+
+.toeic-rc-box {
+  margin-top: 20px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toeic-rc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.toeic-rc-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.toeic-rc-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #c2e7ff;
+  background: rgba(138, 180, 248, 0.14);
+}
+
+.toeic-rc-bar {
+  width: 100%;
+  height: 30px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  color: #090c14;
+}
+
+.toeic-rc-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.toeic-rc-seg--p5 {
+  background: #8ab4f8;
+}
+
+.toeic-rc-seg--p6 {
+  background: #a78bfa;
+}
+
+.toeic-rc-seg--p7 {
+  background: #34d399;
+}
+
+.toeic-rc-legend {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.toeic-rc-legend-item {
+  padding: 9px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.toeic-rc-legend-item strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.toeic-rc-tip {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #9ca3af;
+}
+
+/* Answer Review Accordion */
+.toeic-review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.toeic-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toeic-review-item {
+  border-radius: 16px;
+  background: #14161b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.toeic-review-trigger {
+  width: 100%;
+  padding: 15px 18px;
+  background: transparent;
+  border: none;
+  color: #e8eaed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.toeic-review-trigger:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.toeic-review-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.toeic-review-qtitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.toeic-review-qmeta {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.toeic-review-chevron {
+  width: 18px;
+  height: 18px;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.toeic-review-chevron--open {
+  transform: rotate(180deg);
+}
+
+.toeic-review-body {
+  padding: 0 18px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 16px;
+}
+
+.toeic-review-prompt {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #f3f4f6;
+}
+
+.toeic-review-answers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.toeic-answer-pill {
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.toeic-answer-pill--correct {
+  border-color: rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.08);
+}
+
+.toeic-answer-pill--wrong {
+  border-color: rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.toeic-answer-pill-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  margin-bottom: 3px;
+}
+
+.toeic-answer-pill-val {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.toeic-review-exp {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+  line-height: 1.65;
+  color: #d1d5db;
+}
+
+.toeic-review-exp strong {
+  color: #c2e7ff;
+}
+
+.toeic-review-tip {
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: rgba(138, 180, 248, 0.09);
+  border: 1px solid rgba(138, 180, 248, 0.22);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #c2e7ff;
+}
+
+/* Bottom Actions & Disclaimer */
+.toeic-bottom-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.toeic-bottom-actions .toeic-btn-primary {
+  flex: 1;
+}
+
+.toeic-disclaimer {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #71717a;
+  margin: 4px 0 12px;
+}
+
+/* Toast Notification */
+.toeic-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  z-index: 60;
+  padding: 12px 20px;
+  border-radius: 14px;
+  background: #14161b;
+  border: 1px solid rgba(138, 180, 248, 0.35);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toeic-toast--show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toeic-toast svg {
+  width: 16px;
+  height: 16px;
+  color: #34d399;
+  flex-shrink: 0;
+}
+
+/* ==================== Light Mode Overrides ==================== */
+html[data-theme="light"] .toeic-section {
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-card {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.09);
+  box-shadow: 0 10px 30px -20px rgba(15, 23, 42, 0.18);
+}
+
+html[data-theme="light"] .toeic-card-hero {
+  background:
+    linear-gradient(150deg, #ffffff 0%, #f6f8fc 100%) padding-box,
+    linear-gradient(115deg, rgba(37, 99, 235, 0.28) 0%, rgba(124, 58, 237, 0.24) 55%, rgba(14, 165, 233, 0.24) 100%) border-box;
+}
+
+html[data-theme="light"] .toeic-hero-top,
+html[data-theme="light"] .toeic-score-top {
+  background:
+    radial-gradient(ellipse 75% 65% at 85% 15%, rgba(59, 130, 246, 0.1), transparent 65%),
+    radial-gradient(ellipse 65% 55% at 12% 90%, rgba(139, 92, 246, 0.09), transparent 65%);
+}
+
+html[data-theme="light"] .toeic-eyebrow,
+html[data-theme="light"] .toeic-tier-badge {
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.09);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+html[data-theme="light"] .toeic-hero-title,
+html[data-theme="light"] .toeic-section-title,
+html[data-theme="light"] .toeic-question-prompt,
+html[data-theme="light"] .toeic-analyzing h2,
+html[data-theme="light"] .toeic-score-number,
+html[data-theme="light"] .toeic-stat-value,
+html[data-theme="light"] .toeic-goal-headline,
+html[data-theme="light"] .toeic-goal-hours-val,
+html[data-theme="light"] .toeic-focus-part,
+html[data-theme="light"] .toeic-method-title,
+html[data-theme="light"] .toeic-rc-title,
+html[data-theme="light"] .toeic-rc-legend-item strong,
+html[data-theme="light"] .toeic-review-qtitle,
+html[data-theme="light"] .toeic-review-prompt,
+html[data-theme="light"] .toeic-answer-pill-val,
+html[data-theme="light"] .toeic-feature-item h3,
+html[data-theme="light"] .toeic-overview-heading,
+html[data-theme="light"] .toeic-overview-name,
+html[data-theme="light"] .toeic-skill-name,
+html[data-theme="light"] .toeic-reasons-title {
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-hero-accent {
+  background: linear-gradient(105deg, #1d4ed8 0%, #4f46e5 55%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html[data-theme="light"] .toeic-hero-desc,
+html[data-theme="light"] .toeic-feature-item p,
+html[data-theme="light"] .toeic-section-sub,
+html[data-theme="light"] .toeic-overview-meta,
+html[data-theme="light"] .toeic-question-instruction,
+html[data-theme="light"] .toeic-quiz-hint,
+html[data-theme="light"] .toeic-analyzing p,
+html[data-theme="light"] .toeic-score-cap,
+html[data-theme="light"] .toeic-score-range,
+html[data-theme="light"] .toeic-stat-label,
+html[data-theme="light"] .toeic-gauge-scale,
+html[data-theme="light"] .toeic-score-note,
+html[data-theme="light"] .toeic-skill-top,
+html[data-theme="light"] .toeic-skill-time,
+html[data-theme="light"] .toeic-method-desc,
+html[data-theme="light"] .toeic-rc-tip,
+html[data-theme="light"] .toeic-review-qmeta,
+html[data-theme="light"] .toeic-answer-pill-label {
+  color: #525861;
+}
+
+html[data-theme="light"] .toeic-hero-desc strong,
+html[data-theme="light"] .toeic-passage-body,
+html[data-theme="light"] .toeic-reasons-list li,
+html[data-theme="light"] .toeic-focus-desc,
+html[data-theme="light"] .toeic-rc-legend-item,
+html[data-theme="light"] .toeic-review-exp {
+  color: #30363f;
+}
+
+html[data-theme="light"] .toeic-btn-primary {
+  background: linear-gradient(115deg, #2563eb 0%, #6366f1 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 10px 24px -10px rgba(37, 99, 235, 0.45);
+}
+
+html[data-theme="light"] .toeic-btn-secondary {
+  background: #f3f4f6;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #1f2937;
+}
+
+html[data-theme="light"] .toeic-btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+html[data-theme="light"] .toeic-btn-ghost {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.2);
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-feature-grid,
+html[data-theme="light"] .toeic-score-note {
+  border-top-color: rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+}
+
+html[data-theme="light"] .toeic-feature-item,
+html[data-theme="light"] .toeic-overview-chip,
+html[data-theme="light"] .toeic-passage,
+html[data-theme="light"] .toeic-skill-card,
+html[data-theme="light"] .toeic-reasons-box,
+html[data-theme="light"] .toeic-target-btn,
+html[data-theme="light"] .toeic-focus-card,
+html[data-theme="light"] .toeic-method-card,
+html[data-theme="light"] .toeic-rc-box,
+html[data-theme="light"] .toeic-review-item {
+  background: #f8f9fb;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-overview-q,
+html[data-theme="light"] .toeic-section-kicker,
+html[data-theme="light"] .toeic-quiz-counter,
+html[data-theme="light"] .toeic-passage-header,
+html[data-theme="light"] .toeic-score-label,
+html[data-theme="light"] .toeic-score-unit,
+html[data-theme="light"] .toeic-review-exp strong {
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-quiz-part {
+  color: #494e55;
+}
+
+html[data-theme="light"] .toeic-quiz-sep {
+  color: rgba(15, 23, 42, 0.2);
+}
+
+html[data-theme="light"] .toeic-diff-badge {
+  color: #6d28d9;
+  background: rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+html[data-theme="light"] .toeic-timer-pill {
+  background: #eef0f4;
+  border-color: rgba(15, 23, 42, 0.09);
+  color: #1f2937;
+}
+
+html[data-theme="light"] .toeic-progress-track,
+html[data-theme="light"] .toeic-gauge-track {
+  background: #e5e7eb;
+}
+
+html[data-theme="light"] .toeic-option {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-option:hover {
+  background: #f0f5ff;
+  border-color: rgba(37, 99, 235, 0.45);
+}
+
+html[data-theme="light"] .toeic-option--selected {
+  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+html[data-theme="light"] .toeic-option-badge {
+  background: #eef0f4;
+  color: #374151;
+}
+
+html[data-theme="light"] .toeic-option--selected .toeic-option-badge {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+html[data-theme="light"] .toeic-option-key {
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #6b7280;
+}
+
+html[data-theme="light"] .toeic-quiz-actions,
+html[data-theme="light"] .toeic-passage-header,
+html[data-theme="light"] .toeic-review-body {
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-stat-box {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.09);
+}
+
+html[data-theme="light"] .toeic-roast-banner {
+  background: #fffbeb;
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+html[data-theme="light"] .toeic-roast-text {
+  color: #78350f;
+}
+
+html[data-theme="light"] .toeic-skill-card--correct {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+html[data-theme="light"] .toeic-skill-card--wrong {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+html[data-theme="light"] .toeic-ox-badge--o {
+  background: #d1fae5;
+  color: #047857;
+}
+
+html[data-theme="light"] .toeic-ox-badge--x {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+html[data-theme="light"] .toeic-target-btn {
+  color: #374151;
+}
+
+html[data-theme="light"] .toeic-target-btn--active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  box-shadow: 0 6px 18px -10px rgba(37, 99, 235, 0.45);
+}
+
+html[data-theme="light"] .toeic-goal-banner {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+html[data-theme="light"] .toeic-goal-duration,
+html[data-theme="light"] .toeic-goal-hours-label {
+  color: #047857;
+}
+
+html[data-theme="light"] .toeic-focus-card--weak {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.32);
+}
+
+html[data-theme="light"] .toeic-priority-tag,
+html[data-theme="light"] .toeic-rc-badge {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-weak-tag {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+html[data-theme="light"] .toeic-method-icon {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-rc-legend-item {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-review-trigger {
+  color: #131416;
+}
+
+html[data-theme="light"] .toeic-review-trigger:hover {
+  background: rgba(15, 23, 42, 0.03);
+}
+
+html[data-theme="light"] .toeic-answer-pill {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .toeic-answer-pill--correct {
+  background: #ecfdf5;
+  border-color: rgba(16, 185, 129, 0.28);
+}
+
+html[data-theme="light"] .toeic-answer-pill--wrong {
+  background: #fef2f2;
+  border-color: rgba(239, 68, 68, 0.28);
+}
+
+html[data-theme="light"] .toeic-review-exp {
+  background: #ffffff;
+}
+
+html[data-theme="light"] .toeic-review-tip {
+  background: #eff6ff;
+  border-color: rgba(37, 99, 235, 0.2);
+  color: #1e40af;
+}
+
+html[data-theme="light"] .toeic-toast {
+  background: #131416;
+  color: #ffffff;
+}
+
+/* ==================== Responsive (<= 767px) ==================== */
+@media (max-width: 767px) {
+  .toeic-section {
+    margin-top: 18px;
+  }
+
+  .toeic-card {
+    padding: 20px 18px;
+    border-radius: 20px;
+  }
+
+  .toeic-hero-top,
+  .toeic-score-top {
+    padding: 24px 20px 22px;
+  }
+
+  .toeic-feature-grid {
+    grid-template-columns: 1fr;
+    padding: 18px 20px 20px;
+  }
+
+  .toeic-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toeic-overview-chip {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px 14px;
+    text-align: left;
+  }
+
+  .toeic-option-key {
+    display: none;
+  }
+
+  .toeic-quiz-actions {
+    flex-wrap: nowrap;
+  }
+
+  .toeic-quiz-actions .toeic-btn-primary {
+    flex: 1;
+  }
+
+  .toeic-stats-grid {
+    width: 100%;
+  }
+
+  .toeic-skill-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toeic-skill-card {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: 12px 14px;
+  }
+
+  .toeic-skill-top {
+    width: auto;
+    gap: 8px;
+  }
+
+  .toeic-target-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .toeic-goal-hours-box {
+    text-align: left;
+  }
+
+  .toeic-focus-grid,
+  .toeic-methods-grid,
+  .toeic-review-answers {
+    grid-template-columns: 1fr;
+  }
+
+  .toeic-bottom-actions {
+    flex-direction: column;
+  }
+
+  .toeic-score-note {
+    padding: 14px 20px;
+  }
+}

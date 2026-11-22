@@ -8,6 +8,7 @@ import { LibraryVisual } from "./LibraryVisual";
 import { LibraryHeader, LibraryFooter, BenefitStrip } from "./LibraryChrome";
 import { PlaygroundSection, preloadPlayground } from "./PlaygroundSection";
 import { CapsuleMachineSection } from "./CapsuleMachineSection";
+import { ToeicDiagnosisSection } from "./ToeicDiagnosisSection";
 import { SkillGuideModal } from "./SkillGuideModal";
 import { LoadingOrb } from "./LoadingOrb";
 
@@ -15,6 +16,7 @@ const TABS = [
   { id: "posts", label: "프롬프트 저장소" },
   { id: "playground", label: "플레이그라운드" },
   { id: "capsule", label: "프롬프트 캡슐" },
+  { id: "toeic", label: "토익 진단" },
   { id: "ranking", label: "랭킹" },
   { id: "more", label: "기타" },
 ];
@@ -282,7 +284,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           {TABS.map((item) => (
             <Link
               key={item.id}
-              href={query ? `/?tab=${item.id}&q=${encodeURIComponent(query)}` : `/?tab=${item.id}`}
+              href={query && item.id !== "toeic" ? `/?tab=${item.id}&q=${encodeURIComponent(query)}` : `/?tab=${item.id}`}
               scroll={false}
               onClick={() => setTab(item.id)}
               aria-current={tab === item.id ? "page" : undefined}
@@ -292,44 +294,48 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
           ))}
         </nav>
 
-        <label className="library-search">
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-            <circle cx="10.5" cy="10.5" r="6.5" />
-            <path d="m16 16 4.5 4.5" />
-          </svg>
-          <div className="search-input-stage">
-            <div className="search-mirror" aria-hidden="true">
-              {query ? (
-                <>
-                  <span className="search-mirror-text">{query}</span>
-                  <span className="search-gradient-caret is-active" />
-                </>
-              ) : (
-                <>
-                  <span className="search-gradient-caret" />
-                  <span className="search-mirror-placeholder">제목, 키워드, GitHub Skill 이름으로 찾아보세요</span>
-                </>
-              )}
+        {tab !== "toeic" && (
+          <label className="library-search">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="m16 16 4.5 4.5" />
+            </svg>
+            <div className="search-input-stage">
+              <div className="search-mirror" aria-hidden="true">
+                {query ? (
+                  <>
+                    <span className="search-mirror-text">{query}</span>
+                    <span className="search-gradient-caret is-active" />
+                  </>
+                ) : (
+                  <>
+                    <span className="search-gradient-caret" />
+                    <span className="search-mirror-placeholder">제목, 키워드, GitHub Skill 이름으로 찾아보세요</span>
+                  </>
+                )}
+              </div>
+              <input
+                aria-label="프롬프트 검색"
+                type="search"
+                placeholder="제목, 키워드, GitHub Skill 이름으로 찾아보세요"
+                value={query}
+                onChange={(event) => handleQueryChange(event.target.value)}
+              />
             </div>
-            <input
-              aria-label="프롬프트 검색"
-              type="search"
-              placeholder="제목, 키워드, GitHub Skill 이름으로 찾아보세요"
-              value={query}
-              onChange={(event) => handleQueryChange(event.target.value)}
-            />
-          </div>
-          {query && (
-            <button type="button" onClick={() => handleQueryChange("")} aria-label="검색어 지우기">
-              ×
-            </button>
-          )}
-        </label>
+            {query && (
+              <button type="button" onClick={() => handleQueryChange("")} aria-label="검색어 지우기">
+                ×
+              </button>
+            )}
+          </label>
+        )}
 
         {tab === "playground" ? (
           <PlaygroundSection query={query} />
         ) : tab === "capsule" ? (
           <CapsuleMachineSection />
+        ) : tab === "toeic" ? (
+          <ToeicDiagnosisSection />
         ) : tab === "more" ? (
           <section className="library-tools">
             <div className="library-section-heading">
