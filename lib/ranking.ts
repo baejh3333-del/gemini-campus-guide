@@ -48,9 +48,14 @@ export function isRankingRowId(id: string): boolean {
   return id.startsWith(RANKING_ROW_PREFIX);
 }
 
+/** Counter key for one period bucket, e.g. "d:2026-11-22", "w:2026-11-16", "m:2026-11". */
+export function buildRankingKey(period: RankingPeriod, bucket: string): string {
+  return `${PERIOD_SHORT[period]}:${bucket.replace(/^W-/, "")}`;
+}
+
+/** Legacy row id used when ranking counters were stored as rows of the community sheet. */
 export function buildRankingRowId(period: RankingPeriod, bucket: string, promptId: string): string {
-  const cleanBucket = bucket.replace(/^W-/, "");
-  return `${RANKING_ROW_PREFIX}${PERIOD_SHORT[period]}:${cleanBucket}:${promptId}`.slice(0, 80);
+  return `${RANKING_ROW_PREFIX}${buildRankingKey(period, bucket)}:${promptId}`.slice(0, 80);
 }
 
 export function parseRankingRowId(
@@ -58,8 +63,7 @@ export function parseRankingRowId(
   period: RankingPeriod,
   bucket: string,
 ): string | null {
-  const cleanBucket = bucket.replace(/^W-/, "");
-  const prefix = `${RANKING_ROW_PREFIX}${PERIOD_SHORT[period]}:${cleanBucket}:`;
+  const prefix = `${RANKING_ROW_PREFIX}${buildRankingKey(period, bucket)}:`;
   if (!rowId.startsWith(prefix)) return null;
   const promptId = rowId.slice(prefix.length).trim();
   return promptId || null;
@@ -244,8 +248,11 @@ export function buildRankedPrompts(
   localDeltas: Record<string, number> = {},
   limit = 5,
 ): RankedPromptItem[] {
+  // Baselines follow the static library order only. Community posts arrive later and get no
+  // baseline, so they neither shift the static items' positions nor show copies that never happened.
+  let staticIndex = 0;
   const scored = prompts.map((prompt, index) => {
-    const seedCount = getSeedCopyCount(prompt.id, index, period);
+    const seedCount = prompt.isCommunity ? 0 : getSeedCopyCount(prompt.id, staticIndex++, period);
     const serverDelta = Math.max(0, Math.floor(serverDeltas[prompt.id] ?? 0));
     const localDelta = Math.max(0, Math.floor(localDeltas[prompt.id] ?? 0));
     const liveCount = Math.max(serverDelta, localDelta);

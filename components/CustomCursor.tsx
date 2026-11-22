@@ -179,15 +179,55 @@ function mixRgb(a: RGB, b: RGB, c: RGB, wa: number, wb: number, wc: number): str
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], summary, input, textarea, select, label[for], [data-cursor="button"]';
 
+const CURSOR_ACTIVE_CLASS = "has-custom-cursor";
+// Below these the shape is visually at rest (path is printed with 2 decimals).
+const SETTLE_POS_EPS = 0.002;
+const SETTLE_VEL_EPS = 0.01;
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
 export default function CustomCursor() {
-  const [surface, setSurface] = useState<HTMLElement | null>(null);
+  const [finePointer, setFinePointer] = useState(false);
+  const [host, setHost] = useState<HTMLDivElement | null>(null);
+
+  // Follow pointer-type changes so plugging in a mouse later (2-in-1, DevTools device mode) still works.
   useEffect(() => {
-    const sync = () => setSurface(document.querySelector<HTMLDialogElement>("dialog[open]") ?? document.body);
-    sync();
+    const mq = window.matchMedia("(pointer: fine)");
+    const update = () => setFinePointer(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // A modal <dialog> sits in the top layer above any z-index, so the cursor has to live inside it.
+  // One host node is *moved* there instead of re-rendering the portal, which keeps the cursor's
+  // position, visibility and spring state instead of blinking out until the next mousemove.
+  useEffect(() => {
+    if (!finePointer) return;
+    const el = document.createElement("div");
+    el.className = "custom-cursor-host";
+    document.body.appendChild(el);
+    setHost(el);
+
+    const sync = (records?: MutationRecord[]) => {
+      // Only `open` changes or the host being removed with its dialog can change the target.
+      if (records && el.isConnected && !records.some((record) => record.type === "attributes")) return;
+      const target = document.querySelector<HTMLDialogElement>("dialog[open]") ?? document.body;
+      if (el.parentNode !== target) target.appendChild(el);
+    };
     const observer = new MutationObserver(sync);
     observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
-    return () => observer.disconnect();
-  }, []);
+    sync();
+
+    return () => {
+      observer.disconnect();
+      el.remove();
+      setHost(null);
+    };
+  }, [finePointer]);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const shapeGroupRef = useRef<SVGGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -198,8 +238,7 @@ export default function CustomCursor() {
   const gradRef = useRef<SVGLinearGradientElement>(null);
 
   useEffect(() => {
-    const mq = window.matchMedia("(pointer: fine)");
-    if (!mq.matches) return;
+    if (!host) return;
 
     const wrapper = wrapperRef.current;
     const shapeGroup = shapeGroupRef.current;
@@ -212,6 +251,8 @@ export default function CustomCursor() {
     if (!wrapper || !shapeGroup || !pathEl || !s0 || !s1 || !s2 || !gradEl) {
       return;
     }
+    const stops = [s0, s1, s2] as const;
+    const root = document.documentElement;
 
     let isVisible = false;
     let isHoveringButton = false;
@@ -245,19 +286,183 @@ export default function CustomCursor() {
     let stretchDecayTimer: ReturnType<typeof setTimeout> | null = null;
     let lastTime = performance.now();
     let rafId = 0;
-    let activeUntil = 0;
 
-    const wakeCursor = () => {
-      activeUntil = performance.now() + 1500;
-      if (isVisible && !rafId) {
+    // Last values written to the DOM, so unchanged frames cost no style/paint work.
+    let lastGroupTransform = "";
+    let lastPath = "";
+    const lastStopColors = ["", "", ""];
+    let lastGradient = "";
+    let lastRingRadius = "";
+    let lastRingOpacity = "";
+
+    const currentPoints: ShapePoints = ARROW_POINTS.map(
+      ([x, y]) => [x, y] as Point
+    );
+
+    const targets = () => ({
+      scroll: isScrolling ? 1 : 0,
+      hover: !isScrolling && isHoveringButton ? 1 : 0,
+      press: isPressed ? 0.86 : 1,
+    });
+
+    const isSettled = () => {
+      const t = targets();
+      return (
+        Math.abs(t.scroll - scrollPos) < SETTLE_POS_EPS && Math.abs(scrollVel) < SETTLE_VEL_EPS &&
+        Math.abs(t.hover - hoverPos) < SETTLE_POS_EPS && Math.abs(hoverVel) < SETTLE_VEL_EPS &&
+        Math.abs(stretchTarget - stretchPos) < SETTLE_POS_EPS && Math.abs(stretchVel) < SETTLE_VEL_EPS &&
+        Math.abs(shiftYTarget - shiftYPos) < 0.01 && Math.abs(shiftYVel) < SETTLE_VEL_EPS &&
+        Math.abs(t.press - pressScalePos) < SETTLE_POS_EPS && Math.abs(pressScaleVel) < SETTLE_VEL_EPS &&
+        pulseProgress >= 1 &&
+        Math.abs(gradFlowAngle - 135) < 0.05
+      );
+    };
+
+    const snapToRest = () => {
+      const t = targets();
+      scrollPos = t.scroll;
+      hoverPos = t.hover;
+      stretchPos = stretchTarget;
+      shiftYPos = shiftYTarget;
+      pressScalePos = t.press;
+      scrollVel = hoverVel = stretchVel = shiftYVel = pressScaleVel = 0;
+      pulseProgress = 1;
+      gradFlowAngle = 135;
+    };
+
+    const step = (dt: number) => {
+      const t = targets();
+      const scrollStiffness = isScrolling ? 260 : 195;
+      const scrollDamping = isScrolling ? 18 : 13.5;
+      scrollVel += ((t.scroll - scrollPos) * scrollStiffness - scrollVel * scrollDamping) * dt;
+      scrollPos += scrollVel * dt;
+
+      hoverVel += ((t.hover - hoverPos) * 220 - hoverVel * 16) * dt;
+      hoverPos += hoverVel * dt;
+
+      stretchVel += ((stretchTarget - stretchPos) * 310 - stretchVel * 14) * dt;
+      stretchPos += stretchVel * dt;
+
+      shiftYVel += ((shiftYTarget - shiftYPos) * 240 - shiftYVel * 15) * dt;
+      shiftYPos += shiftYVel * dt;
+
+      pressScaleVel += ((t.press - pressScalePos) * 320 - pressScaleVel * 18) * dt;
+      pressScalePos += pressScaleVel * dt;
+
+      gradFlowAngle += (135 - gradFlowAngle) * (1 - Math.exp(-8 * dt));
+      if (pulseProgress < 1) pulseProgress = Math.min(1, pulseProgress + dt * 2.4);
+    };
+
+    const render = () => {
+      // 세 가지 도형 가중치 블렌딩
+      const wScroll = scrollPos;
+      const wHover = hoverPos * (1 - clamp01(scrollPos));
+      const wDefault = 1 - wScroll - wHover;
+
+      for (let i = 0; i < 24; i++) {
+        currentPoints[i][0] =
+          ARROW_POINTS[i][0] * wDefault +
+          CIRCLE_POINTS[i][0] * wHover +
+          SCROLL_POINTS[i][0] * wScroll;
+        currentPoints[i][1] =
+          ARROW_POINTS[i][1] * wDefault +
+          CIRCLE_POINTS[i][1] * wHover +
+          SCROLL_POINTS[i][1] * wScroll;
+      }
+
+      // 부피 보존형 탄성 스케일 (Squash & Stretch)
+      const sy = Math.max(0.72, 1 + stretchPos);
+      const sx = 1 / Math.sqrt(sy);
+      const dynamicTilt = scrollVel * 1.6;
+      const groupTransform = `scale(${(sx * pressScalePos).toFixed(3)}, ${(sy * pressScalePos).toFixed(3)}) translateY(${shiftYPos.toFixed(2)}px) rotate(${dynamicTilt.toFixed(2)}deg)`;
+      if (groupTransform !== lastGroupTransform) {
+        shapeGroup.style.transform = groupTransform;
+        lastGroupTransform = groupTransform;
+      }
+      const pathData = pointsToSvgPath(currentPoints);
+      if (pathData !== lastPath) {
+        pathEl.setAttribute("d", pathData);
+        lastPath = pathData;
+      }
+
+      // 테두리(Stroke) 그라데이션 컬러 보간
+      const cwScroll = clamp01(wScroll);
+      const cwHover = Math.max(0, Math.min(1 - cwScroll, wHover));
+      const cwDefault = Math.max(0, 1 - cwScroll - cwHover);
+      for (let i = 0; i < 3; i++) {
+        const color = mixRgb(
+          STROKE_PALETTES.default[i], STROKE_PALETTES.hover[i], STROKE_PALETTES.scroll[i],
+          cwDefault, cwHover, cwScroll
+        );
+        if (color !== lastStopColors[i]) {
+          stops[i].setAttribute("stop-color", color);
+          lastStopColors[i] = color;
+        }
+      }
+
+      const rad = (gradFlowAngle * Math.PI) / 180;
+      const gx = Math.cos(rad) * 50;
+      const gy = Math.sin(rad) * 50;
+      const x1 = `${(50 - gx).toFixed(1)}%`;
+      const y1 = `${(50 - gy).toFixed(1)}%`;
+      const x2 = `${(50 + gx).toFixed(1)}%`;
+      const y2 = `${(50 + gy).toFixed(1)}%`;
+      const gradient = `${x1} ${y1} ${x2} ${y2}`;
+      if (gradient !== lastGradient) {
+        gradEl.setAttribute("x1", x1);
+        gradEl.setAttribute("y1", y1);
+        gradEl.setAttribute("x2", x2);
+        gradEl.setAttribute("y2", y2);
+        lastGradient = gradient;
+      }
+
+      // 스크롤 시작/정지 시 퍼져나가는 모션그래픽 리플 링
+      if (pulseRingEl) {
+        let ringOpacity = "0";
+        if (pulseProgress < 1) {
+          const easeOut = 1 - Math.pow(1 - pulseProgress, 3);
+          const ringRadius = (10 + easeOut * 16).toFixed(2);
+          ringOpacity = ((1 - easeOut) * 0.38).toFixed(3);
+          if (ringRadius !== lastRingRadius) {
+            pulseRingEl.setAttribute("r", ringRadius);
+            lastRingRadius = ringRadius;
+          }
+        }
+        if (ringOpacity !== lastRingOpacity) {
+          pulseRingEl.style.opacity = ringOpacity;
+          lastRingOpacity = ringOpacity;
+        }
+      }
+    };
+
+    const animate = (now: number) => {
+      const dt = Math.min(0.032, Math.max(0.001, (now - lastTime) / 1000));
+      lastTime = now;
+      step(dt);
+      // Stop the loop once everything is at rest; input events restart it via kick().
+      if (isSettled()) {
+        snapToRest();
+        render();
+        rafId = 0;
+        return;
+      }
+      render();
+      rafId = isVisible ? requestAnimationFrame(animate) : 0;
+    };
+
+    const kick = () => {
+      if (isVisible && !rafId && !isSettled()) {
         lastTime = performance.now();
         rafId = requestAnimationFrame(animate);
       }
     };
 
-    const currentPoints: ShapePoints = ARROW_POINTS.map(
-      ([x, y]) => [x, y] as Point
-    );
+    const hide = () => {
+      isVisible = false;
+      wrapper.style.opacity = "0";
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    };
 
     const updateInteractiveState = (target: EventTarget | null) => {
       if (!(target instanceof Element)) {
@@ -273,19 +478,22 @@ export default function CustomCursor() {
       if (!isVisible) {
         isVisible = true;
         wrapper.style.opacity = "1";
+        // Hide the OS pointer only once this cursor is actually drawn (not during hydration).
+        root.classList.add(CURSOR_ACTIVE_CLASS);
       }
+      // A button released outside the window never sends mouseup here.
+      if (isPressed && e.buttons === 0) isPressed = false;
       updateInteractiveState(e.target);
-      wakeCursor();
+      kick();
     };
 
     const onMouseOver = (e: MouseEvent) => {
       updateInteractiveState(e.target);
-      wakeCursor();
+      kick();
     };
 
     const onWheel = (e: WheelEvent) => {
       const wasScrolling = isScrolling;
-      wakeCursor();
       isScrolling = true;
 
       // 휠 속도에 비례한 역동적 스트레치 + 방향성 모멘텀
@@ -309,150 +517,62 @@ export default function CustomCursor() {
         stretchTarget = 0;
         shiftYTarget = 0;
         stretchVel -= 3.8;
+        kick();
       }, 65);
 
       if (scrollStopTimer) clearTimeout(scrollStopTimer);
       scrollStopTimer = setTimeout(() => {
         isScrolling = false;
         pulseProgress = 0;
+        kick();
       }, 210);
+
+      kick();
     };
 
     const onMouseDown = () => {
       isPressed = true;
-      wakeCursor();
+      kick();
     };
 
-    const onMouseUp = () => {
+    const releasePress = () => {
       isPressed = false;
-      wakeCursor();
+      kick();
     };
 
-    const onMouseLeave = () => {
-      isVisible = false;
-      wrapper.style.opacity = "0";
-      cancelAnimationFrame(rafId);
-      rafId = 0;
+    // relatedTarget is null only when the pointer leaves the document itself.
+    const onMouseOut = (e: MouseEvent) => {
+      if (!e.relatedTarget) hide();
     };
 
-    const animate = (now: number) => {
-      const dt = Math.min(0.032, Math.max(0.001, (now - lastTime) / 1000));
-      lastTime = now;
-
-      // 2. 2차 스프링 물리 계산
-      const scrollTarget = isScrolling ? 1 : 0;
-      const scrollStiffness = isScrolling ? 260 : 195;
-      const scrollDamping = isScrolling ? 18 : 13.5;
-      scrollVel += ((scrollTarget - scrollPos) * scrollStiffness - scrollVel * scrollDamping) * dt;
-      scrollPos += scrollVel * dt;
-
-      const hoverTarget = !isScrolling && isHoveringButton ? 1 : 0;
-      const hoverStiffness = 220;
-      const hoverDamping = 16;
-      hoverVel += ((hoverTarget - hoverPos) * hoverStiffness - hoverVel * hoverDamping) * dt;
-      hoverPos += hoverVel * dt;
-
-      const stretchStiffness = 310;
-      const stretchDamping = 14;
-      stretchVel += ((stretchTarget - stretchPos) * stretchStiffness - stretchVel * stretchDamping) * dt;
-      stretchPos += stretchVel * dt;
-
-      const shiftStiffness = 240;
-      const shiftDamping = 15;
-      shiftYVel += ((shiftYTarget - shiftYPos) * shiftStiffness - shiftYVel * shiftDamping) * dt;
-      shiftYPos += shiftYVel * dt;
-
-      const pressTarget = isPressed ? 0.86 : 1;
-      pressScaleVel += ((pressTarget - pressScalePos) * 320 - pressScaleVel * 18) * dt;
-      pressScalePos += pressScaleVel * dt;
-
-      // 3. 세 가지 도형 가중치 블렌딩
-      const wScroll = scrollPos;
-      const wHover = hoverPos * (1 - Math.max(0, Math.min(1, scrollPos)));
-      const wDefault = 1 - wScroll - wHover;
-
-      for (let i = 0; i < 24; i++) {
-        currentPoints[i][0] =
-          ARROW_POINTS[i][0] * wDefault +
-          CIRCLE_POINTS[i][0] * wHover +
-          SCROLL_POINTS[i][0] * wScroll;
-        currentPoints[i][1] =
-          ARROW_POINTS[i][1] * wDefault +
-          CIRCLE_POINTS[i][1] * wHover +
-          SCROLL_POINTS[i][1] * wScroll;
-      }
-
-      // 4. 부피 보존형 탄성 스케일 (Squash & Stretch)
-      const sy = Math.max(0.72, 1 + stretchPos);
-      const sx = 1 / Math.sqrt(sy);
-      const dynamicTilt = scrollVel * 1.6;
-
-      shapeGroup.style.transform = `scale(${(sx * pressScalePos).toFixed(3)}, ${(sy * pressScalePos).toFixed(3)}) translateY(${shiftYPos.toFixed(2)}px) rotate(${dynamicTilt.toFixed(2)}deg)`;
-      pathEl.setAttribute("d", pointsToSvgPath(currentPoints));
-
-      // 5. 테두리(Stroke) 그라데이션 컬러 보간
-      const cwScroll = Math.max(0, Math.min(1, wScroll));
-      const cwHover = Math.max(0, Math.min(1 - cwScroll, wHover));
-      const cwDefault = Math.max(0, 1 - cwScroll - cwHover);
-
-      s0.setAttribute(
-        "stop-color",
-        mixRgb(STROKE_PALETTES.default[0], STROKE_PALETTES.hover[0], STROKE_PALETTES.scroll[0], cwDefault, cwHover, cwScroll)
-      );
-      s1.setAttribute(
-        "stop-color",
-        mixRgb(STROKE_PALETTES.default[1], STROKE_PALETTES.hover[1], STROKE_PALETTES.scroll[1], cwDefault, cwHover, cwScroll)
-      );
-      s2.setAttribute(
-        "stop-color",
-        mixRgb(STROKE_PALETTES.default[2], STROKE_PALETTES.hover[2], STROKE_PALETTES.scroll[2], cwDefault, cwHover, cwScroll)
-      );
-
-      gradFlowAngle += (135 - gradFlowAngle) * (1 - Math.exp(-8 * dt));
-      const rad = (gradFlowAngle * Math.PI) / 180;
-      const gx = Math.cos(rad) * 50;
-      const gy = Math.sin(rad) * 50;
-      gradEl.setAttribute("x1", `${(50 - gx).toFixed(1)}%`);
-      gradEl.setAttribute("y1", `${(50 - gy).toFixed(1)}%`);
-      gradEl.setAttribute("x2", `${(50 + gx).toFixed(1)}%`);
-      gradEl.setAttribute("y2", `${(50 + gy).toFixed(1)}%`);
-
-      // 6. 스크롤 시작/정지 시 퍼져나가는 모션그래픽 리플 링
-      if (pulseRingEl) {
-        if (pulseProgress < 1) {
-          pulseProgress = Math.min(1, pulseProgress + dt * 2.4);
-          const easeOut = 1 - Math.pow(1 - pulseProgress, 3);
-          const ringRadius = 10 + easeOut * 16;
-          const ringOpacity = (1 - easeOut) * 0.38;
-          pulseRingEl.setAttribute("r", ringRadius.toFixed(2));
-          pulseRingEl.style.opacity = ringOpacity.toFixed(3);
-        } else {
-          pulseRingEl.style.opacity = "0";
-        }
-      }
-
-      rafId = isVisible && now < activeUntil ? requestAnimationFrame(animate) : 0;
-    };
+    render();
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     window.addEventListener("mouseover", onMouseOver, { passive: true });
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("mousedown", onMouseDown, { passive: true });
-    window.addEventListener("mouseup", onMouseUp, { passive: true });
-    document.addEventListener("mouseleave", onMouseLeave);
+    window.addEventListener("mouseup", releasePress, { passive: true });
+    window.addEventListener("blur", releasePress);
+    window.addEventListener("pointercancel", releasePress);
+    document.addEventListener("mouseleave", hide);
+    document.addEventListener("mouseout", onMouseOut);
 
     return () => {
       cancelAnimationFrame(rafId);
       if (scrollStopTimer) clearTimeout(scrollStopTimer);
       if (stretchDecayTimer) clearTimeout(stretchDecayTimer);
+      root.classList.remove(CURSOR_ACTIVE_CLASS);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("mouseup", onMouseUp);
-      document.removeEventListener("mouseleave", onMouseLeave);
+      window.removeEventListener("mouseup", releasePress);
+      window.removeEventListener("blur", releasePress);
+      window.removeEventListener("pointercancel", releasePress);
+      document.removeEventListener("mouseleave", hide);
+      document.removeEventListener("mouseout", onMouseOut);
     };
-  }, [surface]);
+  }, [host]);
 
   const cursor = (
     <div
@@ -525,5 +645,5 @@ export default function CustomCursor() {
       </svg>
     </div>
   );
-  return surface ? createPortal(cursor, surface) : null;
+  return host ? createPortal(cursor, host) : null;
 }

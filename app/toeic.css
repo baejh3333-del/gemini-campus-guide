@@ -864,6 +864,17 @@
   gap: 10px;
 }
 
+.toeic-share-error {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #fecaca;
+}
+
+html[data-theme="light"] .toeic-share-error {
+  color: #b91c1c;
+}
+
 .toeic-share-btn {
   flex: 1;
   min-width: 180px;

@@ -24,6 +24,10 @@ export function LibraryPromptComposer({
   const artPending = useRef(false);
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  // Re-submitting the same content reuses its requestId, so a retry after a slow 503
+  // (the sheet may already have the row) is de-duplicated by the server.
+  const createAttempt = useRef<{ payload: string; id: string } | null>(null);
+  const createPending = useRef(false);
 
   function insertFourBlockTemplate() {
     const template = `당신은 [전공·역할] 전문가입니다.
@@ -55,8 +59,8 @@ export function LibraryPromptComposer({
         body: JSON.stringify({ title, body, mode: "image" }),
         signal: AbortSignal.timeout(115000),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const data = (await res.json().catch(() => ({}))) as { artwork?: string; error?: string };
+      if (!res.ok || !data.artwork) throw new Error(data.error || "이미지를 만들지 못했어요.");
       setArtwork(data.artwork);
     } catch (e) {
       setFormError(e instanceof Error ? e.message : "이미지를 만들지 못했어요.");
@@ -68,6 +72,7 @@ export function LibraryPromptComposer({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (createPending.current) return;
     setFormError("");
     if (title.trim().length < 2) {
       setFormError("제목을 2자 이상 입력해 주세요.");
@@ -78,23 +83,30 @@ export function LibraryPromptComposer({
       return;
     }
 
+    const fields = {
+      action: "create",
+      title,
+      description,
+      author: author.trim() || "익명 학우",
+      category,
+      variant,
+      artwork,
+      body,
+    };
+    const payload = JSON.stringify(fields);
+    if (createAttempt.current?.payload !== payload) {
+      createAttempt.current = { payload, id: crypto.randomUUID() };
+    }
+
+    createPending.current = true;
     setSubmitting(true);
     try {
       const res = await fetch("/api/playground", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "create",
-          title,
-          description,
-          author: author.trim() || "익명 학우",
-          category,
-          variant,
-          artwork,
-          body,
-        }),
+        body: JSON.stringify({ ...fields, requestId: createAttempt.current.id }),
       });
-      const data = (await res.json()) as {
+      const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
         prompt?: PlaygroundPrompt;
         error?: string;
@@ -103,10 +115,12 @@ export function LibraryPromptComposer({
         setFormError(data.error || "등록 중 오류가 발생했습니다.");
         return;
       }
+      createAttempt.current = null;
       onCreated(data.prompt);
     } catch {
       setFormError("네트워크 오류가 발생했습니다.");
     } finally {
+      createPending.current = false;
       setSubmitting(false);
     }
   }

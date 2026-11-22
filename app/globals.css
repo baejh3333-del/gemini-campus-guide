@@ -348,10 +348,12 @@ summary::-webkit-details-marker {
   pointer-events: none;
 }
 
+/* CustomCursor adds .has-custom-cursor once its own cursor is drawn, so the OS pointer
+   stays visible while the page hydrates or if the script never runs. */
 @media (pointer: fine) {
-  html,
-  body,
-  body * {
+  html.has-custom-cursor,
+  html.has-custom-cursor body,
+  html.has-custom-cursor body * {
     cursor: none !important;
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import "@/app/toeic.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   TOEIC_QUESTIONS,
   TARGET_KEYS,
@@ -44,6 +44,50 @@ interface AiDrillData {
 
 const AI_DRILL_STORAGE_KEY = "gsa-toeic-ai-drill-used-v1";
 const PART_GROUPS = ["Part 5", "Part 6", "Part 7"] as const;
+const SCORE_COUNT_FROM = 400;
+const SCORE_COUNT_MS = 650;
+// Answer options are excluded so "click an option, then press Enter" still moves on.
+const INTERACTIVE_KEY_TARGET = 'button:not([role="radio"]), a[href], summary, [role="button"], [role="link"]';
+
+/**
+ * Animates only this span's text. Driving the count-up through the section's state re-rendered
+ * the whole result screen every frame, which made scrolling and the custom cursor stutter.
+ */
+function ScoreCountUp({ target }: { target: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.textContent = String(target);
+      return;
+    }
+    el.textContent = String(SCORE_COUNT_FROM);
+    const startTime = performance.now();
+    let frameId = 0;
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - startTime) / SCORE_COUNT_MS);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = String(Math.round(SCORE_COUNT_FROM + (target - SCORE_COUNT_FROM) * eased));
+      if (progress < 1) frameId = requestAnimationFrame(tick);
+    };
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [target]);
+  return <span ref={ref} className="toeic-score-number" />;
+}
+
+/** Ticks on its own so the quiz screen is not re-rendered twice a second. */
+function QuizElapsedTimer({ startedAt }: { startedAt: number }) {
+  const [elapsedSec, setElapsedSec] = useState(0);
+  useEffect(() => {
+    const update = () => setElapsedSec(Math.max(0, Math.floor((Date.now() - startedAt) / 1000)));
+    update();
+    const id = window.setInterval(update, 500);
+    return () => window.clearInterval(id);
+  }, [startedAt]);
+  return <>{formatSecondsToMMSS(elapsedSec)}</>;
+}
 
 function formatShortDate(timestamp: number): string {
   const d = new Date(timestamp);
@@ -90,15 +134,15 @@ export function ToeicDiagnosisSection() {
   const [guessedFlags, setGuessedFlags] = useState<boolean[]>(() =>
     Array(TOEIC_QUESTIONS.length).fill(false),
   );
-  const [elapsedSec, setElapsedSec] = useState(0);
+  const [quizStartedAt, setQuizStartedAt] = useState(0);
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
-  const [displayScore, setDisplayScore] = useState(400);
   const [selectedTarget, setSelectedTarget] = useState<TargetScoreKey>(800);
   const [selectedDday, setSelectedDday] = useState<DdayOption>("4w");
   const [openReviews, setOpenReviews] = useState<boolean[]>([]);
   const [history, setHistory] = useState<ToeicHistoryEntry[]>([]);
   const [savingCard, setSavingCard] = useState<ShareCardFormat | null>(null);
   const [savedCard, setSavedCard] = useState<ShareCardFormat | null>(null);
+  const [cardError, setCardError] = useState<string | null>(null);
   const [drillPhase, setDrillPhase] = useState<AiDrillPhase>("ready");
   const [drillData, setDrillData] = useState<AiDrillData | null>(null);
   const [drillAnswers, setDrillAnswers] = useState<(number | null)[]>([]);
@@ -108,7 +152,6 @@ export function ToeicDiagnosisSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const questionTimesMsRef = useRef<number[]>(Array(TOEIC_QUESTIONS.length).fill(0));
   const questionStartRef = useRef<number>(0);
-  const quizStartRef = useRef<number>(0);
   const savedCardTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -131,15 +174,6 @@ export function ToeicDiagnosisSection() {
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Live elapsed timer during quiz
-  useEffect(() => {
-    if (phase !== "quiz") return;
-    const id = window.setInterval(() => {
-      setElapsedSec(Math.floor((Date.now() - quizStartRef.current) / 1000));
-    }, 500);
-    return () => window.clearInterval(id);
-  }, [phase]);
-
   // Brief analyzing transition (~500ms) -> result
   useEffect(() => {
     if (phase !== "analyzing") return;
@@ -149,33 +183,6 @@ export function ToeicDiagnosisSection() {
     }, 520);
     return () => window.clearTimeout(id);
   }, [phase, scrollToSectionTop]);
-
-  // Score count-up animation when entering result screen
-  useEffect(() => {
-    if (phase !== "result" || !diagnosis) return;
-    const target = diagnosis.finalScore;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayScore(target);
-      return;
-    }
-
-    const startVal = 400;
-    const duration = 650;
-    const startTime = performance.now();
-    let frameId = 0;
-
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - startTime) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayScore(Math.round(startVal + (target - startVal) * eased));
-      if (progress < 1) {
-        frameId = requestAnimationFrame(tick);
-      }
-    };
-
-    frameId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frameId);
-  }, [phase, diagnosis]);
 
   const flushCurrentQuestionTime = useCallback((index: number) => {
     const now = Date.now();
@@ -207,11 +214,10 @@ export function ToeicDiagnosisSection() {
     const now = Date.now();
     questionTimesMsRef.current = Array(TOEIC_QUESTIONS.length).fill(0);
     questionStartRef.current = now;
-    quizStartRef.current = now;
+    setQuizStartedAt(now);
     setAnswers(Array(TOEIC_QUESTIONS.length).fill(null));
     setGuessedFlags(Array(TOEIC_QUESTIONS.length).fill(false));
     setCurrentIndex(0);
-    setElapsedSec(0);
     setDiagnosis(null);
     setSavedCard(null);
     setPhase("quiz");
@@ -273,6 +279,7 @@ export function ToeicDiagnosisSection() {
     async (format: ShareCardFormat) => {
       if (!diagnosis || savingCard) return;
       setSavingCard(format);
+      setCardError(null);
       try {
         await downloadToeicShareCard(diagnosis, format);
         setSavedCard(format);
@@ -283,6 +290,8 @@ export function ToeicDiagnosisSection() {
           setSavedCard(null);
           savedCardTimerRef.current = null;
         }, 2200);
+      } catch {
+        setCardError("카드 저장에 실패했어요. 다른 브라우저(Chrome·Safari)에서 다시 시도해 주세요.");
       } finally {
         setSavingCard(null);
       }
@@ -296,8 +305,18 @@ export function ToeicDiagnosisSection() {
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const tag = (e.target as HTMLElement | null)?.tagName;
+      const target = e.target instanceof HTMLElement ? e.target : null;
+      const tag = target?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      // A control reached with Tab (e.g. "이전 문제") keeps its own Enter action.
+      if (
+        e.key === "Enter" &&
+        target?.closest(INTERACTIVE_KEY_TARGET) &&
+        target.matches(":focus-visible")
+      ) {
+        return;
+      }
 
       if (e.key >= "1" && e.key <= "4") {
         e.preventDefault();
@@ -328,7 +347,6 @@ export function ToeicDiagnosisSection() {
     setAnswers(Array(TOEIC_QUESTIONS.length).fill(null));
     setGuessedFlags(Array(TOEIC_QUESTIONS.length).fill(false));
     setCurrentIndex(0);
-    setElapsedSec(0);
     setSavedCard(null);
     setDrillData(null);
     setDrillAnswers([]);
@@ -599,7 +617,7 @@ export function ToeicDiagnosisSection() {
                 <span className="toeic-diff-badge">{currentQuestion.difficultyLabel}</span>
                 <span className="toeic-timer-pill" aria-label="경과 시간">
                   <span className="toeic-timer-dot" aria-hidden="true" />
-                  {formatSecondsToMMSS(elapsedSec)}
+                  <QuizElapsedTimer startedAt={quizStartedAt} />
                 </span>
               </div>
             </div>
@@ -719,7 +737,7 @@ export function ToeicDiagnosisSection() {
                 <div>
                   <p className="toeic-score-label">당신의 예상 토익 점수는</p>
                   <div className="toeic-score-value-row">
-                    <span className="toeic-score-number">{displayScore}</span>
+                    <ScoreCountUp target={diagnosis.finalScore} />
                     <span className="toeic-score-unit">점</span>
                     <span className="toeic-score-range">(±25점 오차 범위)</span>
                   </div>
@@ -798,6 +816,11 @@ export function ToeicDiagnosisSection() {
                   </span>
                 </button>
               </div>
+              {cardError && (
+                <p className="toeic-share-error" role="alert">
+                  {cardError}
+                </p>
+              )}
             </div>
 
             <div className="toeic-score-note">

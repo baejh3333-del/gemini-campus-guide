@@ -1,6 +1,16 @@
+import { hashClientKey, hitRateLimit } from "@/lib/rate-limit";
+
+export const runtime = "nodejs";
+// Primary + fallback model calls can together take up to PRIMARY_TIMEOUT_MS + FALLBACK_TIMEOUT_MS.
+export const maxDuration = 60;
+
 const MAX_BODY_BYTES = 8000;
 const MAX_REQUESTS_PER_HOUR = 20;
 const ONE_HOUR_MS = 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * ONE_HOUR_MS;
+const DEFAULT_DAILY_LIMIT = 300;
+const PRIMARY_TIMEOUT_MS = 20_000;
+const FALLBACK_TIMEOUT_MS = 25_000;
 const TRIAL_COOKIE_NAME = "gsa_toeic_drill_used";
 const TRIAL_COOKIE_HEADER = `${TRIAL_COOKIE_NAME}=1; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax`;
 const OPTION_LABELS = ["A", "B", "C", "D"] as const;
@@ -22,18 +32,10 @@ interface DrillQuestion {
   collocationTip: string;
 }
 
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
+function getDailyLimit(): number {
+  const configured = Number(process.env.TOEIC_DRILL_DAILY_LIMIT);
+  return Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : DEFAULT_DAILY_LIMIT;
 }
-
-const globalForRateLimit = globalThis as typeof globalThis & {
-  __toeicDrillRateMap?: Map<string, RateLimitEntry>;
-};
-
-const ipRateLimitMap =
-  globalForRateLimit.__toeicDrillRateMap ??
-  (globalForRateLimit.__toeicDrillRateMap = new Map<string, RateLimitEntry>());
 
 const DRILL_RESPONSE_SCHEMA = {
   type: "object",
@@ -127,7 +129,8 @@ function sanitizeStrings(items: string[]): string[] {
 
 async function callOpenAIResponses(
   model: string,
-  userPrompt: string
+  userPrompt: string,
+  timeoutMs: number
 ): Promise<Response> {
   return fetch("https://api.openai.com/v1/responses", {
     method: "POST",
@@ -135,7 +138,7 @@ async function callOpenAIResponses(
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",
     },
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(timeoutMs),
     body: JSON.stringify({
       model,
       store: false,
@@ -239,6 +242,32 @@ function validateDrillOutput(raw: unknown): {
   };
 }
 
+/** One model attempt. Any failure (timeout, HTTP error, incomplete or invalid output) returns null. */
+async function generateDrill(
+  model: string,
+  userPrompt: string,
+  timeoutMs: number
+): Promise<ReturnType<typeof validateDrillOutput>> {
+  try {
+    const response = await callOpenAIResponses(model, userPrompt, timeoutMs);
+    if (!response.ok) return null;
+
+    const result = (await response.json()) as {
+      status?: string;
+      output?: Array<{ content?: Array<{ type: string; text?: string }> }>;
+    };
+    if (result.status !== "completed") return null;
+
+    const outputText = result.output
+      ?.flatMap((item) => item.content ?? [])
+      .find((item) => item.type === "output_text")?.text;
+
+    return validateDrillOutput(JSON.parse(outputText || "{}"));
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin) {
     return Response.json(
@@ -266,24 +295,6 @@ export async function POST(request: Request) {
       },
       { status: 429 }
     );
-  }
-
-  const clientIp = getClientIp(request);
-  const now = Date.now();
-  const existingRate = ipRateLimitMap.get(clientIp);
-  if (existingRate && now < existingRate.resetAt) {
-    if (existingRate.count >= MAX_REQUESTS_PER_HOUR) {
-      return Response.json(
-        {
-          code: "IP_RATE_LIMIT",
-          error:
-            "잠시 요청이 몰렸어요. 잠시 후 다시 시도하거나 Gemini에서 바로 이어서 풀어보세요!",
-        },
-        { status: 429 }
-      );
-    }
-  } else if (existingRate && now >= existingRate.resetAt) {
-    ipRateLimitMap.delete(clientIp);
   }
 
   if (Number(request.headers.get("content-length") || 0) > MAX_BODY_BYTES) {
@@ -358,17 +369,33 @@ export async function POST(request: Request) {
     );
   }
 
-  // Record IP usage after validation passes; prune map if it grows large.
-  if (ipRateLimitMap.size > 5000) {
-    for (const [key, entry] of ipRateLimitMap.entries()) {
-      if (now >= entry.resetAt) ipRateLimitMap.delete(key);
-    }
+  // The trial cookie only stops honest browsers; these shared counters cap what a scripted
+  // client can spend (per IP per hour, and for the whole site per day).
+  const ipHits = await hitRateLimit(
+    `toeic-drill:ip:${hashClientKey(getClientIp(request))}`,
+    ONE_HOUR_MS
+  );
+  if (ipHits > MAX_REQUESTS_PER_HOUR) {
+    return Response.json(
+      {
+        code: "IP_RATE_LIMIT",
+        error:
+          "잠시 요청이 몰렸어요. 잠시 후 다시 시도하거나 Gemini에서 바로 이어서 풀어보세요!",
+      },
+      { status: 429 }
+    );
   }
-  const activeRate = ipRateLimitMap.get(clientIp);
-  if (activeRate && now < activeRate.resetAt) {
-    activeRate.count += 1;
-  } else {
-    ipRateLimitMap.set(clientIp, { count: 1, resetAt: now + ONE_HOUR_MS });
+
+  const dailyHits = await hitRateLimit("toeic-drill:all", ONE_DAY_MS);
+  if (dailyHits > getDailyLimit()) {
+    return Response.json(
+      {
+        code: "DAILY_LIMIT",
+        error:
+          "오늘 준비된 AI 맞춤 문제가 모두 소진됐어요. 아래 Gemini 프롬프트로 바로 이어서 훈련해 보세요!",
+      },
+      { status: 429 }
+    );
   }
 
   const cleanWeakSkills = sanitizeStrings(weakSkills);
@@ -394,53 +421,16 @@ export async function POST(request: Request) {
   const primaryModel = process.env.OPENAI_TOEIC_MODEL || "gpt-4.1-nano";
   const fallbackModel = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-  try {
-    let modelUsed = primaryModel;
-    let response = await callOpenAIResponses(primaryModel, userPrompt);
+  let modelUsed = primaryModel;
+  let validated = await generateDrill(primaryModel, userPrompt, PRIMARY_TIMEOUT_MS);
 
-    if (!response.ok && fallbackModel !== primaryModel) {
-      modelUsed = fallbackModel;
-      response = await callOpenAIResponses(fallbackModel, userPrompt);
-    }
+  // A timeout or malformed answer from the primary model also falls through to the fallback model.
+  if (!validated && fallbackModel !== primaryModel) {
+    modelUsed = fallbackModel;
+    validated = await generateDrill(fallbackModel, userPrompt, FALLBACK_TIMEOUT_MS);
+  }
 
-    if (!response.ok) {
-      throw new Error("upstream");
-    }
-
-    const result = (await response.json()) as {
-      status?: string;
-      output?: Array<{ content?: Array<{ type: string; text?: string }> }>;
-    };
-
-    if (result.status !== "completed") {
-      throw new Error("incomplete");
-    }
-
-    const outputText = result.output
-      ?.flatMap((item) => item.content ?? [])
-      .find((item) => item.type === "output_text")?.text;
-
-    const parsed: unknown = JSON.parse(outputText || "{}");
-    const validated = validateDrillOutput(parsed);
-    if (!validated) {
-      throw new Error("invalid");
-    }
-
-    return Response.json(
-      {
-        ok: true,
-        modelUsed,
-        focusSummary: validated.focusSummary,
-        questions: validated.questions,
-      },
-      {
-        status: 200,
-        headers: {
-          "Set-Cookie": TRIAL_COOKIE_HEADER,
-        },
-      }
-    );
-  } catch {
+  if (!validated) {
     return Response.json(
       {
         error:
@@ -449,4 +439,19 @@ export async function POST(request: Request) {
       { status: 502 }
     );
   }
+
+  return Response.json(
+    {
+      ok: true,
+      modelUsed,
+      focusSummary: validated.focusSummary,
+      questions: validated.questions,
+    },
+    {
+      status: 200,
+      headers: {
+        "Set-Cookie": TRIAL_COOKIE_HEADER,
+      },
+    }
+  );
 }

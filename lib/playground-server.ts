@@ -1,10 +1,18 @@
 import fs from "node:fs";
 import path from "node:path";
+import { cache } from "react";
 import { SEED_PLAYGROUND_PROMPTS, type PlaygroundPrompt } from "@/lib/playground";
 import type { LibraryPrompt } from "@/lib/prompt-library";
 import { isRankingRowId } from "@/lib/ranking";
 
 const STORE_FILE = path.join(process.cwd(), ".next", "cache", "playground-store.json");
+const REMOTE_LIST_TIMEOUT_MS = 4_000;
+const REMOTE_LIST_TTL_MS = 30_000;
+// Only community posts (`user-<uuid>`) live solely in the sheet; anything else is local or a 404.
+const COMMUNITY_ID_RE = /^user-[a-zA-Z0-9_-]{4,64}$/;
+
+let remoteList: { prompts: PlaygroundPrompt[]; expiresAt: number } | null = null;
+let remoteListRequest: Promise<PlaygroundPrompt[] | null> | null = null;
 
 function getWebhookConfig() {
   const url = (
@@ -20,7 +28,41 @@ function getWebhookConfig() {
   return { url, secret, enabled: Boolean(url && secret) };
 }
 
-export async function findDynamicPlaygroundPrompt(id: string): Promise<LibraryPrompt | undefined> {
+/**
+ * The sheet's full post list (artwork included), shared by concurrent callers and kept for a short
+ * TTL, so generateMetadata + page and crawlers probing random slugs don't each download it again.
+ */
+async function fetchRemoteList(): Promise<PlaygroundPrompt[] | null> {
+  if (remoteList && remoteList.expiresAt > Date.now()) return remoteList.prompts;
+  const { url, secret, enabled } = getWebhookConfig();
+  if (!enabled) return null;
+
+  remoteListRequest ??= (async () => {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "list", secret }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(REMOTE_LIST_TIMEOUT_MS),
+      });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { ok?: boolean; prompts?: PlaygroundPrompt[] };
+      if (!data?.ok || !Array.isArray(data.prompts)) return null;
+      remoteList = { prompts: data.prompts, expiresAt: Date.now() + REMOTE_LIST_TTL_MS };
+      return data.prompts;
+    } catch {
+      return null;
+    } finally {
+      remoteListRequest = null;
+    }
+  })();
+  return remoteListRequest;
+}
+
+export const findDynamicPlaygroundPrompt = cache(async function findDynamicPlaygroundPrompt(
+  id: string,
+): Promise<LibraryPrompt | undefined> {
   if (!id || isRankingRowId(id)) return undefined;
   let candidates: PlaygroundPrompt[] = [...SEED_PLAYGROUND_PROMPTS];
 
@@ -37,26 +79,8 @@ export async function findDynamicPlaygroundPrompt(id: string): Promise<LibraryPr
 
   let found = candidates.find((p) => p.id === id);
 
-  if (!found) {
-    const { url, secret, enabled } = getWebhookConfig();
-    if (enabled) {
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "list", secret }),
-          cache: "no-store",
-        });
-        if (res.ok) {
-          const data = (await res.json()) as { ok?: boolean; prompts?: PlaygroundPrompt[] };
-          if (data?.ok && Array.isArray(data.prompts)) {
-            found = data.prompts.find((p) => p.id === id);
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
+  if (!found && COMMUNITY_ID_RE.test(id)) {
+    found = (await fetchRemoteList())?.find((p) => p.id === id);
   }
 
   if (!found) return undefined;
@@ -77,4 +101,4 @@ export async function findDynamicPlaygroundPrompt(id: string): Promise<LibraryPr
     thumbnail: { variant: found.variant, src: found.artwork, alt: `${found.title} 썸네일` },
     copyCount: found.copies,
   };
-}
+});
