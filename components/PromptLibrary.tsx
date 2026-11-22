@@ -24,6 +24,7 @@ import { LoadingOrb } from "./LoadingOrb";
 import type { PlaygroundPrompt } from "@/lib/playground";
 
 const LOCAL_CUSTOM_KEY = "gsa-playground-custom:v1";
+let hasCompletedOrbIntro = false;
 
 function toLibraryPrompt(item: PlaygroundPrompt): LibraryPrompt {
   return {
@@ -146,11 +147,8 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
   useLayoutEffect(() => {
     if (!introInitialized.current) {
       introInitialized.current = true;
-      const introKey = "prompt-library-intro-seen";
-      if (window.sessionStorage.getItem(introKey)) {
+      if (hasCompletedOrbIntro) {
         replayTyping();
-      } else {
-        window.sessionStorage.setItem(introKey, "true");
       }
     }
 
@@ -160,6 +158,12 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
     window.addEventListener("pageshow", replayTypingOnRestore);
     return () => window.removeEventListener("pageshow", replayTypingOnRestore);
   }, [replayTyping]);
+
+  useEffect(() => {
+    if (typingIndex > 0) {
+      hasCompletedOrbIntro = true;
+    }
+  }, [typingIndex]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -383,7 +387,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
 
   const rankedTop5 =
     tab === "ranking" && !trimmedQuery
-      ? buildRankedPrompts(prompts, periodKey, rankingDeltas[periodKey], localRankingDeltas, 5)
+      ? buildRankedPrompts(allPrompts, periodKey, rankingDeltas[periodKey], localRankingDeltas, 5)
       : [];
 
   const currentSearch = new URLSearchParams();

@@ -1781,33 +1781,32 @@
 
 /* ==================== Light Mode Overrides ==================== */
 html[data-theme="light"] .toeic-section {
-  color: #131416;
+  color: #1f2937;
 }
 
-html[data-theme="light"] .toeic-card {
+html[data-theme="light"] .toeic-card,
+html[data-theme="light"] .toeic-prompt-section {
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.09);
-  box-shadow: 0 10px 30px -20px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 html[data-theme="light"] .toeic-card-hero {
-  background:
-    linear-gradient(150deg, #ffffff 0%, #f6f8fc 100%) padding-box,
-    linear-gradient(115deg, rgba(37, 99, 235, 0.28) 0%, rgba(124, 58, 237, 0.24) 55%, rgba(14, 165, 233, 0.24) 100%) border-box;
+  background: #ffffff;
+  border: 1px solid rgba(59, 130, 246, 0.14);
+  box-shadow: 0 10px 32px rgba(59, 130, 246, 0.1), 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 html[data-theme="light"] .toeic-hero-top,
 html[data-theme="light"] .toeic-score-top {
-  background:
-    radial-gradient(ellipse 75% 65% at 85% 15%, rgba(59, 130, 246, 0.1), transparent 65%),
-    radial-gradient(ellipse 65% 55% at 12% 90%, rgba(139, 92, 246, 0.09), transparent 65%);
+  background: radial-gradient(ellipse 85% 65% at 50% 0%, rgba(219, 238, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%);
 }
 
 html[data-theme="light"] .toeic-eyebrow,
 html[data-theme="light"] .toeic-tier-badge {
   color: #1d4ed8;
-  background: rgba(37, 99, 235, 0.09);
-  border-color: rgba(37, 99, 235, 0.2);
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 html[data-theme="light"] .toeic-hero-title,
@@ -1829,15 +1828,18 @@ html[data-theme="light"] .toeic-feature-item h3,
 html[data-theme="light"] .toeic-overview-heading,
 html[data-theme="light"] .toeic-overview-name,
 html[data-theme="light"] .toeic-skill-name,
-html[data-theme="light"] .toeic-reasons-title {
-  color: #131416;
+html[data-theme="light"] .toeic-reasons-title,
+html[data-theme="light"] .toeic-part-pill-score,
+html[data-theme="light"] .toeic-history-row--latest .toeic-history-score,
+html[data-theme="light"] .toeic-dday-label {
+  color: #1f2937;
 }
 
 html[data-theme="light"] .toeic-hero-accent {
-  background: linear-gradient(105deg, #1d4ed8 0%, #4f46e5 55%, #7c3aed 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  color: #3b82f6;
 }
 
 html[data-theme="light"] .toeic-hero-desc,
@@ -1857,8 +1859,12 @@ html[data-theme="light"] .toeic-skill-time,
 html[data-theme="light"] .toeic-method-desc,
 html[data-theme="light"] .toeic-rc-tip,
 html[data-theme="light"] .toeic-review-qmeta,
-html[data-theme="light"] .toeic-answer-pill-label {
-  color: #525861;
+html[data-theme="light"] .toeic-answer-pill-label,
+html[data-theme="light"] .toeic-part-pill-rate,
+html[data-theme="light"] .toeic-history-date,
+html[data-theme="light"] .toeic-dday-hint,
+html[data-theme="light"] .toeic-disclaimer {
+  color: #64748b;
 }
 
 html[data-theme="light"] .toeic-hero-desc strong,
@@ -1866,37 +1872,45 @@ html[data-theme="light"] .toeic-passage-body,
 html[data-theme="light"] .toeic-reasons-list li,
 html[data-theme="light"] .toeic-focus-desc,
 html[data-theme="light"] .toeic-rc-legend-item,
-html[data-theme="light"] .toeic-review-exp {
-  color: #30363f;
+html[data-theme="light"] .toeic-review-exp,
+html[data-theme="light"] .toeic-part-pill-label,
+html[data-theme="light"] .toeic-history-score,
+html[data-theme="light"] .toeic-quiz-part {
+  color: #374151;
 }
 
 html[data-theme="light"] .toeic-btn-primary {
-  background: linear-gradient(115deg, #2563eb 0%, #6366f1 100%);
+  background: #2563eb;
   color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 10px 24px -10px rgba(37, 99, 235, 0.45);
+  border: 1px solid #2563eb;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.24);
 }
 
-html[data-theme="light"] .toeic-btn-secondary {
-  background: #f3f4f6;
-  border-color: rgba(15, 23, 42, 0.12);
-  color: #1f2937;
+html[data-theme="light"] .toeic-btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  box-shadow: 0 8px 22px rgba(59, 130, 246, 0.3);
 }
 
-html[data-theme="light"] .toeic-btn-secondary:hover:not(:disabled) {
-  background: #e5e7eb;
-}
-
+html[data-theme="light"] .toeic-btn-secondary,
 html[data-theme="light"] .toeic-btn-ghost {
-  background: rgba(37, 99, 235, 0.08);
-  border-color: rgba(37, 99, 235, 0.2);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  color: #374151;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+html[data-theme="light"] .toeic-btn-secondary:hover:not(:disabled),
+html[data-theme="light"] .toeic-btn-ghost:hover {
+  background: #f0f7ff;
+  border-color: #93c5fd;
   color: #1d4ed8;
 }
 
 html[data-theme="light"] .toeic-feature-grid,
 html[data-theme="light"] .toeic-score-note {
-  border-top-color: rgba(15, 23, 42, 0.08);
-  background: #f8fafc;
+  border-top-color: rgba(59, 130, 246, 0.1);
+  background: #f8fbff;
 }
 
 html[data-theme="light"] .toeic-feature-item,
@@ -1904,13 +1918,34 @@ html[data-theme="light"] .toeic-overview-chip,
 html[data-theme="light"] .toeic-passage,
 html[data-theme="light"] .toeic-skill-card,
 html[data-theme="light"] .toeic-reasons-box,
-html[data-theme="light"] .toeic-target-btn,
 html[data-theme="light"] .toeic-focus-card,
 html[data-theme="light"] .toeic-method-card,
 html[data-theme="light"] .toeic-rc-box,
-html[data-theme="light"] .toeic-review-item {
-  background: #f8f9fb;
-  border-color: rgba(15, 23, 42, 0.08);
+html[data-theme="light"] .toeic-review-item,
+html[data-theme="light"] .toeic-part-pill,
+html[data-theme="light"] .toeic-stat-box {
+  background: #f0f7ff;
+  border-color: rgba(59, 130, 246, 0.12);
+}
+
+html[data-theme="light"] .toeic-feature-icon--blue,
+html[data-theme="light"] .toeic-method-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+html[data-theme="light"] .toeic-feature-icon--emerald {
+  background: #d1fae5;
+  color: #059669;
+}
+
+html[data-theme="light"] .toeic-feature-icon--purple {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+html[data-theme="light"] .toeic-overview-bar {
+  background: #3b82f6;
 }
 
 html[data-theme="light"] .toeic-overview-q,
@@ -1919,116 +1954,187 @@ html[data-theme="light"] .toeic-quiz-counter,
 html[data-theme="light"] .toeic-passage-header,
 html[data-theme="light"] .toeic-score-label,
 html[data-theme="light"] .toeic-score-unit,
-html[data-theme="light"] .toeic-review-exp strong {
-  color: #1d4ed8;
+html[data-theme="light"] .toeic-review-exp strong,
+html[data-theme="light"] .toeic-score-note svg {
+  color: #3b82f6;
 }
 
-html[data-theme="light"] .toeic-quiz-part {
-  color: #494e55;
+html[data-theme="light"] .toeic-section-kicker--emerald {
+  color: #059669;
+}
+
+html[data-theme="light"] .toeic-section-kicker--amber {
+  color: #d97706;
+}
+
+html[data-theme="light"] .toeic-section-kicker--purple {
+  color: #7c3aed;
 }
 
 html[data-theme="light"] .toeic-quiz-sep {
-  color: rgba(15, 23, 42, 0.2);
+  color: #cbd5e1;
 }
 
 html[data-theme="light"] .toeic-diff-badge {
-  color: #6d28d9;
-  background: rgba(124, 58, 237, 0.1);
-  border-color: rgba(124, 58, 237, 0.2);
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #bfdbfe;
 }
 
 html[data-theme="light"] .toeic-timer-pill {
-  background: #eef0f4;
-  border-color: rgba(15, 23, 42, 0.09);
+  background: #f0f7ff;
+  border-color: rgba(59, 130, 246, 0.18);
   color: #1f2937;
 }
 
+html[data-theme="light"] .toeic-timer-dot {
+  background: #3b82f6;
+  box-shadow: none;
+}
+
 html[data-theme="light"] .toeic-progress-track,
-html[data-theme="light"] .toeic-gauge-track {
-  background: #e5e7eb;
+html[data-theme="light"] .toeic-gauge-track,
+html[data-theme="light"] .toeic-part-pill-bar,
+html[data-theme="light"] .toeic-history-track {
+  background: #e2e8f0;
+}
+
+html[data-theme="light"] .toeic-progress-fill {
+  background: #3b82f6;
+}
+
+html[data-theme="light"] .toeic-gauge-fill {
+  background: linear-gradient(90deg, #f59e0b 0%, #10b981 55%, #3b82f6 100%);
 }
 
 html[data-theme="light"] .toeic-option {
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.1);
-  color: #131416;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  color: #1f2937;
 }
 
 html[data-theme="light"] .toeic-option:hover {
-  background: #f0f5ff;
-  border-color: rgba(37, 99, 235, 0.45);
+  background: #f0f7ff;
+  border-color: #93c5fd;
 }
 
 html[data-theme="light"] .toeic-option--selected {
   background: #eff6ff;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+  border: 2px solid #3b82f6;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
 }
 
 html[data-theme="light"] .toeic-option-badge {
-  background: #eef0f4;
+  background: #f0f7ff;
   color: #374151;
 }
 
 html[data-theme="light"] .toeic-option--selected .toeic-option-badge {
-  background: #2563eb;
+  background: #3b82f6;
   color: #ffffff;
 }
 
 html[data-theme="light"] .toeic-option-key {
   border-color: rgba(15, 23, 42, 0.12);
-  color: #6b7280;
+  color: #64748b;
 }
 
 html[data-theme="light"] .toeic-quiz-actions,
 html[data-theme="light"] .toeic-passage-header,
-html[data-theme="light"] .toeic-review-body {
-  border-color: rgba(15, 23, 42, 0.08);
+html[data-theme="light"] .toeic-review-body,
+html[data-theme="light"] .toeic-dday-wrap {
+  border-color: rgba(59, 130, 246, 0.12);
 }
 
-html[data-theme="light"] .toeic-stat-box {
-  background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.09);
+html[data-theme="light"] .toeic-spinner-wrap {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+html[data-theme="light"] .toeic-spinner {
+  border-color: #bfdbfe;
+  border-top-color: #3b82f6;
 }
 
 html[data-theme="light"] .toeic-roast-banner {
   background: #fffbeb;
-  border-color: rgba(217, 119, 6, 0.3);
+  border: 1px solid #fde68a;
+}
+
+html[data-theme="light"] .toeic-roast-tag {
+  background: #f59e0b;
+  color: #ffffff;
 }
 
 html[data-theme="light"] .toeic-roast-text {
-  color: #78350f;
+  color: #92400e;
 }
 
 html[data-theme="light"] .toeic-intro-history-pill {
   background: #ecfdf5;
-  border-color: rgba(16, 185, 129, 0.28);
+  border-color: #a7f3d0;
   color: #047857;
+}
+
+html[data-theme="light"] .toeic-intro-history-dot {
+  background: #10b981;
 }
 
 html[data-theme="light"] .toeic-guess-toggle,
 html[data-theme="light"] .toeic-skip-btn,
-html[data-theme="light"] .toeic-dday-btn {
-  background: #f8f9fb;
-  border-color: rgba(15, 23, 42, 0.12);
-  color: #374151;
+html[data-theme="light"] .toeic-dday-btn,
+html[data-theme="light"] .toeic-target-btn {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  color: #4b5563;
+}
+
+html[data-theme="light"] .toeic-guess-toggle:hover,
+html[data-theme="light"] .toeic-skip-btn:hover,
+html[data-theme="light"] .toeic-dday-btn:hover,
+html[data-theme="light"] .toeic-target-btn:hover {
+  background: #f0f7ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
 }
 
 html[data-theme="light"] .toeic-guess-toggle[aria-pressed="true"] {
-  background: #fef3c7;
-  border-color: #d97706;
-  color: #92400e;
+  background: #eff6ff;
+  border: 1.5px solid #3b82f6;
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-target-btn--active,
+html[data-theme="light"] .toeic-dday-btn--active {
+  background: #eff6ff;
+  border: 1.5px solid #3b82f6;
+  color: #1d4ed8;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.14);
+}
+
+html[data-theme="light"] .toeic-target-btn--active:hover,
+html[data-theme="light"] .toeic-dday-btn--active:hover {
+  background: #dbeafe;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+html[data-theme="light"] .toeic-target-rec {
+  background: #10b981;
+  color: #ffffff;
 }
 
 html[data-theme="light"] .toeic-share-btn {
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.14);
-  color: #131416;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  color: #1f2937;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.06);
 }
 
 html[data-theme="light"] .toeic-share-btn:hover:not(:disabled) {
   background: #eff6ff;
-  border-color: #2563eb;
+  border-color: #3b82f6;
   color: #1d4ed8;
 }
 
@@ -2040,95 +2146,66 @@ html[data-theme="light"] .toeic-share-btn--done {
 
 html[data-theme="light"] .toeic-delta-badge {
   background: #eff6ff;
-  border-color: rgba(37, 99, 235, 0.25);
+  border-color: #bfdbfe;
   color: #1d4ed8;
 }
 
 html[data-theme="light"] .toeic-delta-badge--up {
   background: #ecfdf5;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: #a7f3d0;
   color: #047857;
 }
 
 html[data-theme="light"] .toeic-delta-badge--down {
   background: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: #fecaca;
   color: #b91c1c;
 }
 
-html[data-theme="light"] .toeic-history-date,
-html[data-theme="light"] .toeic-dday-hint {
-  color: #525861;
-}
-
 html[data-theme="light"] .toeic-history-row--latest .toeic-history-date {
-  color: #1d4ed8;
+  color: #2563eb;
 }
 
-html[data-theme="light"] .toeic-history-track {
-  background: #e5e7eb;
+html[data-theme="light"] .toeic-history-fill {
+  background: #93c5fd;
 }
 
-html[data-theme="light"] .toeic-history-score {
-  color: #374151;
-}
-
-html[data-theme="light"] .toeic-history-row--latest .toeic-history-score,
-html[data-theme="light"] .toeic-dday-label {
-  color: #131416;
+html[data-theme="light"] .toeic-history-row--latest .toeic-history-fill {
+  background: #3b82f6;
 }
 
 html[data-theme="light"] .toeic-flag-badge--guess {
-  background: #fef3c7;
-  color: #92400e;
-  border-color: rgba(217, 119, 6, 0.3);
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
 }
 
 html[data-theme="light"] .toeic-flag-badge--skip {
-  background: #e5e7eb;
-  color: #374151;
-  border-color: rgba(15, 23, 42, 0.12);
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
 }
 
-html[data-theme="light"] .toeic-dday-wrap {
-  border-top-color: rgba(15, 23, 42, 0.08);
+html[data-theme="light"] .toeic-part-pill-fill {
+  background: #3b82f6;
 }
 
-html[data-theme="light"] .toeic-dday-btn--active {
-  background: #eff6ff;
-  border-color: #2563eb;
-  color: #1d4ed8;
+html[data-theme="light"] .toeic-part-pill-fill--strong {
+  background: #10b981;
 }
 
-html[data-theme="light"] .toeic-part-pill {
-  background: #f8f9fb;
-  border-color: rgba(15, 23, 42, 0.08);
-}
-
-html[data-theme="light"] .toeic-part-pill-label {
-  color: #3f444d;
-}
-
-html[data-theme="light"] .toeic-part-pill-score {
-  color: #131416;
-}
-
-html[data-theme="light"] .toeic-part-pill-rate {
-  color: #525861;
-}
-
-html[data-theme="light"] .toeic-part-pill-bar {
-  background: #e5e7eb;
+html[data-theme="light"] .toeic-part-pill-fill--weak {
+  background: #ef4444;
 }
 
 html[data-theme="light"] .toeic-skill-card--correct {
   background: #ecfdf5;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: #a7f3d0;
 }
 
 html[data-theme="light"] .toeic-skill-card--wrong {
   background: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: #fecaca;
 }
 
 html[data-theme="light"] .toeic-ox-badge--o {
@@ -2141,20 +2218,23 @@ html[data-theme="light"] .toeic-ox-badge--x {
   color: #b91c1c;
 }
 
-html[data-theme="light"] .toeic-target-btn {
-  color: #374151;
+html[data-theme="light"] .toeic-skill-slow {
+  color: #d97706;
 }
 
-html[data-theme="light"] .toeic-target-btn--active {
-  background: #eff6ff;
-  border-color: #2563eb;
-  color: #1d4ed8;
-  box-shadow: 0 6px 18px -10px rgba(37, 99, 235, 0.45);
+html[data-theme="light"] .toeic-reasons-dot,
+html[data-theme="light"] .toeic-reasons-list li::before {
+  background: #3b82f6;
 }
 
 html[data-theme="light"] .toeic-goal-banner {
   background: #ecfdf5;
-  border-color: rgba(16, 185, 129, 0.28);
+  border-color: #a7f3d0;
+}
+
+html[data-theme="light"] .toeic-goal-gap {
+  background: #10b981;
+  color: #ffffff;
 }
 
 html[data-theme="light"] .toeic-goal-duration,
@@ -2164,37 +2244,52 @@ html[data-theme="light"] .toeic-goal-hours-label {
 
 html[data-theme="light"] .toeic-focus-card--weak {
   background: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.32);
+  border-color: #fecaca;
 }
 
 html[data-theme="light"] .toeic-priority-tag,
 html[data-theme="light"] .toeic-rc-badge {
-  background: rgba(37, 99, 235, 0.1);
+  background: #dbeafe;
   color: #1d4ed8;
 }
 
 html[data-theme="light"] .toeic-weak-tag {
   background: #fee2e2;
   color: #b91c1c;
-  border-color: rgba(239, 68, 68, 0.25);
+  border-color: #fecaca;
 }
 
-html[data-theme="light"] .toeic-method-icon {
-  background: rgba(37, 99, 235, 0.1);
-  color: #1d4ed8;
+html[data-theme="light"] .toeic-rc-bar {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .toeic-rc-seg--p5 {
+  background: #3b82f6;
+}
+
+html[data-theme="light"] .toeic-rc-seg--p6 {
+  background: #8b5cf6;
+}
+
+html[data-theme="light"] .toeic-rc-seg--p7 {
+  background: #10b981;
 }
 
 html[data-theme="light"] .toeic-rc-legend-item {
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.08);
+  border-color: rgba(59, 130, 246, 0.14);
 }
 
 html[data-theme="light"] .toeic-review-trigger {
-  color: #131416;
+  color: #1f2937;
 }
 
 html[data-theme="light"] .toeic-review-trigger:hover {
-  background: rgba(15, 23, 42, 0.03);
+  background: #e6f0ff;
+}
+
+html[data-theme="light"] .toeic-review-chevron {
+  color: #64748b;
 }
 
 html[data-theme="light"] .toeic-answer-pill {
@@ -2204,21 +2299,22 @@ html[data-theme="light"] .toeic-answer-pill {
 
 html[data-theme="light"] .toeic-answer-pill--correct {
   background: #ecfdf5;
-  border-color: rgba(16, 185, 129, 0.28);
+  border-color: #a7f3d0;
 }
 
 html[data-theme="light"] .toeic-answer-pill--wrong {
   background: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.28);
+  border-color: #fecaca;
 }
 
 html[data-theme="light"] .toeic-review-exp {
   background: #ffffff;
+  border: 1px solid rgba(59, 130, 246, 0.12);
 }
 
 html[data-theme="light"] .toeic-review-tip {
   background: #eff6ff;
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: #bfdbfe;
   color: #1e40af;
 }
 

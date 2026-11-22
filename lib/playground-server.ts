@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { SEED_PLAYGROUND_PROMPTS, type PlaygroundPrompt } from "@/lib/playground";
 import type { LibraryPrompt } from "@/lib/prompt-library";
+import { isRankingRowId } from "@/lib/ranking";
 
 const STORE_FILE = path.join(process.cwd(), ".next", "cache", "playground-store.json");
 
@@ -20,6 +21,7 @@ function getWebhookConfig() {
 }
 
 export async function findDynamicPlaygroundPrompt(id: string): Promise<LibraryPrompt | undefined> {
+  if (!id || isRankingRowId(id)) return undefined;
   let candidates: PlaygroundPrompt[] = [...SEED_PLAYGROUND_PROMPTS];
 
   try {

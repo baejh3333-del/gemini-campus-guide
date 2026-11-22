@@ -32,9 +32,38 @@ export type RankingApiResponse = {
   bucket: string;
   items: RankingApiItem[];
   deltas: Record<string, number>;
-  source: "kv" | "memory";
+  source: "kv" | "google-sheets" | "memory";
   updatedAt: string;
 };
+
+export const RANKING_ROW_PREFIX = "__rk__:";
+
+const PERIOD_SHORT: Record<RankingPeriod, string> = {
+  today: "d",
+  week: "w",
+  month: "m",
+};
+
+export function isRankingRowId(id: string): boolean {
+  return id.startsWith(RANKING_ROW_PREFIX);
+}
+
+export function buildRankingRowId(period: RankingPeriod, bucket: string, promptId: string): string {
+  const cleanBucket = bucket.replace(/^W-/, "");
+  return `${RANKING_ROW_PREFIX}${PERIOD_SHORT[period]}:${cleanBucket}:${promptId}`.slice(0, 80);
+}
+
+export function parseRankingRowId(
+  rowId: string,
+  period: RankingPeriod,
+  bucket: string,
+): string | null {
+  const cleanBucket = bucket.replace(/^W-/, "");
+  const prefix = `${RANKING_ROW_PREFIX}${PERIOD_SHORT[period]}:${cleanBucket}:`;
+  if (!rowId.startsWith(prefix)) return null;
+  const promptId = rowId.slice(prefix.length).trim();
+  return promptId || null;
+}
 
 export type RankedPromptItem = {
   rank: number;

@@ -4,8 +4,10 @@ import path from "node:path";
 import { LIBRARY_PROMPTS } from "@/content/prompts";
 import {
   buildRankedPrompts,
+  buildRankingRowId,
   getRankingBucket,
   normalizeRankingPeriod,
+  parseRankingRowId,
   RANKING_PERIODS,
   type RankingApiResponse,
   type RankingPeriod,
@@ -13,19 +15,42 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 20;
 
 const STORE_FILE = path.join(process.cwd(), ".next", "cache", "ranking-store.json");
 const KV_TIMEOUT_MS = 2_500;
-const VALID_PROMPT_IDS = new Set(LIBRARY_PROMPTS.map((prompt) => prompt.id));
+const SHEET_READ_TIMEOUT_MS = 5_000;
+const SHEET_WRITE_TIMEOUT_MS = 10_000;
+const SHEET_CACHE_MS = 15_000;
+
+const STATIC_PROMPT_IDS = new Set(LIBRARY_PROMPTS.map((prompt) => prompt.id));
+const COMMUNITY_ID_RE = /^user-[a-zA-Z0-9_-]{4,64}$/;
+
+function isValidPromptId(id: string): boolean {
+  return STATIC_PROMPT_IDS.has(id) || COMMUNITY_ID_RE.test(id);
+}
 
 type MemoryRankingStore = Record<
   RankingPeriod,
   { bucket: string; counts: Record<string, number> }
 >;
 
+type SheetPromptRow = {
+  id: string;
+  copies?: number;
+};
+
+type SheetCache = {
+  rows: SheetPromptRow[];
+  expiresAt: number;
+};
+
 declare global {
   var __gsaRankingStore: MemoryRankingStore | undefined;
+  var __gsaRankingSheetCache: SheetCache | undefined;
 }
+
+/* ── 1. Optional Vercel KV / Upstash Redis REST adapter ─────────────────── */
 
 function getKvConfig() {
   const url = (
@@ -88,7 +113,7 @@ async function readKvDeltas(
     for (let i = 0; i < raw.length - 1; i += 2) {
       const id = String(raw[i]);
       const val = Number(raw[i + 1]);
-      if (VALID_PROMPT_IDS.has(id) && Number.isFinite(val) && val > 0) {
+      if (isValidPromptId(id) && Number.isFinite(val) && val > 0) {
         deltas[id] = Math.floor(val);
       }
     }
@@ -97,7 +122,7 @@ async function readKvDeltas(
   if (typeof raw === "object") {
     for (const [id, val] of Object.entries(raw as Record<string, unknown>)) {
       const num = Number(val);
-      if (VALID_PROMPT_IDS.has(id) && Number.isFinite(num) && num > 0) {
+      if (isValidPromptId(id) && Number.isFinite(num) && num > 0) {
         deltas[id] = Math.floor(num);
       }
     }
@@ -122,6 +147,132 @@ async function incrementKv(promptId: string, now: Date): Promise<boolean> {
   );
   return results.every(Boolean);
 }
+
+/* ── 2. Google Sheets (Apps Script Webhook) persistent DB adapter ───────── */
+
+function getSheetsConfig() {
+  const url = (
+    process.env.PLAYGROUND_WEBHOOK_URL ||
+    process.env.ENTRY_WEBHOOK_URL ||
+    ""
+  ).trim();
+  const secret = (
+    process.env.PLAYGROUND_SHARED_SECRET ||
+    process.env.ENTRY_SHARED_SECRET ||
+    ""
+  ).trim();
+  return { url, secret, enabled: Boolean(url && secret) };
+}
+
+async function callSheetsWebhook<T = { ok?: boolean }>(
+  payload: Record<string, unknown>,
+  timeoutMs: number,
+): Promise<T | null> {
+  const { url, secret, enabled } = getSheetsConfig();
+  if (!enabled) return null;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, secret }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function readSheetsRows(): Promise<SheetPromptRow[] | null> {
+  const { enabled } = getSheetsConfig();
+  if (!enabled) return null;
+
+  const cached = globalThis.__gsaRankingSheetCache;
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.rows;
+  }
+
+  const data = await callSheetsWebhook<{ ok?: boolean; prompts?: SheetPromptRow[] }>(
+    { action: "list" },
+    SHEET_READ_TIMEOUT_MS,
+  );
+  if (!data?.ok || !Array.isArray(data.prompts)) return null;
+
+  globalThis.__gsaRankingSheetCache = {
+    rows: data.prompts,
+    expiresAt: Date.now() + SHEET_CACHE_MS,
+  };
+  return data.prompts;
+}
+
+async function readSheetsDeltas(
+  period: RankingPeriod,
+  bucket: string,
+): Promise<Record<string, number> | null> {
+  const rows = await readSheetsRows();
+  if (rows === null) return null;
+
+  const deltas: Record<string, number> = {};
+  for (const row of rows) {
+    if (!row || typeof row.id !== "string") continue;
+    const promptId = parseRankingRowId(row.id, period, bucket);
+    if (!promptId || !isValidPromptId(promptId)) continue;
+    const val = Number(row.copies) || 0;
+    if (val > 0) {
+      deltas[promptId] = Math.floor(val);
+    }
+  }
+  return deltas;
+}
+
+async function incrementSheets(promptId: string, now: Date): Promise<boolean> {
+  const { enabled } = getSheetsConfig();
+  if (!enabled) return false;
+
+  // Invalidate read cache so next GET sees the fresh count immediately
+  globalThis.__gsaRankingSheetCache = undefined;
+
+  const jobs = RANKING_PERIODS.map(async (period) => {
+    const bucket = getRankingBucket(period, now);
+    const rowId = buildRankingRowId(period, bucket, promptId);
+    const res = await callSheetsWebhook<{ ok?: boolean }>(
+      {
+        action: "copy",
+        id: rowId,
+        seed: {
+          id: rowId,
+          createdAt: bucket,
+          author: "__ranking__",
+          category: period,
+          variant: "orbit",
+          title: "ranking",
+          description: promptId,
+          body: "ranking-counter",
+          copies: 0,
+          likes: 0,
+        },
+      },
+      SHEET_WRITE_TIMEOUT_MS,
+    );
+    return Boolean(res?.ok);
+  });
+
+  // Also increment the community post's own `copies` column in Google Sheets
+  if (COMMUNITY_ID_RE.test(promptId)) {
+    void callSheetsWebhook(
+      { action: "copy", id: promptId },
+      SHEET_WRITE_TIMEOUT_MS,
+    );
+  }
+
+  const results = await Promise.all(jobs);
+  return results.some(Boolean);
+}
+
+/* ── 3. Local memory + cache-file fallback (for local dev without DB env) ─ */
 
 function createEmptyMemoryStore(now: Date = new Date()): MemoryRankingStore {
   return {
@@ -148,7 +299,7 @@ function normalizeMemoryStore(
     ) {
       const sanitized: Record<string, number> = {};
       for (const [id, val] of Object.entries(entry.counts)) {
-        if (VALID_PROMPT_IDS.has(id) && typeof val === "number" && Number.isFinite(val) && val > 0) {
+        if (isValidPromptId(id) && typeof val === "number" && Number.isFinite(val) && val > 0) {
           sanitized[id] = Math.floor(val);
         }
       }
@@ -191,19 +342,29 @@ function writeMemoryStore(store: MemoryRankingStore): void {
   }
 }
 
+/* ── Route Handlers ─────────────────────────────────────────────────────── */
+
 export async function GET(request: NextRequest) {
   const now = new Date();
   const period = normalizeRankingPeriod(request.nextUrl.searchParams.get("period"));
   const bucket = getRankingBucket(period, now);
 
-  let source: "kv" | "memory" = "memory";
-  let deltas: Record<string, number>;
+  let source: RankingApiResponse["source"] = "memory";
+  let deltas: Record<string, number> | null = null;
 
   const kvDeltas = await readKvDeltas(period, bucket);
   if (kvDeltas !== null) {
     source = "kv";
     deltas = kvDeltas;
   } else {
+    const sheetDeltas = await readSheetsDeltas(period, bucket);
+    if (sheetDeltas !== null) {
+      source = "google-sheets";
+      deltas = sheetDeltas;
+    }
+  }
+
+  if (deltas === null) {
     const store = readMemoryStore(now);
     deltas = { ...store[period].counts };
   }
@@ -248,7 +409,7 @@ export async function POST(request: NextRequest) {
       ? (body as { promptId: string }).promptId.trim()
       : "";
 
-  if (!promptId || !VALID_PROMPT_IDS.has(promptId)) {
+  if (!promptId || !isValidPromptId(promptId)) {
     return NextResponse.json({ ok: false, error: "Unknown or missing promptId" }, { status: 400 });
   }
 
@@ -259,13 +420,18 @@ export async function POST(request: NextRequest) {
   }
   writeMemoryStore(store);
 
-  const kvUpdated = await incrementKv(promptId, now);
+  let source: RankingApiResponse["source"] = "memory";
+  if (await incrementKv(promptId, now)) {
+    source = "kv";
+  } else if (await incrementSheets(promptId, now)) {
+    source = "google-sheets";
+  }
 
   return NextResponse.json(
     {
       ok: true,
       promptId,
-      source: kvUpdated ? "kv" : "memory",
+      source,
       deltas: {
         today: store.today.counts[promptId],
         week: store.week.counts[promptId],

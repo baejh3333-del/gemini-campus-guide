@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateSvgArtwork } from "@/lib/svg-artwork";
 import { CATEGORIES, type Category, type LibraryPrompt } from "@/lib/prompt-library";
+import { isRankingRowId } from "@/lib/ranking";
 import {
   SEED_PLAYGROUND_PROMPTS,
   VISUAL_VARIANTS,
@@ -45,7 +46,7 @@ function readLocalStore(): PlaygroundPrompt[] {
       const raw = fs.readFileSync(STORE_FILE, "utf8");
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        memoryStore = parsed;
+        memoryStore = parsed.filter((item) => item && typeof item.id === "string" && !isRankingRowId(item.id));
         return memoryStore;
       }
     }
@@ -58,19 +59,20 @@ function readLocalStore(): PlaygroundPrompt[] {
 
 function writeLocalStore(items: PlaygroundPrompt[]) {
   storeVersion += 1;
-  memoryStore = items;
+  memoryStore = items.filter((item) => !isRankingRowId(item.id));
   try {
     fs.mkdirSync(path.dirname(STORE_FILE), { recursive: true });
-    fs.writeFileSync(STORE_FILE, JSON.stringify(items, null, 2), "utf8");
+    fs.writeFileSync(STORE_FILE, JSON.stringify(memoryStore, null, 2), "utf8");
   } catch {
     // Ignore file write errors on read-only serverless filesystems
   }
 }
 
 function mergeWithSeeds(sheetPrompts: PlaygroundPrompt[]): PlaygroundPrompt[] {
-  const sheetIds = new Set(sheetPrompts.map((p) => p.id));
+  const communityPrompts = sheetPrompts.filter((p) => p && typeof p.id === "string" && !isRankingRowId(p.id));
+  const sheetIds = new Set(communityPrompts.map((p) => p.id));
   const remainingSeeds = SEED_PLAYGROUND_PROMPTS.filter((seed) => !sheetIds.has(seed.id));
-  return [...sheetPrompts, ...remainingSeeds];
+  return [...communityPrompts, ...remainingSeeds];
 }
 
 async function callAppsScript(payload: Record<string, unknown>) {
