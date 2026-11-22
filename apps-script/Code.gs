@@ -18,11 +18,18 @@
  *
  * 이미 배포한 스크립트를 수정할 때:
  * [배포] > [배포 관리] > 연필 아이콘(수정) > 버전: [새 버전] > [배포]
+ *
+ * 랭킹 복사 수는 "랭킹" 시트에 따로 저장합니다(지난 일/주/월 행은 자동 정리).
+ * 예전 버전이 "플레이그라운드" 시트에 남긴 "__rk__:" 행은 이 스크립트를 새 버전으로 배포한 뒤
+ * 편집기에서 migrateLegacyRankingRows 를 한 번 실행하면 "랭킹" 시트로 옮겨지고 지워집니다.
  * ──────────────────────────────────────────────────────────
  */
 
 var SECRET = "여기에-PLAYGROUND_SHARED_SECRET-과-같은-값";
 var SHEET_NAME = "플레이그라운드";
+var RANK_SHEET_NAME = "랭킹";
+var LEGACY_RANK_PREFIX = "__rk__:";
+var RANK_KEY_RE = /^[dwm]:\d{4}-\d{2}(-\d{2})?$/;
 
 function doGet(e) {
   try {
@@ -48,10 +55,19 @@ function doPost(e) {
         return json({ ok: true, prompts: readAllPrompts(existingSheet) });
       }
     }
+    if (action === "rank_list") {
+      var listKey = String(body.key || "");
+      if (!RANK_KEY_RE.test(listKey)) return json({ ok: false, error: "invalid key" });
+      return json({ ok: true, counts: readRankCounts(listKey) });
+    }
     var lock = LockService.getScriptLock();
     lock.waitLock(10000);
 
     try {
+      if (action === "rank_incr") {
+        return json(incrementRank(body));
+      }
+
       var sheet = getSheet();
 
       if (action === "list") {
@@ -210,11 +226,131 @@ function readAllPrompts(sheet) {
   var list = [];
   for (var i = values.length - 1; i >= 0; i--) {
     var item = rowToPrompt(values[i]);
-    if (item.id && item.title && item.body) {
+    if (item.id && item.title && item.body && item.id.indexOf(LEGACY_RANK_PREFIX) !== 0) {
       list.push(item);
     }
   }
   return list;
+}
+
+/* ── 랭킹 카운터 ("랭킹" 시트: 키 | 프롬프트ID | 복사수) ─────────────── */
+
+function getRankSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(RANK_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(RANK_SHEET_NAME);
+    sheet.appendRow(["키", "프롬프트ID", "복사수"]);
+    sheet.setFrozenRows(1);
+    sheet.getRange("A:B").setNumberFormat("@");
+  }
+  return sheet;
+}
+
+function readRankRows(sheet) {
+  var last = sheet.getLastRow();
+  if (last <= 1) return [];
+  return sheet.getRange(2, 1, last - 1, 3).getValues();
+}
+
+function readRankCounts(key) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(RANK_SHEET_NAME);
+  var counts = {};
+  if (!sheet) return counts;
+  var rows = readRankRows(sheet);
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i][0]) === key) {
+      var rowPromptId = String(rows[i][1]);
+      counts[rowPromptId] = (counts[rowPromptId] || 0) + (Number(rows[i][2]) || 0);
+    }
+  }
+  return counts;
+}
+
+/**
+ * body.keys 는 지금 일/주/월 키 3개. 그 키들의 행만 남기고(지난 기간 행은 삭제)
+ * promptId 의 각 키 복사 수를 1씩 올린다.
+ */
+function incrementRank(body) {
+  var promptId = String(body.promptId || "").trim();
+  var keys = Array.isArray(body.keys) ? body.keys.map(String) : [];
+  if (!promptId || promptId.length > 80 || /^[=+\-@]/.test(promptId)) {
+    return { ok: false, error: "invalid promptId" };
+  }
+  if (keys.length === 0 || keys.length > 3 || !keys.every(function (k) { return RANK_KEY_RE.test(k); })) {
+    return { ok: false, error: "invalid keys" };
+  }
+
+  var sheet = getRankSheet();
+  var rows = readRankRows(sheet);
+  var kept = [];
+  for (var i = 0; i < rows.length; i++) {
+    if (keys.indexOf(String(rows[i][0])) !== -1) kept.push(rows[i]);
+  }
+  var pruned = kept.length !== rows.length;
+
+  var appended = [];
+  for (var k = 0; k < keys.length; k++) {
+    var found = false;
+    for (var r = 0; r < kept.length; r++) {
+      if (String(kept[r][0]) === keys[k] && String(kept[r][1]) === promptId) {
+        kept[r][2] = (Number(kept[r][2]) || 0) + 1;
+        found = true;
+        break;
+      }
+    }
+    if (!found) appended.push([keys[k], promptId, 1]);
+  }
+
+  var all = kept.concat(appended);
+  if (pruned && rows.length > 0) {
+    sheet.getRange(2, 1, rows.length, 3).clearContent();
+  }
+  if (all.length > 0) {
+    sheet.getRange(2, 1, all.length, 3).setValues(all);
+  }
+  return { ok: true };
+}
+
+/**
+ * 한 번만 편집기에서 직접 실행: 예전 "__rk__:" 행을 "랭킹" 시트로 옮기고 플레이그라운드 시트에서 지운다.
+ * 지난 기간 행은 다음 복사 때 incrementRank 가 정리한다.
+ */
+function migrateLegacyRankingRows() {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var sheet = getSheet();
+    var last = sheet.getLastRow();
+    if (last <= 1) return;
+    var values = sheet.getRange(2, 1, last - 1, 9).getValues();
+    var rankSheet = getRankSheet();
+    var moved = [];
+    var deleteRows = [];
+    for (var i = 0; i < values.length; i++) {
+      var id = unquote(values[i][0]);
+      if (id.indexOf(LEGACY_RANK_PREFIX) !== 0) continue;
+      var match = /^__rk__:([dwm]:\d{4}-\d{2}(?:-\d{2})?):(.+)$/.exec(id);
+      if (match) moved.push([match[1], match[2], Number(values[i][8]) || 0]);
+      deleteRows.push(i + 2);
+    }
+    if (moved.length > 0) {
+      rankSheet.getRange(rankSheet.getLastRow() + 1, 1, moved.length, 3).setValues(moved);
+    }
+    // 아래에서 위로, 연속 구간 단위로 지워야 행 번호가 밀리지 않는다.
+    for (var j = deleteRows.length - 1; j >= 0; ) {
+      var end = deleteRows[j];
+      var start = end;
+      while (j - 1 >= 0 && deleteRows[j - 1] === start - 1) {
+        j--;
+        start--;
+      }
+      sheet.deleteRows(start, end - start + 1);
+      j--;
+    }
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function findRowById(sheet, id) {

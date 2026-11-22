@@ -171,20 +171,20 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
       return;
     }
     if (typingIndex >= HERO_TYPING_STEPS.length - 1) return;
-    const skipIntro = () => setTypingIndex(HERO_TYPING_STEPS.length - 1);
-    const blockClick = (event: MouseEvent) => {
+    // The page is still dark/blurred here, so the click must not land on a control the user
+    // cannot see. It reveals the page at once instead of being silently swallowed.
+    const skipIntroOnClick = (event: MouseEvent) => {
       event.preventDefault();
       event.stopPropagation();
+      setTypingIndex(HERO_TYPING_STEPS.length - 1);
     };
-    window.addEventListener("click", blockClick, true);
-    window.addEventListener("dblclick", skipIntro);
+    window.addEventListener("click", skipIntroOnClick, true);
     const timer = window.setTimeout(() => {
       setTypingIndex((prev) => Math.min(prev + 1, HERO_TYPING_STEPS.length - 1));
     }, HERO_TYPING_STEPS[typingIndex].wait);
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("click", blockClick, true);
-      window.removeEventListener("dblclick", skipIntro);
+      window.removeEventListener("click", skipIntroOnClick, true);
     };
   }, [typingIndex]);
 
@@ -639,7 +639,7 @@ export function PromptLibrary({ prompts }: { prompts: LibraryPrompt[] }) {
                         </p>
                         {prompt.isCommunity && (
                           <p className="library-card-community">
-                            이용자가 만든 프롬프트{prompt.author && prompt.author !== "익명" ? ` · ${prompt.author}` : ""}
+                            이용자가 만든 프롬프트{prompt.author && !prompt.author.startsWith("익명") ? ` · ${prompt.author}` : ""}
                           </p>
                         )}
                       </div>

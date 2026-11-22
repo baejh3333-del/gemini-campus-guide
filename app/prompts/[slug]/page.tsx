@@ -48,7 +48,7 @@ export default async function PromptDetail({
         <p className="library-eyebrow">
           {prompt.category} ·{" "}
           {prompt.isCommunity
-            ? `이용자가 만든 프롬프트${prompt.author && prompt.author !== "익명" ? ` · ${prompt.author}` : ""}`
+            ? `이용자가 만든 프롬프트${prompt.author && !prompt.author.startsWith("익명") ? ` · ${prompt.author}` : ""}`
             : prompt.source
               ? `${prompt.source.kind} #${prompt.source.number}`
               : prompt.kind === "gem"

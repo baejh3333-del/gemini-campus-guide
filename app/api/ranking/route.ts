@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 import { LIBRARY_PROMPTS } from "@/content/prompts";
+import { getKvConfig, runKvCommand } from "@/lib/kv";
+import { listPrompts } from "@/lib/prompt-library";
 import {
   buildRankedPrompts,
+  buildRankingKey,
   buildRankingRowId,
   getRankingBucket,
   normalizeRankingPeriod,
@@ -18,13 +21,14 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 20;
 
 const STORE_FILE = path.join(process.cwd(), ".next", "cache", "ranking-store.json");
-const KV_TIMEOUT_MS = 2_500;
 const SHEET_READ_TIMEOUT_MS = 5_000;
 const SHEET_WRITE_TIMEOUT_MS = 10_000;
 const SHEET_CACHE_MS = 15_000;
 
 const STATIC_PROMPT_IDS = new Set(LIBRARY_PROMPTS.map((prompt) => prompt.id));
-const COMMUNITY_ID_RE = /^user-[a-zA-Z0-9_-]{4,64}$/;
+// Community posts are `user-<uuid>`. 55 chars after the prefix keeps the legacy
+// `__rk__:d:YYYY-MM-DD:<id>` row id under the sheet's 80-char ID cell, so ids never collide.
+const COMMUNITY_ID_RE = /^user-[a-zA-Z0-9_-]{4,55}$/;
 
 function isValidPromptId(id: string): boolean {
   return STATIC_PROMPT_IDS.has(id) || COMMUNITY_ID_RE.test(id);
@@ -40,33 +44,25 @@ type SheetPromptRow = {
   copies?: number;
 };
 
-type SheetCache = {
-  rows: SheetPromptRow[];
-  expiresAt: number;
-};
+type DeltaCache = Record<string, { deltas: Record<string, number>; expiresAt: number }>;
 
 declare global {
   var __gsaRankingStore: MemoryRankingStore | undefined;
-  var __gsaRankingSheetCache: SheetCache | undefined;
+  var __gsaRankingDeltaCache: DeltaCache | undefined;
+}
+
+function sanitizeCounts(raw: Record<string, unknown>): Record<string, number> {
+  const deltas: Record<string, number> = {};
+  for (const [id, val] of Object.entries(raw)) {
+    const num = Number(val);
+    if (isValidPromptId(id) && Number.isFinite(num) && num > 0) {
+      deltas[id] = Math.floor(num);
+    }
+  }
+  return deltas;
 }
 
 /* ── 1. Optional Vercel KV / Upstash Redis REST adapter ─────────────────── */
-
-function getKvConfig() {
-  const url = (
-    process.env.KV_REST_API_URL ||
-    process.env.UPSTASH_REDIS_REST_URL ||
-    ""
-  )
-    .trim()
-    .replace(/\/+$/, "");
-  const token = (
-    process.env.KV_REST_API_TOKEN ||
-    process.env.UPSTASH_REDIS_REST_TOKEN ||
-    ""
-  ).trim();
-  return { url, token, enabled: Boolean(url && token) };
-}
 
 function kvHashKey(period: RankingPeriod, bucket: string): string {
   return `gsa:ranking:${period}:${bucket}`;
@@ -78,29 +74,6 @@ function kvTtlSeconds(period: RankingPeriod): number {
   return 60 * 60 * 24 * 45; // 45 days
 }
 
-async function runKvCommand<T = unknown>(command: (string | number)[]): Promise<T | null> {
-  const { url, token, enabled } = getKvConfig();
-  if (!enabled) return null;
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(command),
-      cache: "no-store",
-      signal: AbortSignal.timeout(KV_TIMEOUT_MS),
-    });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { result?: T; error?: string };
-    if (data.error) return null;
-    return data.result ?? null;
-  } catch {
-    return null;
-  }
-}
-
 async function readKvDeltas(
   period: RankingPeriod,
   bucket: string,
@@ -108,32 +81,21 @@ async function readKvDeltas(
   const raw = await runKvCommand<unknown>(["HGETALL", kvHashKey(period, bucket)]);
   if (raw === null) return null;
 
-  const deltas: Record<string, number> = {};
   if (Array.isArray(raw)) {
+    const pairs: Record<string, unknown> = {};
     for (let i = 0; i < raw.length - 1; i += 2) {
-      const id = String(raw[i]);
-      const val = Number(raw[i + 1]);
-      if (isValidPromptId(id) && Number.isFinite(val) && val > 0) {
-        deltas[id] = Math.floor(val);
-      }
+      pairs[String(raw[i])] = raw[i + 1];
     }
-    return deltas;
+    return sanitizeCounts(pairs);
   }
   if (typeof raw === "object") {
-    for (const [id, val] of Object.entries(raw as Record<string, unknown>)) {
-      const num = Number(val);
-      if (isValidPromptId(id) && Number.isFinite(num) && num > 0) {
-        deltas[id] = Math.floor(num);
-      }
-    }
-    return deltas;
+    return sanitizeCounts(raw as Record<string, unknown>);
   }
-  return deltas;
+  return {};
 }
 
 async function incrementKv(promptId: string, now: Date): Promise<boolean> {
-  const { enabled } = getKvConfig();
-  if (!enabled) return false;
+  if (!getKvConfig().enabled) return false;
 
   const results = await Promise.all(
     RANKING_PERIODS.map(async (period) => {
@@ -149,6 +111,11 @@ async function incrementKv(promptId: string, now: Date): Promise<boolean> {
 }
 
 /* ── 2. Google Sheets (Apps Script Webhook) persistent DB adapter ───────── */
+// Counters live in their own "랭킹" sheet (actions rank_list / rank_incr), so they no longer
+// bloat the community sheet that every `list` call downloads. Until the Apps Script is
+// redeployed it answers "unknown action", and we fall back to the legacy `__rk__:` rows.
+
+type SheetResponse = { ok?: boolean; error?: string };
 
 function getSheetsConfig() {
   const url = (
@@ -164,7 +131,7 @@ function getSheetsConfig() {
   return { url, secret, enabled: Boolean(url && secret) };
 }
 
-async function callSheetsWebhook<T = { ok?: boolean }>(
+async function callSheetsWebhook<T extends SheetResponse = SheetResponse>(
   payload: Record<string, unknown>,
   timeoutMs: number,
 ): Promise<T | null> {
@@ -186,90 +153,111 @@ async function callSheetsWebhook<T = { ok?: boolean }>(
   }
 }
 
-async function readSheetsRows(): Promise<SheetPromptRow[] | null> {
-  const { enabled } = getSheetsConfig();
-  if (!enabled) return null;
+function isUnknownAction(res: SheetResponse | null): boolean {
+  return Boolean(res && !res.ok && res.error === "unknown action");
+}
 
-  const cached = globalThis.__gsaRankingSheetCache;
-  if (cached && cached.expiresAt > Date.now()) {
-    return cached.rows;
-  }
-
-  const data = await callSheetsWebhook<{ ok?: boolean; prompts?: SheetPromptRow[] }>(
+async function readLegacySheetsDeltas(
+  period: RankingPeriod,
+  bucket: string,
+): Promise<Record<string, number> | null> {
+  const data = await callSheetsWebhook<SheetResponse & { prompts?: SheetPromptRow[] }>(
     { action: "list" },
     SHEET_READ_TIMEOUT_MS,
   );
   if (!data?.ok || !Array.isArray(data.prompts)) return null;
 
-  globalThis.__gsaRankingSheetCache = {
-    rows: data.prompts,
-    expiresAt: Date.now() + SHEET_CACHE_MS,
-  };
-  return data.prompts;
+  const counts: Record<string, unknown> = {};
+  for (const row of data.prompts) {
+    if (!row || typeof row.id !== "string") continue;
+    const promptId = parseRankingRowId(row.id, period, bucket);
+    if (promptId) counts[promptId] = row.copies;
+  }
+  return sanitizeCounts(counts);
 }
 
 async function readSheetsDeltas(
   period: RankingPeriod,
   bucket: string,
 ): Promise<Record<string, number> | null> {
-  const rows = await readSheetsRows();
-  if (rows === null) return null;
+  if (!getSheetsConfig().enabled) return null;
 
-  const deltas: Record<string, number> = {};
-  for (const row of rows) {
-    if (!row || typeof row.id !== "string") continue;
-    const promptId = parseRankingRowId(row.id, period, bucket);
-    if (!promptId || !isValidPromptId(promptId)) continue;
-    const val = Number(row.copies) || 0;
-    if (val > 0) {
-      deltas[promptId] = Math.floor(val);
-    }
+  const key = buildRankingKey(period, bucket);
+  const cache = (globalThis.__gsaRankingDeltaCache ??= {});
+  const cached = cache[key];
+  if (cached && cached.expiresAt > Date.now()) return cached.deltas;
+
+  const data = await callSheetsWebhook<SheetResponse & { counts?: Record<string, unknown> }>(
+    { action: "rank_list", key },
+    SHEET_READ_TIMEOUT_MS,
+  );
+
+  let deltas: Record<string, number> | null = null;
+  if (data?.ok && data.counts && typeof data.counts === "object") {
+    deltas = sanitizeCounts(data.counts);
+  } else if (isUnknownAction(data)) {
+    deltas = await readLegacySheetsDeltas(period, bucket);
   }
+  if (deltas === null) return null;
+
+  cache[key] = { deltas, expiresAt: Date.now() + SHEET_CACHE_MS };
   return deltas;
 }
 
-async function incrementSheets(promptId: string, now: Date): Promise<boolean> {
-  const { enabled } = getSheetsConfig();
-  if (!enabled) return false;
-
-  // Invalidate read cache so next GET sees the fresh count immediately
-  globalThis.__gsaRankingSheetCache = undefined;
-
-  const jobs = RANKING_PERIODS.map(async (period) => {
-    const bucket = getRankingBucket(period, now);
-    const rowId = buildRankingRowId(period, bucket, promptId);
-    const res = await callSheetsWebhook<{ ok?: boolean }>(
-      {
-        action: "copy",
-        id: rowId,
-        seed: {
+async function incrementLegacySheets(promptId: string, now: Date): Promise<boolean> {
+  const results = await Promise.all(
+    RANKING_PERIODS.map(async (period) => {
+      const bucket = getRankingBucket(period, now);
+      const rowId = buildRankingRowId(period, bucket, promptId);
+      const res = await callSheetsWebhook(
+        {
+          action: "copy",
           id: rowId,
-          createdAt: bucket,
-          author: "__ranking__",
-          category: period,
-          variant: "orbit",
-          title: "ranking",
-          description: promptId,
-          body: "ranking-counter",
-          copies: 0,
-          likes: 0,
+          seed: {
+            id: rowId,
+            createdAt: bucket,
+            author: "__ranking__",
+            category: period,
+            variant: "orbit",
+            title: "ranking",
+            description: promptId,
+            body: "ranking-counter",
+            copies: 0,
+            likes: 0,
+          },
         },
-      },
-      SHEET_WRITE_TIMEOUT_MS,
-    );
-    return Boolean(res?.ok);
-  });
-
-  // Also increment the community post's own `copies` column in Google Sheets
-  if (COMMUNITY_ID_RE.test(promptId)) {
-    void callSheetsWebhook(
-      { action: "copy", id: promptId },
-      SHEET_WRITE_TIMEOUT_MS,
-    );
-  }
-
-  const results = await Promise.all(jobs);
+        SHEET_WRITE_TIMEOUT_MS,
+      );
+      return Boolean(res?.ok);
+    }),
+  );
   return results.some(Boolean);
+}
+
+async function incrementSheets(promptId: string, now: Date): Promise<boolean> {
+  if (!getSheetsConfig().enabled) return false;
+
+  const keys = RANKING_PERIODS.map((period) => buildRankingKey(period, getRankingBucket(period, now)));
+  // Invalidate read cache so the next GET sees the fresh count immediately
+  const cache = globalThis.__gsaRankingDeltaCache;
+  if (cache) for (const key of keys) delete cache[key];
+
+  const res = await callSheetsWebhook({ action: "rank_incr", promptId, keys }, SHEET_WRITE_TIMEOUT_MS);
+  if (res?.ok) return true;
+  if (isUnknownAction(res)) return incrementLegacySheets(promptId, now);
+  return false;
+}
+
+/**
+ * Bumps the community post's own `copies` column, which also proves the post exists.
+ * Returns "missing" only when the sheet answered that no such post exists.
+ */
+async function recordCommunityCopy(promptId: string): Promise<"ok" | "missing" | "unknown"> {
+  if (!getSheetsConfig().enabled) return "unknown";
+  const res = await callSheetsWebhook({ action: "copy", id: promptId }, SHEET_WRITE_TIMEOUT_MS);
+  if (res?.ok) return "ok";
+  if (res && res.error === "not found") return "missing";
+  return "unknown";
 }
 
 /* ── 3. Local memory + cache-file fallback (for local dev without DB env) ─ */
@@ -297,13 +285,7 @@ function normalizeMemoryStore(
       entry.counts &&
       typeof entry.counts === "object"
     ) {
-      const sanitized: Record<string, number> = {};
-      for (const [id, val] of Object.entries(entry.counts)) {
-        if (isValidPromptId(id) && typeof val === "number" && Number.isFinite(val) && val > 0) {
-          sanitized[id] = Math.floor(val);
-        }
-      }
-      fresh[period] = { bucket: entry.bucket, counts: sanitized };
+      fresh[period] = { bucket: entry.bucket, counts: sanitizeCounts(entry.counts) };
     }
   }
   return fresh;
@@ -369,7 +351,8 @@ export async function GET(request: NextRequest) {
     deltas = { ...store[period].counts };
   }
 
-  const ranked = buildRankedPrompts(LIBRARY_PROMPTS, period, deltas, {}, 5);
+  // Same order the home page passes to the client, so both compute the same baselines.
+  const ranked = buildRankedPrompts(await listPrompts(), period, deltas, {}, 5);
   const response: RankingApiResponse = {
     ok: true,
     period,
@@ -411,6 +394,12 @@ export async function POST(request: NextRequest) {
 
   if (!promptId || !isValidPromptId(promptId)) {
     return NextResponse.json({ ok: false, error: "Unknown or missing promptId" }, { status: 400 });
+  }
+
+  // Only posts that really exist may get counter rows; otherwise anyone could mint
+  // unlimited rows with made-up `user-` ids.
+  if (!STATIC_PROMPT_IDS.has(promptId) && (await recordCommunityCopy(promptId)) === "missing") {
+    return NextResponse.json({ ok: false, error: "Unknown promptId" }, { status: 404 });
   }
 
   const now = new Date();
